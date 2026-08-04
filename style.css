@@ -19,6 +19,12 @@
   --navy-600: #1b3a6b;   /* primary navy — buttons, headings */
   --navy-100: #e8edf5;   /* very light navy tint — borders */
 
+  /* Colours taken from the TVETMARA logo */
+  --logo-navy: #1b2a5e;  /* the TVETMARA lettering */
+  --logo-blue: #1d4ed8;  /* the blue stroke of the check mark */
+  --logo-red:  #c8102e;  /* the red stroke and the small square */
+  --logo-grey: #6b7280;  /* the "MASJID TANAH" line */
+
   --white: #ffffff;
   --page-bg: #f4f6fa;    /* soft grey-blue page background */
 
@@ -59,40 +65,71 @@ body {
 
 /* ------------------------------------------------------------
    TOP HEADER BAR
+   ------------------------------------------------------------
+   The header is WHITE (not navy) because the TVETMARA logo is
+   navy-coloured — navy artwork on a navy bar would be invisible.
+   A navy stripe along the bottom keeps the corporate feel.
    ------------------------------------------------------------ */
 .site-header {
-  background-color: var(--navy-900);
-  padding: 18px 28px;
+  background-color: var(--white);
+  padding: 16px 28px;
   border-bottom: 3px solid var(--navy-600);
 }
 
 .brand {
-  display: flex;         /* puts the logo + name side by side */
-  align-items: center;   /* vertically centres them */
-  gap: 12px;
   max-width: 1100px;
   margin: 0 auto;        /* centres the bar contents on wide screens */
 }
 
-/* The small square "NP" logo block */
-.brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1.5px solid rgba(255, 255, 255, 0.7);
-  color: var(--white);
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.5px;
+/* ---------- Line 1: the TVETMARA wordmark ---------- */
+.wordmark {
+  display: flex;            /* letters + check sit in a row */
+  align-items: center;      /* line them up vertically */
+  gap: 1px;
 }
 
-.brand-name {
-  color: var(--white);
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+.wm-letter {
+  font-size: 30px;
+  font-weight: 800;         /* very heavy, like the real logo */
+  color: var(--logo-navy);
+  letter-spacing: 1.5px;
+  line-height: 1;
+}
+
+/* The check mark that stands in for the "V" */
+.wm-check {
+  width: 27px;
+  height: 24px;
+  /* Nudge it so it sits on the same baseline as the letters */
+  margin: 0 1px -1px 1px;
+}
+
+/* Colours for the two strokes inside the SVG.
+   "fill" is the colour used to paint a shape. */
+.wm-check-red  { fill: var(--logo-red); }
+.wm-check-blue { fill: var(--logo-blue); }
+
+/* The small red square after the final "A" */
+.wm-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--logo-red);
+  align-self: flex-end;     /* push it down to the baseline */
+  margin: 0 0 3px 4px;
+}
+
+/* ---------- Line 2: MASJID TANAH ---------- */
+.wordmark-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--logo-grey);
+  text-transform: uppercase;
+  /* Wide spacing between letters, matching the printed logo */
+  letter-spacing: 7px;
+  /* letter-spacing adds a gap AFTER the last letter too, so we pull
+     the whole line back slightly to keep it visually left-aligned */
+  margin-left: 2px;
 }
 
 
@@ -304,5 +341,24 @@ input.input-error:focus {
 
   .card-header h1 {
     font-size: 20px;
+  }
+
+  /* Shrink the logo so it never overflows a narrow phone screen */
+  .site-header {
+    padding: 14px 16px;
+  }
+
+  .wm-letter {
+    font-size: 23px;
+  }
+
+  .wm-check {
+    width: 21px;
+    height: 18px;
+  }
+
+  .wordmark-sub {
+    font-size: 10.5px;
+    letter-spacing: 4.5px;
   }
 }

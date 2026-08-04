@@ -1,4 +1,4 @@
-# Client Registration Form
+# TVETMARA Masjid Tanah — Student Registration Form
 
 A beginner-friendly web form (plain HTML + CSS + JavaScript) that saves
 name / email / phone into a Supabase table called `submission`.
@@ -13,6 +13,26 @@ to install. Three files and it runs.
 | `index.html` | The structure of the page (the skeleton) |
 | `style.css`  | How it looks — navy & white corporate styling |
 | `app.js`     | Supabase settings + validation + saving |
+
+## About the logo
+
+The TVETMARA wordmark in the header is **drawn with HTML and SVG**, not
+loaded from an image file. That keeps it sharp on any screen and means
+there is no extra file to host.
+
+If you would rather use the official logo image, save it into this folder
+as `logo.png`, then in `index.html` replace the whole `<div class="brand">
+… </div>` block with:
+
+```html
+<img src="logo.png" alt="TVETMARA Masjid Tanah" class="brand-logo" />
+```
+
+and add this to `style.css`:
+
+```css
+.brand-logo { height: 52px; width: auto; display: block; }
+```
 
 ---
 
