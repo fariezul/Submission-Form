@@ -36,6 +36,11 @@ const phoneError = document.getElementById("phoneError");
 const successMessage = document.getElementById("successMessage");
 const errorMessage = document.getElementById("errorMessage");
 
+// The SPM results section
+const spmRows = document.getElementById("spmRows");
+const addSubjectButton = document.getElementById("addSubjectButton");
+const spmError = document.getElementById("spmError");
+
 
 /* ------------------------------------------------------------
    STEP 2 — Supabase settings
@@ -152,7 +157,178 @@ function validatePhone(value) {
 }
 
 
-/* Runs all three rules and returns true only if everything passed. */
+/* ------------------------------------------------------------
+   STEP 4b — The SPM results section
+   ------------------------------------------------------------
+   This part of the form is different from the others: the number
+   of inputs is not fixed. A student might add three subjects or
+   ten, so JavaScript builds the rows as they click "Add Subject".
+   ------------------------------------------------------------ */
+
+/* The subjects offered. "Other" lets a student record anything
+   not on the list. Add or remove entries here freely. */
+const SPM_SUBJECTS = [
+  "Bahasa Melayu",
+  "Bahasa Inggeris",
+  "Sejarah",
+  "Pendidikan Islam",
+  "Pendidikan Moral",
+  "Matematik",
+  "Matematik Tambahan",
+  "Sains",
+  "Fizik",
+  "Kimia",
+  "Biologi",
+  "Prinsip Perakaunan",
+  "Perniagaan",
+  "Ekonomi",
+  "Geografi",
+  "Pendidikan Seni Visual",
+  "Sains Komputer",
+  "Reka Cipta",
+  "Bahasa Arab",
+  "Bahasa Cina",
+  "Bahasa Tamil",
+  "Other",
+];
+
+/* SPM grades, best to worst. */
+const SPM_GRADES = ["A+", "A", "A-", "B+", "B", "C+", "C", "D", "E", "G"];
+
+
+/* Helper: build a <select> dropdown from a list of strings.
+   ------------------------------------------------------------
+   "placeholder" is the greyed-out first line, e.g. "Select subject".
+   It has an empty value so we can detect "nothing chosen yet". */
+function buildSelect(className, options, placeholder) {
+  const select = document.createElement("select");
+  select.className = className;
+
+  // The first option is the prompt. "disabled" stops it being
+  // re-picked, "selected" makes it show initially.
+  const first = document.createElement("option");
+  first.value = "";
+  first.textContent = placeholder;
+  first.disabled = true;
+  first.selected = true;
+  select.appendChild(first);
+
+  // Now one <option> per entry in the list.
+  options.forEach(function (text) {
+    const opt = document.createElement("option");
+    opt.value = text;
+    opt.textContent = text;
+    select.appendChild(opt);
+  });
+
+  return select;
+}
+
+
+/* Add one subject row to the page. */
+function addSubjectRow() {
+  const row = document.createElement("div");
+  row.className = "spm-row";
+
+  const subject = buildSelect("spm-subject", SPM_SUBJECTS, "Select subject");
+  const grade = buildSelect("spm-grade", SPM_GRADES, "Grade");
+
+  // The little "×" button that deletes this row.
+  const remove = document.createElement("button");
+  remove.type = "button";          // again: must not submit the form
+  remove.className = "btn-remove";
+  remove.textContent = "×";
+  remove.setAttribute("aria-label", "Remove this subject");
+
+  remove.addEventListener("click", function () {
+    row.remove();                  // delete this row from the page
+
+    // Never leave the section completely empty — always keep one row
+    // so the student has something to fill in.
+    if (spmRows.children.length === 0) addSubjectRow();
+  });
+
+  // Put the three controls inside the row, then the row on the page.
+  row.appendChild(subject);
+  row.appendChild(grade);
+  row.appendChild(remove);
+  spmRows.appendChild(row);
+
+  return row;
+}
+
+
+/* Read every row and return the results as a list of objects, like:
+     [ { subject: "Matematik", grade: "A" }, ... ]
+   Rows the student left completely blank are skipped. */
+function getSpmResults() {
+  const results = [];
+
+  // querySelectorAll finds ALL matching elements. It returns something
+  // list-like, so Array.from() turns it into a real array we can loop.
+  Array.from(spmRows.querySelectorAll(".spm-row")).forEach(function (row) {
+    const subject = row.querySelector(".spm-subject").value;
+    const grade = row.querySelector(".spm-grade").value;
+
+    // Skip a row where neither box was touched.
+    if (subject === "" && grade === "") return;
+
+    results.push({ subject: subject, grade: grade });
+  });
+
+  return results;
+}
+
+
+/* Check the SPM section. Returns an error message, or "" if fine. */
+function validateSpmResults(results) {
+  // At least one subject is required.
+  if (results.length === 0) {
+    return "Please add at least one SPM subject and grade.";
+  }
+
+  // Every row that exists must be filled in on both sides.
+  const incomplete = results.some(function (r) {
+    return r.subject === "" || r.grade === "";
+  });
+  if (incomplete) {
+    return "Each row needs both a subject and a grade.";
+  }
+
+  // The same subject must not appear twice.
+  const seen = [];
+  for (let i = 0; i < results.length; i++) {
+    const subject = results[i].subject;
+
+    // "Other" is allowed more than once, since it can mean different
+    // subjects each time.
+    if (subject !== "Other" && seen.indexOf(subject) !== -1) {
+      return 'You have added "' + subject + '" more than once.';
+    }
+    seen.push(subject);
+  }
+
+  return "";
+}
+
+
+/* Wipe the section back to a single empty row (used after a save). */
+function resetSpmRows() {
+  spmRows.innerHTML = "";   // remove every row at once
+  addSubjectRow();          // put one fresh row back
+}
+
+
+// Wire up the "+ Add Subject" button, and create the first row so the
+// section is never empty when the page loads.
+addSubjectButton.addEventListener("click", function () {
+  addSubjectRow();
+});
+
+addSubjectRow();
+
+
+/* Runs all the rules and returns true only if everything passed. */
 function validateForm() {
   // .value is what the user typed. .trim() removes stray spaces
   // at the start and end.
@@ -174,8 +350,19 @@ function validateForm() {
   if (phoneMsg) setFieldError(phoneInput, phoneError, phoneMsg);
   else clearFieldError(phoneInput, phoneError);
 
-  // If all three messages are empty strings, the form is valid.
-  return !nameMsg && !emailMsg && !phoneMsg;
+  // The SPM section is a group, not a single input, so it gets its own
+  // message line rather than a red border on one box.
+  const spmMsg = validateSpmResults(getSpmResults());
+  if (spmMsg) {
+    spmError.textContent = spmMsg;
+    spmError.classList.add("is-visible");
+  } else {
+    spmError.textContent = "";
+    spmError.classList.remove("is-visible");
+  }
+
+  // If every message is an empty string, the form is valid.
+  return !nameMsg && !emailMsg && !phoneMsg && !spmMsg;
 }
 
 
@@ -266,6 +453,11 @@ form.addEventListener("submit", async function (event) {
     name: nameInput.value.trim(),
     email: emailInput.value.trim(),
     phone: phoneInput.value.trim(),
+
+    // An array of { subject, grade } objects. Because the Supabase
+    // column is JSONB, Postgres stores this as real structured data
+    // that you can query later — not just a lump of text.
+    spm_results: getSpmResults(),
   };
 
   // Lock the button so a fast double-click can't send twice.
@@ -284,6 +476,12 @@ form.addEventListener("submit", async function (event) {
     clearFieldError(nameInput, nameError);
     clearFieldError(emailInput, emailError);
     clearFieldError(phoneInput, phoneError);
+
+    // form.reset() cannot remove rows that JavaScript created, so we
+    // rebuild the SPM section by hand.
+    spmError.textContent = "";
+    spmError.classList.remove("is-visible");
+    resetSpmRows();
 
     // Scroll the banner into view in case the user is on a phone.
     successMessage.scrollIntoView({ behavior: "smooth", block: "nearest" });

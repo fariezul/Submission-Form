@@ -148,6 +148,38 @@
           <p class="error-text" id="phoneError"></p>
         </div>
 
+        <!-- ---------- SPM results section ---------- -->
+        <div class="field">
+          <!--
+            This is a group of controls rather than one input, so we use
+            a <fieldset> with a <legend> instead of a <label>. That tells
+            screen readers "everything inside belongs to this heading".
+          -->
+          <fieldset class="spm-fieldset">
+            <legend>SPM Results</legend>
+            <p class="hint hint-top">
+              Add each subject you sat for and the grade you obtained.
+            </p>
+
+            <!--
+              Empty container. JavaScript inserts the subject rows here,
+              so the number of rows can grow and shrink as the student
+              clicks Add / Remove.
+            -->
+            <div id="spmRows"></div>
+
+            <!--
+              type="button" is important! Inside a <form>, a button with
+              no type defaults to "submit" and would send the form.
+            -->
+            <button type="button" class="btn-add" id="addSubjectButton">
+              + Add Subject
+            </button>
+
+            <p class="error-text" id="spmError"></p>
+          </fieldset>
+        </div>
+
         <!-- ---------- Submit button ---------- -->
         <button type="submit" class="btn-submit" id="submitButton">
           Submit Registration

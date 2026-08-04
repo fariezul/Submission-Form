@@ -14,6 +14,54 @@ to install. Three files and it runs.
 | `style.css`  | How it looks — navy & white corporate styling |
 | `app.js`     | Supabase settings + validation + saving |
 
+## Database columns
+
+The `submission` table needs these columns:
+
+| Column | Type | Notes |
+|---|---|---|
+| `name` | text | |
+| `email` | text | |
+| `phone` | text | |
+| `spm_results` | **jsonb** | added for the SPM section |
+
+If `spm_results` is missing you will see the error
+`PGRST204 — Could not find the 'spm_results' column`. Add it with:
+
+```sql
+alter table public.submission add column spm_results jsonb;
+```
+
+### What the SPM data looks like
+
+Each submission stores a list of subject/grade pairs, for example:
+
+```json
+[
+  { "subject": "Matematik", "grade": "A+" },
+  { "subject": "Bahasa Melayu", "grade": "A" }
+]
+```
+
+Because the column is `jsonb` (real structured JSON, not plain text)
+you can query inside it. For example, every student who scored A+ in
+any subject:
+
+```sql
+select name, email
+from submission
+where spm_results @> '[{"grade": "A+"}]';
+```
+
+To change which subjects appear in the dropdown, edit the
+`SPM_SUBJECTS` list near the top of the SPM section in `app.js`.
+
+By default at least one subject is required. To make the section
+optional, open `app.js`, find `validateSpmResults`, and delete the
+`if (results.length === 0)` block.
+
+---
+
 ## About the logo
 
 The TVETMARA wordmark in the header is **drawn with HTML and SVG**, not

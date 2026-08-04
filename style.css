@@ -263,6 +263,113 @@ input.input-error:focus {
 
 
 /* ------------------------------------------------------------
+   SPM RESULTS SECTION
+   ------------------------------------------------------------ */
+
+/* A <fieldset> has a default border and padding we don't want. */
+.spm-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  /* min-width:0 stops fieldsets from refusing to shrink on mobile —
+     a long-standing browser quirk. */
+  min-width: 0;
+}
+
+/* The "SPM Results" heading — styled to match the other labels */
+.spm-fieldset legend {
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy-900);
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+/* The explanatory line sits under the legend, above the rows */
+.hint-top {
+  margin: 7px 0 12px;
+}
+
+/* One subject row: [ subject ] [ grade ] [ × ] */
+.spm-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Dropdowns share the look of the text inputs */
+.spm-row select {
+  padding: 10px 11px;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: var(--text-dark);
+  background-color: var(--white);
+  border: 1px solid #c8d0dd;
+  border-radius: var(--radius);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  /* Stops a long subject name from stretching the row */
+  min-width: 0;
+}
+
+.spm-row select:focus {
+  outline: none;
+  border-color: var(--navy-600);
+  box-shadow: 0 0 0 3px rgba(27, 58, 107, 0.15);
+}
+
+/* flex: 1 makes the subject box take all the leftover space, so the
+   grade box and × button stay their natural size. */
+.spm-subject {
+  flex: 1;
+}
+
+.spm-grade {
+  flex: 0 0 88px;   /* don't grow, don't shrink, stay 88px wide */
+}
+
+/* The small "×" remove button */
+.btn-remove {
+  flex: 0 0 38px;
+  font-size: 19px;
+  line-height: 1;
+  color: var(--text-muted);
+  background-color: var(--white);
+  border: 1px solid #c8d0dd;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease,
+              border-color 0.15s ease;
+}
+
+.btn-remove:hover {
+  color: var(--error);
+  border-color: var(--error);
+  background-color: var(--error-bg);
+}
+
+/* The "+ Add Subject" button — outlined, so it reads as a secondary
+   action next to the solid navy Submit button. */
+.btn-add {
+  margin-top: 4px;
+  padding: 9px 15px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--navy-600);
+  background-color: var(--white);
+  border: 1px solid var(--navy-600);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-add:hover {
+  background-color: var(--navy-100);
+}
+
+
+/* ------------------------------------------------------------
    SUBMIT BUTTON
    ------------------------------------------------------------ */
 .btn-submit {
@@ -360,5 +467,15 @@ input.input-error:focus {
   .wordmark-sub {
     font-size: 10.5px;
     letter-spacing: 4.5px;
+  }
+
+  /* Give the subject dropdown more room on a narrow screen */
+  .spm-grade {
+    flex: 0 0 74px;
+  }
+
+  .spm-row select {
+    font-size: 13.5px;
+    padding: 10px 8px;
   }
 }
