@@ -19,11 +19,8 @@
   --navy-600: #1b3a6b;   /* primary navy — buttons, headings */
   --navy-100: #e8edf5;   /* very light navy tint — borders */
 
-  /* Colours taken from the TVETMARA logo */
-  --logo-navy: #1b2a5e;  /* the TVETMARA lettering */
-  --logo-blue: #1d4ed8;  /* the blue stroke of the check mark */
-  --logo-red:  #c8102e;  /* the red stroke and the small square */
-  --logo-grey: #6b7280;  /* the "MASJID TANAH" line */
+  /* The logo is now a real image file (logo.png), so its colours
+     live in the artwork rather than here. */
 
   --white: #ffffff;
   --page-bg: #f4f6fa;    /* soft grey-blue page background */
@@ -76,60 +73,22 @@ body {
   border-bottom: 3px solid var(--navy-600);
 }
 
-.brand {
-  max-width: 1100px;
-  margin: 0 auto;        /* centres the bar contents on wide screens */
-}
+/* ---------- The logo image ---------- */
+.brand-logo {
+  /* "display: block" + "margin: 0 auto" is the classic way to centre
+     an image. A plain <img> sits inline like a letter of text, and
+     inline elements ignore auto margins — block makes it obey them. */
+  display: block;
+  margin: 0 auto;
 
-/* ---------- Line 1: the TVETMARA wordmark ---------- */
-.wordmark {
-  display: flex;            /* letters + check sit in a row */
-  align-items: center;      /* line them up vertically */
-  gap: 1px;
-}
+  /* Set the HEIGHT and let the width follow automatically, so the
+     logo keeps its proportions and never looks squashed. */
+  height: 46px;
+  width: auto;
 
-.wm-letter {
-  font-size: 30px;
-  font-weight: 800;         /* very heavy, like the real logo */
-  color: var(--logo-navy);
-  letter-spacing: 1.5px;
-  line-height: 1;
-}
-
-/* The check mark that stands in for the "V" */
-.wm-check {
-  width: 27px;
-  height: 24px;
-  /* Nudge it so it sits on the same baseline as the letters */
-  margin: 0 1px -1px 1px;
-}
-
-/* Colours for the two strokes inside the SVG.
-   "fill" is the colour used to paint a shape. */
-.wm-check-red  { fill: var(--logo-red); }
-.wm-check-blue { fill: var(--logo-blue); }
-
-/* The small red square after the final "A" */
-.wm-dot {
-  width: 6px;
-  height: 6px;
-  background-color: var(--logo-red);
-  align-self: flex-end;     /* push it down to the baseline */
-  margin: 0 0 3px 4px;
-}
-
-/* ---------- Line 2: MASJID TANAH ---------- */
-.wordmark-sub {
-  margin-top: 4px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--logo-grey);
-  text-transform: uppercase;
-  /* Wide spacing between letters, matching the printed logo */
-  letter-spacing: 7px;
-  /* letter-spacing adds a gap AFTER the last letter too, so we pull
-     the whole line back slightly to keep it visually left-aligned */
-  margin-left: 2px;
+  /* Safety net: on a very narrow phone, shrink rather than overflow
+     the screen. */
+  max-width: 100%;
 }
 
 
@@ -455,18 +414,8 @@ input.input-error:focus {
     padding: 14px 16px;
   }
 
-  .wm-letter {
-    font-size: 23px;
-  }
-
-  .wm-check {
-    width: 21px;
-    height: 18px;
-  }
-
-  .wordmark-sub {
-    font-size: 10.5px;
-    letter-spacing: 4.5px;
+  .brand-logo {
+    height: 34px;
   }
 
   /* Give the subject dropdown more room on a narrow screen */

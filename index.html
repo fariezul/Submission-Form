@@ -25,42 +25,23 @@
   <header class="site-header">
     <!--
       THE LOGO
-      This is built from text + a small SVG shape rather than an image
-      file, so it stays perfectly sharp at any screen size and there is
-      no extra file to load.
 
-      role="img" + aria-label tell screen readers to announce it as a
-      single logo instead of reading the letters one at a time.
+      "alt" is the text a screen reader announces, and what shows if
+      the image ever fails to load. Always describe the logo, don't
+      just write "logo".
+
+      width and height match the real pixel size of the file. Giving
+      them to the browser lets it reserve the right space BEFORE the
+      image downloads, so the page doesn't jump around while loading.
+      The actual on-screen size is set in style.css.
     -->
-    <div class="brand" role="img" aria-label="TVETMARA Masjid Tanah">
-
-      <!-- Top line: the TVETMARA wordmark -->
-      <div class="wordmark">
-        <span class="wm-letter">T</span>
-
-        <!--
-          The "V" in TVETMARA is drawn as a check mark.
-          An SVG is a picture made of shapes described in code.
-          Each <path> below is one stroke of the check:
-            - the short red stroke on the left
-            - the long blue stroke going up to the right
-          "d" is the drawing instruction: M = move to, L = line to.
-        -->
-        <svg class="wm-check" viewBox="0 0 30 26" aria-hidden="true">
-          <path class="wm-check-red"  d="M1 9 L9 26 L15 15 Z" />
-          <path class="wm-check-blue" d="M9 26 L29 0 L21 0 L6 19 Z" />
-        </svg>
-
-        <span class="wm-letter">ETMARA</span>
-
-        <!-- The small red square that finishes the logo -->
-        <span class="wm-dot" aria-hidden="true"></span>
-      </div>
-
-      <!-- Bottom line: the campus name, widely spaced -->
-      <div class="wordmark-sub">Masjid Tanah</div>
-
-    </div>
+    <img
+      src="logo.png"
+      alt="TVETMARA Masjid Tanah"
+      class="brand-logo"
+      width="515"
+      height="100"
+    />
   </header>
 
   <!-- ===== MAIN CONTENT ============================================ -->
