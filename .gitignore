@@ -1,0 +1,13 @@
+# This is now a plain static site — there is nothing secret to ignore.
+# The Supabase anon key in app.js is meant to be public.
+#
+# Keep this file around so Git ignores common junk:
+
+node_modules/
+.DS_Store
+Thumbs.db
+
+# Safety net: if you ever add a .env later, Git will never upload it.
+.env
+.env.*
+!.env.example

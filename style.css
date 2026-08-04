@@ -1,0 +1,308 @@
+/* ============================================================
+   style.css — how the page LOOKS
+   ============================================================
+   CSS works like this:   selector { property: value; }
+   The "selector" picks which HTML elements to style.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   CSS VARIABLES
+   ------------------------------------------------------------
+   These are reusable values. Define a colour once here, use it
+   everywhere with var(--name). Change it once = changes the
+   whole site. ":root" just means "the whole document".
+   ------------------------------------------------------------ */
+:root {
+  --navy-900: #0b1f3a;   /* darkest navy — header bar */
+  --navy-700: #14294d;   /* button hover */
+  --navy-600: #1b3a6b;   /* primary navy — buttons, headings */
+  --navy-100: #e8edf5;   /* very light navy tint — borders */
+
+  --white: #ffffff;
+  --page-bg: #f4f6fa;    /* soft grey-blue page background */
+
+  --text-dark: #1a2233;
+  --text-muted: #5b6779;
+
+  --error: #b3261e;
+  --error-bg: #fdecea;
+  --success: #1e6f4c;
+  --success-bg: #eaf6f0;
+
+  --radius: 6px;         /* corner rounding — small = formal */
+}
+
+
+/* ------------------------------------------------------------
+   GLOBAL RESET
+   ------------------------------------------------------------
+   "*" means every element. box-sizing: border-box makes width
+   include padding + border, which makes layouts much easier.
+   ------------------------------------------------------------ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  /* Professional sans-serif stack; falls back down the list if a
+     font isn't installed on the visitor's computer. */
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--page-bg);
+  color: var(--text-dark);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+
+/* ------------------------------------------------------------
+   TOP HEADER BAR
+   ------------------------------------------------------------ */
+.site-header {
+  background-color: var(--navy-900);
+  padding: 18px 28px;
+  border-bottom: 3px solid var(--navy-600);
+}
+
+.brand {
+  display: flex;         /* puts the logo + name side by side */
+  align-items: center;   /* vertically centres them */
+  gap: 12px;
+  max-width: 1100px;
+  margin: 0 auto;        /* centres the bar contents on wide screens */
+}
+
+/* The small square "NP" logo block */
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.brand-name {
+  color: var(--white);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+
+/* ------------------------------------------------------------
+   PAGE LAYOUT
+   ------------------------------------------------------------ */
+.page {
+  display: flex;
+  justify-content: center;  /* centre the card horizontally */
+  padding: 48px 20px 64px;
+}
+
+
+/* ------------------------------------------------------------
+   THE CARD (white box)
+   ------------------------------------------------------------ */
+.card {
+  background-color: var(--white);
+  width: 100%;
+  max-width: 520px;              /* never wider than this */
+  border: 1px solid var(--navy-100);
+  border-top: 4px solid var(--navy-600);  /* navy accent stripe on top */
+  border-radius: var(--radius);
+  padding: 36px 38px 30px;
+  /* A soft shadow lifts the card off the background */
+  box-shadow: 0 1px 2px rgba(11, 31, 58, 0.06),
+              0 8px 24px rgba(11, 31, 58, 0.08);
+}
+
+.card-header {
+  border-bottom: 1px solid var(--navy-100);
+  padding-bottom: 18px;
+  margin-bottom: 26px;
+}
+
+.card-header h1 {
+  font-size: 23px;
+  font-weight: 600;
+  color: var(--navy-900);
+  letter-spacing: 0.2px;
+}
+
+.card-subtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.card-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--navy-100);
+  font-size: 12.5px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+
+/* ------------------------------------------------------------
+   FORM FIELDS
+   ------------------------------------------------------------ */
+.field {
+  margin-bottom: 20px;
+}
+
+/* Labels sit ABOVE the input because they are display:block */
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy-900);
+  margin-bottom: 7px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;   /* formal, corporate feel */
+}
+
+input {
+  width: 100%;
+  padding: 11px 13px;
+  font-size: 15px;
+  font-family: inherit;         /* use the same font as the body */
+  color: var(--text-dark);
+  background-color: var(--white);
+  border: 1px solid #c8d0dd;
+  border-radius: var(--radius);
+  /* Animate the border/shadow change so focus feels smooth */
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input::placeholder {
+  color: #9aa5b5;
+}
+
+/* ":focus" = the input the user is currently typing in */
+input:focus {
+  outline: none;                          /* remove default outline... */
+  border-color: var(--navy-600);
+  box-shadow: 0 0 0 3px rgba(27, 58, 107, 0.15);  /* ...replace with a navy glow */
+}
+
+/* JavaScript adds the "input-error" class when validation fails */
+input.input-error {
+  border-color: var(--error);
+  background-color: #fffafa;
+}
+
+input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.15);
+}
+
+/* Small grey helper text under a field */
+.hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* The red error text. It's empty and hidden until JS fills it in. */
+.error-text {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--error);
+  min-height: 0;
+  display: none;
+}
+
+/* Class added by JS to reveal the error line */
+.error-text.is-visible {
+  display: block;
+}
+
+
+/* ------------------------------------------------------------
+   SUBMIT BUTTON
+   ------------------------------------------------------------ */
+.btn-submit {
+  width: 100%;
+  padding: 13px;
+  margin-top: 6px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--white);
+  background-color: var(--navy-600);   /* solid navy */
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;                     /* hand cursor on hover */
+  transition: background-color 0.15s ease;
+}
+
+.btn-submit:hover {
+  background-color: var(--navy-700);
+}
+
+.btn-submit:active {
+  background-color: var(--navy-900);
+}
+
+/* ":disabled" applies while we're saving, so nobody double-submits */
+.btn-submit:disabled {
+  background-color: #8d9bb2;
+  cursor: not-allowed;
+}
+
+
+/* ------------------------------------------------------------
+   ALERT BOXES (success / error banners)
+   ------------------------------------------------------------ */
+.alert {
+  padding: 13px 15px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  margin-bottom: 22px;
+  border-left: 4px solid transparent;   /* coloured stripe on the left */
+}
+
+.alert-success {
+  background-color: var(--success-bg);
+  color: var(--success);
+  border-left-color: var(--success);
+}
+
+.alert-error {
+  background-color: var(--error-bg);
+  color: var(--error);
+  border-left-color: var(--error);
+}
+
+/* A general-purpose "hide this" class used by JavaScript */
+.is-hidden {
+  display: none;
+}
+
+
+/* ------------------------------------------------------------
+   MOBILE ADJUSTMENTS
+   ------------------------------------------------------------
+   A "media query" applies rules only on screens up to 560px wide.
+   ------------------------------------------------------------ */
+@media (max-width: 560px) {
+  .page {
+    padding: 28px 14px 48px;
+  }
+
+  .card {
+    padding: 26px 20px 22px;
+  }
+
+  .card-header h1 {
+    font-size: 20px;
+  }
+}
