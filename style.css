@@ -144,6 +144,45 @@ body {
   font-size: 12.5px;
   color: var(--text-muted);
   text-align: center;
+
+  /* Stack the credit line and the admin button, centred, with a
+     small gap between them. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* The small outlined "Admin Login" button.
+   ------------------------------------------------------------
+   It is an <a> link, not a <button>, because it navigates to
+   another page. We just style it to look like a button.
+   ------------------------------------------------------------ */
+.btn-admin-link {
+  display: inline-block;
+  padding: 7px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--navy-600);
+  background-color: var(--white);
+  border: 1px solid #c8d0dd;
+  border-radius: var(--radius);
+  /* Links are underlined by default; we don't want that here. */
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-admin-link:hover {
+  background-color: var(--navy-100);
+  border-color: var(--navy-600);
+}
+
+/* Show a clear focus ring for people navigating by keyboard */
+.btn-admin-link:focus-visible {
+  outline: none;
+  border-color: var(--navy-600);
+  box-shadow: 0 0 0 3px rgba(27, 58, 107, 0.15);
 }
 
 
