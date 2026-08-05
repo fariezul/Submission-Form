@@ -319,8 +319,10 @@ function makeCell(text) {
      [ { subject: "Matematik", grade: "A+" },
        { subject: "Fizik",     grade: "B"  } ]
 
-   We draw each one as a small "pill" — the subject name with the
-   grade in a navy badge beside it.
+   We list each one on its own line, in the form:
+
+     Matematik (A+)
+     Fizik (B)
    ------------------------------------------------------------ */
 function makeSpmCell(results) {
   const td = document.createElement("td");
@@ -334,7 +336,7 @@ function makeSpmCell(results) {
     return td;
   }
 
-  // A container so the pills wrap neatly onto more than one line.
+  // A container holding one line per subject.
   const wrap = document.createElement("div");
   wrap.className = "spm-list";
 
@@ -342,23 +344,15 @@ function makeSpmCell(results) {
     // Guard against a malformed entry (e.g. missing grade).
     if (!item || typeof item !== "object") return;
 
-    const pill = document.createElement("span");
-    pill.className = "spm-pill";
+    const line = document.createElement("div");
+    line.className = "spm-line";
 
-    // Subject name. textContent, never innerHTML — same reason as
-    // the other cells: whatever is stored is treated as plain text.
-    const subject = document.createElement("span");
-    subject.className = "spm-pill-subject";
-    subject.textContent = item.subject || "?";
+    // Build the text: subject, then the grade in brackets.
+    // textContent, never innerHTML — whatever is stored is treated
+    // as plain text, so it cannot inject markup.
+    line.textContent = (item.subject || "?") + " (" + (item.grade || "?") + ")";
 
-    // The grade badge.
-    const grade = document.createElement("span");
-    grade.className = "spm-pill-grade";
-    grade.textContent = item.grade || "?";
-
-    pill.appendChild(subject);
-    pill.appendChild(grade);
-    wrap.appendChild(pill);
+    wrap.appendChild(line);
   });
 
   td.appendChild(wrap);

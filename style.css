@@ -508,40 +508,19 @@ input.input-error:focus {
 
 /* ---------- SPM results inside the admin table ---------- */
 
-/* The container for one student's pills. flex-wrap lets them flow
-   onto a second line when there are many subjects. */
+/* The container holding one student's subject lines */
 .spm-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  /* Stops one student with 10 subjects stretching the column */
-  max-width: 320px;
+  /* Stops a long subject name stretching the column */
+  max-width: 260px;
 }
 
-/* One subject + grade pair */
-.spm-pill {
-  display: inline-flex;
-  align-items: stretch;
-  border: 1px solid var(--navy-100);
-  border-radius: 3px;
-  overflow: hidden;       /* keeps the badge corners inside the pill */
-  font-size: 12px;
-  line-height: 1.5;
-  white-space: nowrap;
-}
-
-.spm-pill-subject {
-  padding: 2px 7px;
-  background-color: #f7f9fc;
+/* One line: "Matematik (A+)" */
+.spm-line {
+  font-size: 13px;
+  line-height: 1.65;
   color: var(--text-dark);
-}
-
-/* The grade sits in a solid navy badge so it stands out */
-.spm-pill-grade {
-  padding: 2px 7px;
-  background-color: var(--navy-600);
-  color: var(--white);
-  font-weight: 700;
+  /* Keep a subject and its grade together on one line */
+  white-space: nowrap;
 }
 
 /* The dash shown when a row has no SPM data */
