@@ -48,11 +48,10 @@ const tableBody = document.getElementById("tableBody");
 const emptyState = document.getElementById("emptyState");
 
 // The analytics section
-const statStudents = document.getElementById("statStudents");
-const statEntries = document.getElementById("statEntries");
-const statDistinct = document.getElementById("statDistinct");
-const gradeChart = document.getElementById("gradeChart");
-const subjectChart = document.getElementById("subjectChart");
+const statQualified = document.getElementById("statQualified");
+const statNotQualified = document.getElementById("statNotQualified");
+const statPercent = document.getElementById("statPercent");
+const breakdownChart = document.getElementById("breakdownChart");
 
 
 /* ------------------------------------------------------------
@@ -529,51 +528,121 @@ function render() {
 
 
 /* ============================================================
-   STEP 8b — THE ANALYTICS
+   STEP 8b — THE ANALYTICS: MINIMUM 3 CREDITS
    ============================================================
-   Three questions to answer:
-     1. How many students are there?
-     2. How many of each grade, across every subject?
-     3. Which subjects come up most often?
+   One question to answer:
+
+     How many students have a CREDIT in Sains, in Matematik, and
+     in at least one other subject?
+
+   In SPM, a "credit" (kredit) means grade C or better. The full
+   grade ladder, best to worst, is:
+
+       A+  A  A-  B+  B  C+  C  |  D  E  G
+       \________ credit ________/  \__ no credit __/
+
+   Note there is no "C-" in SPM. C is the lowest credit grade.
    ============================================================ */
 
-/* The grades in the order we want to show them: best to worst.
-   Listing them explicitly means the chart always reads A+ down to
-   G, instead of a random order. */
+/* The grades from best to worst. Their POSITION in this list is
+   what lets us compare them: a lower position number is a better
+   grade. */
 const GRADE_ORDER = ["A+", "A", "A-", "B+", "B", "C+", "C", "D", "E", "G"];
 
+/* The lowest grade that still counts as a credit. */
+const CREDIT_GRADE = "C";
 
-/* Count how many times each grade and each subject appears.
+/* The two subjects that are compulsory for this requirement.
+   Stored lowercase so comparisons ignore capital letters. */
+const REQUIRED_SUBJECTS = ["sains", "matematik"];
+
+
+/* Is this grade a credit (C or better)?
    ------------------------------------------------------------
-   We use a plain object as a tally sheet:
-       { "A+": 3, "B": 1 }
-   Every time we meet a grade we add 1 to its entry.
+   indexOf() gives the position in GRADE_ORDER. "A+" is 0, "C" is
+   6, "G" is 9. So a grade is a credit when its position is less
+   than or equal to the position of C.
+
+   A grade we don't recognise (like "?") returns -1 from indexOf,
+   which we treat as NOT a credit — we never guess in the
+   student's favour.
    ------------------------------------------------------------ */
-function computeStats(rows) {
-  const gradeCounts = {};
-  const subjectCounts = {};
-  let totalEntries = 0;
+function isCredit(grade) {
+  const position = GRADE_ORDER.indexOf(grade);
+  if (position === -1) return false;          // unknown grade
 
-  rows.forEach(function (row) {
-    // The same parser used everywhere else — so text rows and
-    // list rows both get counted.
-    const results = normaliseSpm(row.spm_results);
+  return position <= GRADE_ORDER.indexOf(CREDIT_GRADE);
+}
 
-    results.forEach(function (item) {
-      totalEntries++;
 
-      // (gradeCounts[g] || 0) means "the count so far, or 0 if we
-      // haven't seen this grade before".
-      gradeCounts[item.grade] = (gradeCounts[item.grade] || 0) + 1;
-      subjectCounts[item.subject] = (subjectCounts[item.subject] || 0) + 1;
-    });
+/* Work out whether ONE student meets the requirement.
+   ------------------------------------------------------------
+   Returns an object describing which parts they passed, so the
+   breakdown chart can show where students fall short.
+
+   "Matematik Tambahan" is a DIFFERENT subject from "Matematik",
+   so we compare the whole name, not just the start of it. Add
+   Maths therefore counts towards the "one other subject" part.
+   ------------------------------------------------------------ */
+function checkStudent(row) {
+  const results = normaliseSpm(row.spm_results);
+
+  let hasSains = false;
+  let hasMatematik = false;
+  let otherCredits = 0;
+
+  results.forEach(function (item) {
+    // Compare in lowercase with spaces trimmed, so "SAINS" and
+    // " Sains " both match.
+    const subject = item.subject.trim().toLowerCase();
+
+    // Only credits matter from here on.
+    if (!isCredit(item.grade)) return;
+
+    if (subject === "sains") {
+      hasSains = true;
+    } else if (subject === "matematik") {
+      hasMatematik = true;
+    } else {
+      // Any credit that is NOT Sains or Matematik counts towards
+      // the "one other subject" part.
+      otherCredits++;
+    }
   });
 
   return {
-    totalStudents: rows.length,
-    totalEntries: totalEntries,
-    gradeCounts: gradeCounts,
-    subjectCounts: subjectCounts,
+    hasSains: hasSains,
+    hasMatematik: hasMatematik,
+    hasOther: otherCredits > 0,
+    // Qualified only when all three parts are true.
+    qualified: hasSains && hasMatematik && otherCredits > 0,
+  };
+}
+
+
+/* Run the check over every student and tally the results. */
+function computeCreditStats(rows) {
+  let qualified = 0;
+  let sainsOnly = 0;
+  let matematikOnly = 0;
+  let otherOnly = 0;
+
+  rows.forEach(function (row) {
+    const result = checkStudent(row);
+
+    if (result.qualified) qualified++;
+    if (result.hasSains) sainsOnly++;
+    if (result.hasMatematik) matematikOnly++;
+    if (result.hasOther) otherOnly++;
+  });
+
+  return {
+    total: rows.length,
+    qualified: qualified,
+    notQualified: rows.length - qualified,
+    creditInSains: sainsOnly,
+    creditInMatematik: matematikOnly,
+    creditInOther: otherOnly,
   };
 }
 
@@ -642,47 +711,29 @@ function drawChart(container, items) {
 
 /* Work out the numbers and put them on the page. */
 function renderAnalytics() {
-  const stats = computeStats(allSubmissions);
+  const stats = computeCreditStats(allSubmissions);
 
-  // ---------- The three summary numbers ----------
-  statStudents.textContent = stats.totalStudents;
-  statEntries.textContent = stats.totalEntries;
-  statDistinct.textContent = Object.keys(stats.subjectCounts).length;
+  // ---------- The three headline numbers ----------
+  statQualified.textContent = stats.qualified;
+  statNotQualified.textContent = stats.notQualified;
 
-  // ---------- Grade distribution ----------
-  // Start from our fixed best-to-worst order, then add any grade
-  // that turned up but isn't on the list (e.g. "?" from a row we
-  // couldn't fully read).
-  const knownGrades = GRADE_ORDER.slice();
+  // Percentage, rounded to a whole number. Guard against dividing
+  // by zero when there are no students at all.
+  const percent =
+    stats.total > 0 ? Math.round((stats.qualified / stats.total) * 100) : 0;
+  statPercent.textContent = percent + "%";
 
-  Object.keys(stats.gradeCounts).forEach(function (g) {
-    if (knownGrades.indexOf(g) === -1) knownGrades.push(g);
-  });
-
-  const gradeItems = knownGrades
-    .map(function (g) {
-      return { label: g, count: stats.gradeCounts[g] || 0 };
-    })
-    // Hide grades nobody scored, so the chart isn't full of zeros
-    .filter(function (item) {
-      return item.count > 0;
-    });
-
-  drawChart(gradeChart, gradeItems);
-
-  // ---------- Most common subjects ----------
-  const subjectItems = Object.keys(stats.subjectCounts)
-    .map(function (name) {
-      return { label: name, count: stats.subjectCounts[name] };
-    })
-    // Sort biggest first
-    .sort(function (a, b) {
-      return b.count - a.count;
-    })
-    // Only show the top 8, or the chart gets very long
-    .slice(0, 8);
-
-  drawChart(subjectChart, subjectItems);
+  // ---------- The breakdown chart ----------
+  // Each bar is measured against the total number of students, so
+  // a full-width bar means "every student". We pass the total in
+  // as an extra item so the scale is consistent.
+  drawChart(breakdownChart, [
+    { label: "Credit in Sains", count: stats.creditInSains },
+    { label: "Credit in Matematik", count: stats.creditInMatematik },
+    { label: "Credit in 1+ other", count: stats.creditInOther },
+    { label: "All three (qualified)", count: stats.qualified },
+    { label: "Total students", count: stats.total },
+  ]);
 }
 
 

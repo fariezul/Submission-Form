@@ -486,7 +486,20 @@ input.input-error:focus {
   color: var(--navy-900);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 14px;
+  margin-bottom: 6px;
+}
+
+/* The sentence explaining the rule, under the heading */
+.analytics-note {
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Bold words inside that sentence pick up the navy colour */
+.analytics-note strong {
+  color: var(--navy-900);
+  font-weight: 600;
 }
 
 /* ---------- The three summary boxes ---------- */
@@ -507,6 +520,12 @@ input.input-error:focus {
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+/* The "Qualified" tile gets a green left edge so the good number
+   stands out from the other two at a glance. */
+.stat-box-pass {
+  border-left: 4px solid var(--success);
 }
 
 .stat-value {

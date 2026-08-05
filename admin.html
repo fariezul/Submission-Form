@@ -86,48 +86,40 @@
       <!-- Red box for problems loading the data -->
       <div id="dataError" class="alert alert-error is-hidden" role="alert"></div>
 
-      <!-- ---------- ANALYTICS ---------- -->
+      <!-- ---------- ANALYTICS: CREDIT REQUIREMENT ---------- -->
       <section class="analytics" aria-labelledby="analyticsTitle">
-        <h2 class="analytics-title" id="analyticsTitle">SPM Analytics</h2>
+        <h2 class="analytics-title" id="analyticsTitle">
+          Minimum 3 Credits
+        </h2>
+        <p class="analytics-note">
+          A student qualifies with a credit (grade <strong>C</strong> or
+          better) in <strong>Sains</strong>, <strong>Matematik</strong>,
+          and at least <strong>one other subject</strong>.
+        </p>
 
-        <!-- Three summary numbers across the top -->
+        <!-- The headline numbers -->
         <div class="stat-row">
-          <div class="stat-box">
-            <span class="stat-value" id="statStudents">0</span>
-            <span class="stat-label">Students</span>
+          <div class="stat-box stat-box-pass">
+            <span class="stat-value" id="statQualified">0</span>
+            <span class="stat-label">Qualified</span>
           </div>
           <div class="stat-box">
-            <span class="stat-value" id="statEntries">0</span>
-            <span class="stat-label">Subject entries</span>
+            <span class="stat-value" id="statNotQualified">0</span>
+            <span class="stat-label">Not qualified</span>
           </div>
           <div class="stat-box">
-            <span class="stat-value" id="statDistinct">0</span>
-            <span class="stat-label">Different subjects</span>
+            <span class="stat-value" id="statPercent">0%</span>
+            <span class="stat-label">Qualifying rate</span>
           </div>
         </div>
 
-        <!-- Two charts side by side (they stack on a phone) -->
-        <div class="analytics-grid">
-
-          <div class="panel">
-            <h3 class="panel-title">Grade Distribution</h3>
-            <p class="panel-note">
-              Every subject from every student, counted by grade.
-            </p>
-            <!-- JavaScript builds the bars inside here -->
-            <div class="chart" id="gradeChart"></div>
-          </div>
-
-          <div class="panel">
-            <h3 class="panel-title">Most Common Subjects</h3>
-            <p class="panel-note">
-              How many students took each subject.
-            </p>
-            <!-- "chart-wide" gives this chart a roomier label column,
-                 because subject names are far longer than "A+" -->
-            <div class="chart chart-wide" id="subjectChart"></div>
-          </div>
-
+        <!-- Where students fall down, so you can see WHY -->
+        <div class="panel">
+          <h3 class="panel-title">Breakdown</h3>
+          <p class="panel-note">
+            How many students meet each part of the requirement.
+          </p>
+          <div class="chart chart-wide" id="breakdownChart"></div>
         </div>
       </section>
 
