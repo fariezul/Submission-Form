@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!--
+  admin.html — a private page for viewing the submissions.
+
+  This page is protected by a login. Supabase will only hand over the
+  data once you have signed in, so putting this file online does NOT
+  make your students' details public.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Submissions | TVETMARA Masjid Tanah</title>
+
+  <!-- Same stylesheet as the form, so the look matches exactly -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ===== TOP BAR (same logo as the form) ===== -->
+  <header class="site-header">
+    <img
+      src="logo.png"
+      alt="TVETMARA Masjid Tanah"
+      class="brand-logo"
+      width="515"
+      height="100"
+    />
+  </header>
+
+  <main class="page page-wide">
+
+    <!--
+      ===== SCREEN 1: THE LOGIN BOX =====
+      Shown first. Once the sign-in succeeds, JavaScript hides this
+      and shows the table below.
+    -->
+    <section class="card" id="loginCard">
+      <div class="card-header">
+        <h1>Administrator Sign In</h1>
+        <p class="card-subtitle">
+          Sign in to view the student submissions.
+        </p>
+      </div>
+
+      <!-- Red box for "wrong password" type messages -->
+      <div id="loginError" class="alert alert-error is-hidden" role="alert"></div>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="adminEmail">Email</label>
+          <input type="email" id="adminEmail" autocomplete="username" />
+        </div>
+
+        <div class="field">
+          <label for="adminPassword">Password</label>
+          <!-- type="password" makes the browser show dots instead of text -->
+          <input type="password" id="adminPassword" autocomplete="current-password" />
+        </div>
+
+        <button type="submit" class="btn-submit" id="loginButton">
+          Sign In
+        </button>
+      </form>
+    </section>
+
+
+    <!--
+      ===== SCREEN 2: THE SUBMISSIONS TABLE =====
+      Starts hidden ("is-hidden"). JavaScript reveals it after login.
+    -->
+    <section class="card card-wide is-hidden" id="adminCard">
+
+      <div class="card-header admin-header">
+        <div>
+          <h1>Student Submissions</h1>
+          <!-- Filled in by JavaScript, e.g. "Showing 12 of 40" -->
+          <p class="card-subtitle" id="countLine">Loading…</p>
+        </div>
+        <button type="button" class="btn-plain" id="signOutButton">
+          Sign Out
+        </button>
+      </div>
+
+      <!-- Red box for problems loading the data -->
+      <div id="dataError" class="alert alert-error is-hidden" role="alert"></div>
+
+      <!-- ---------- The toolbar: search + sort + refresh ---------- -->
+      <div class="toolbar">
+        <input
+          type="search"
+          id="searchInput"
+          class="search-input"
+          placeholder="Search by name or email…"
+          aria-label="Search submissions by name or email"
+        />
+
+        <!--
+          One button that flips between two states. The text changes
+          to show what you will get if you click it.
+        -->
+        <button type="button" class="btn-plain" id="sortButton">
+          Sort: Newest first
+        </button>
+
+        <button type="button" class="btn-plain" id="refreshButton">
+          Refresh
+        </button>
+      </div>
+
+      <!--
+        The table is wrapped in a scrolling box. On a narrow phone the
+        table can slide sideways instead of breaking the page layout.
+      -->
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Submitted</th>
+            </tr>
+          </thead>
+          <!-- JavaScript fills this in. It starts empty. -->
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Shown when there is nothing to display -->
+      <p class="empty-state is-hidden" id="emptyState">
+        No submissions match your search.
+      </p>
+
+    </section>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>

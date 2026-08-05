@@ -14,6 +14,68 @@ to install. Three files and it runs.
 | `style.css`  | How it looks — navy & white corporate styling |
 | `app.js`     | Supabase settings + validation + saving |
 
+## The admin page (`admin.html`)
+
+A private page that lists every submission, with search and sorting.
+
+**It requires a login.** This is deliberate. The form page only ever
+*writes*, so the public anon key is harmless there. But an admin page
+has to *read* — and if reading were allowed with the public key, anyone
+on the internet could download every student's name, email and phone
+number. Requiring a sign-in means the read permission belongs to a real
+user account, not to the public.
+
+### Setting it up — two steps in Supabase
+
+**Step 1: create your admin user**
+
+1. Supabase dashboard → **Authentication** → **Users**
+2. Click **Add user** → **Create new user**
+3. Enter your email and a password
+4. Tick **Auto Confirm User** (otherwise it waits for an email link)
+5. Click **Create user**
+
+**Step 2: allow logged-in users to read**
+
+SQL Editor → paste this **on its own** → Run:
+
+```sql
+create policy "Signed-in users can read submissions"
+on public.submission
+for select
+to authenticated
+using (true);
+```
+
+Note `to authenticated`, not `to anon`. That single word is the
+difference between "only people who signed in" and "the whole
+internet".
+
+### Opening it
+
+Local: `admin.html` in the project folder.
+Online: `https://your-site.netlify.app/admin.html`
+
+Sign in with the user you created in Step 1.
+
+### What it does
+
+- Newest submissions first by default
+- **Search box** — filters by name or email as you type
+- **Sort button** — flips between newest-first and oldest-first
+- **Refresh** — fetches the latest rows without reloading the page
+- **Sign Out** — forgets your session
+
+The sign-in is remembered for the current browser tab only. Closing the
+tab signs you out.
+
+### If the table loads but is empty
+
+You are signed in, but the SELECT policy is missing — Supabase returns
+an empty list rather than an error. Run the SQL in Step 2.
+
+---
+
 ## Database columns
 
 The `submission` table needs these columns:
