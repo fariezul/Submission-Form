@@ -470,6 +470,152 @@ input.input-error:focus {
   background-color: var(--navy-100);
 }
 
+/* ------------------------------------------------------------
+   ANALYTICS SECTION
+   ------------------------------------------------------------ */
+
+.analytics {
+  margin-bottom: 26px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--navy-100);
+}
+
+.analytics-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy-900);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+}
+
+/* ---------- The three summary boxes ---------- */
+.stat-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;      /* stack on a narrow screen */
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 130px;
+  padding: 14px 16px;
+  background-color: var(--navy-900);
+  border-radius: var(--radius);
+  /* Stack the big number above its caption */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--white);
+}
+
+.stat-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #a9b6cc;       /* muted blue-grey against the navy */
+}
+
+/* ---------- The two chart panels ---------- */
+.analytics-grid {
+  display: grid;
+  /* Two equal columns on a wide screen. "1fr" means one equal
+     share of the space. */
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.panel {
+  padding: 16px 18px;
+  border: 1px solid var(--navy-100);
+  border-radius: var(--radius);
+  background-color: var(--white);
+}
+
+.panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy-900);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.panel-note {
+  margin: 4px 0 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ---------- The bar chart ---------- */
+
+/* One row = label, bar, number */
+.chart-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.chart-label {
+  /* Fixed width keeps every bar starting at the same place */
+  flex: 0 0 42px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dark);
+  /* Cut off a very long subject name with "..." rather than
+     letting it push the bar out of line */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The grey groove the bar sits in */
+.chart-track {
+  flex: 1;
+  height: 16px;
+  background-color: #eef1f7;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* The navy bar itself */
+.chart-fill {
+  height: 100%;
+  background-color: var(--navy-600);
+  border-radius: 3px;
+  /* Animate the width so the bars grow into place when the
+     numbers change */
+  transition: width 0.3s ease;
+}
+
+/* Subject names are much longer than grade names like "A+", so the
+   subject chart gets a wider label column. */
+.chart-wide .chart-label {
+  flex: 0 0 128px;
+}
+
+.chart-count {
+  flex: 0 0 28px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy-900);
+}
+
+.chart-empty {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+
 /* ---------- The search / sort / refresh bar ---------- */
 .toolbar {
   display: flex;
@@ -608,6 +754,19 @@ input.input-error:focus {
   .admin-header {
     flex-direction: column;
     gap: 12px;
+  }
+
+  /* Charts go one above the other instead of side by side */
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-value {
+    font-size: 22px;
+  }
+
+  .chart-label {
+    flex: 0 0 54px;
   }
 
   .data-table {

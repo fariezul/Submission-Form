@@ -47,6 +47,13 @@ const refreshButton = document.getElementById("refreshButton");
 const tableBody = document.getElementById("tableBody");
 const emptyState = document.getElementById("emptyState");
 
+// The analytics section
+const statStudents = document.getElementById("statStudents");
+const statEntries = document.getElementById("statEntries");
+const statDistinct = document.getElementById("statDistinct");
+const gradeChart = document.getElementById("gradeChart");
+const subjectChart = document.getElementById("subjectChart");
+
 
 /* ------------------------------------------------------------
    STEP 3 — Variables that hold the current state of the page
@@ -95,6 +102,125 @@ function formatDate(isoText) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+
+/* ============================================================
+   STEP 4b — READING THE SPM FIELD
+   ============================================================
+   Everything that counts grades and subjects goes through the one
+   function below. It turns whatever is stored in `spm_results`
+   into the same tidy shape:
+
+       [ { subject: "Matematik", grade: "A+" }, ... ]
+
+   Why "whatever is stored"? Because the field can arrive in two
+   different shapes, and we want both to work:
+
+   SHAPE 1 — a real list (this is what the form saves).
+     The column type is jsonb, so Supabase hands it back already
+     converted into a JavaScript array of objects. Nothing to
+     parse; we just tidy it up.
+
+   SHAPE 2 — one long piece of text, like:
+        "Bahasa Melayu (A+), Sejarah (A+), Biologi (C+)"
+     This needs real parsing: chop it into pieces and pull the
+     subject and grade out of each one.
+
+   Handling both means old rows and new rows both count correctly.
+   ============================================================ */
+
+function normaliseSpm(value) {
+  // ---------- Nothing stored ----------
+  if (!value) return [];
+
+  // ---------- SHAPE 1: already a list ----------
+  if (Array.isArray(value)) {
+    return value
+      // Throw away anything that isn't a proper object
+      .filter(function (item) {
+        return item && typeof item === "object";
+      })
+      // Tidy each one: trim spaces, use "?" when a piece is missing
+      .map(function (item) {
+        return {
+          subject: String(item.subject || "?").trim(),
+          grade: String(item.grade || "?").trim().toUpperCase(),
+        };
+      });
+  }
+
+  // ---------- SHAPE 2: a piece of text ----------
+  if (typeof value === "string") {
+    return parseSpmText(value);
+  }
+
+  // Anything else (a number? a stray object?) — ignore it.
+  return [];
+}
+
+
+/* Parse text like:
+       "Bahasa Melayu (A+), Sejarah (A+), Biologi (C+)"
+   into:
+       [ {subject:"Bahasa Melayu", grade:"A+"}, ... ]
+
+   HOW THE PATTERN BELOW WORKS
+   ------------------------------------------------------------
+   A "regular expression" is a search pattern for text. Ours is:
+
+       /([^,(]+?)\s*\(\s*([^)]*?)\s*\)/g
+
+   Reading it piece by piece:
+
+     ([^,(]+?)   capture the SUBJECT: one or more characters that
+                 are not a comma and not an opening bracket.
+                 The "?" means "take as few as possible", so we
+                 stop as soon as we reach the bracket.
+     \s*         allow spaces before the bracket
+     \(          a literal opening bracket  (the \ says "the real
+                 character", because ( normally has a special job)
+     \s*         allow spaces inside the bracket
+     ([^)]*?)    capture the GRADE: anything that isn't a closing
+                 bracket
+     \s*\)       optional spaces, then the closing bracket
+     g           "global": keep going and find EVERY match, not
+                 just the first one
+
+   The two things in round brackets are "capture groups". Group 1
+   lands in match[1] (the subject) and group 2 in match[2] (the
+   grade).
+   ------------------------------------------------------------ */
+function parseSpmText(text) {
+  const results = [];
+  const pattern = /([^,(]+?)\s*\(\s*([^)]*?)\s*\)/g;
+
+  let match;
+
+  // pattern.exec() returns the next match each time it is called,
+  // and null when there are no more. So this loop walks through
+  // every "Subject (Grade)" pair in the text.
+  while ((match = pattern.exec(text)) !== null) {
+    const subject = match[1].trim();
+    const grade = match[2].trim().toUpperCase();
+
+    // Skip anything that came out empty.
+    if (subject === "") continue;
+
+    results.push({ subject: subject, grade: grade || "?" });
+  }
+
+  // FALLBACK: if the text had no brackets at all, the pattern
+  // finds nothing. Rather than lose the data, treat each
+  // comma-separated piece as a subject with an unknown grade.
+  if (results.length === 0 && text.trim() !== "") {
+    text.split(",").forEach(function (piece) {
+      const subject = piece.trim();
+      if (subject !== "") results.push({ subject: subject, grade: "?" });
+    });
+  }
+
+  return results;
 }
 
 
@@ -324,13 +450,16 @@ function makeCell(text) {
      Matematik (A+)
      Fizik (B)
    ------------------------------------------------------------ */
-function makeSpmCell(results) {
+function makeSpmCell(rawValue) {
   const td = document.createElement("td");
 
-  // Older rows were saved before the SPM section existed, so this
-  // can be null. Array.isArray() also protects against anything
-  // unexpected being in the column.
-  if (!Array.isArray(results) || results.length === 0) {
+  // Run it through the same parser the analytics use, so a row
+  // stored as text displays exactly like a row stored as a list.
+  const results = normaliseSpm(rawValue);
+
+  // Older rows were saved before the SPM section existed, so there
+  // may be nothing to show.
+  if (results.length === 0) {
     td.textContent = "—";
     td.className = "spm-empty";
     return td;
@@ -361,6 +490,11 @@ function makeSpmCell(results) {
 
 
 function render() {
+  // The analytics always describe EVERY submission, not just the
+  // ones matching the current search — otherwise the totals would
+  // jump around as you type.
+  renderAnalytics();
+
   // Search first, then sort what's left.
   const visible = applySort(applySearch(allSubmissions));
 
@@ -391,6 +525,164 @@ function render() {
     countLine.textContent =
       "Showing " + visible.length + " of " + allSubmissions.length;
   }
+}
+
+
+/* ============================================================
+   STEP 8b — THE ANALYTICS
+   ============================================================
+   Three questions to answer:
+     1. How many students are there?
+     2. How many of each grade, across every subject?
+     3. Which subjects come up most often?
+   ============================================================ */
+
+/* The grades in the order we want to show them: best to worst.
+   Listing them explicitly means the chart always reads A+ down to
+   G, instead of a random order. */
+const GRADE_ORDER = ["A+", "A", "A-", "B+", "B", "C+", "C", "D", "E", "G"];
+
+
+/* Count how many times each grade and each subject appears.
+   ------------------------------------------------------------
+   We use a plain object as a tally sheet:
+       { "A+": 3, "B": 1 }
+   Every time we meet a grade we add 1 to its entry.
+   ------------------------------------------------------------ */
+function computeStats(rows) {
+  const gradeCounts = {};
+  const subjectCounts = {};
+  let totalEntries = 0;
+
+  rows.forEach(function (row) {
+    // The same parser used everywhere else — so text rows and
+    // list rows both get counted.
+    const results = normaliseSpm(row.spm_results);
+
+    results.forEach(function (item) {
+      totalEntries++;
+
+      // (gradeCounts[g] || 0) means "the count so far, or 0 if we
+      // haven't seen this grade before".
+      gradeCounts[item.grade] = (gradeCounts[item.grade] || 0) + 1;
+      subjectCounts[item.subject] = (subjectCounts[item.subject] || 0) + 1;
+    });
+  });
+
+  return {
+    totalStudents: rows.length,
+    totalEntries: totalEntries,
+    gradeCounts: gradeCounts,
+    subjectCounts: subjectCounts,
+  };
+}
+
+
+/* Draw one bar chart into a container.
+   ------------------------------------------------------------
+   "items" is a list of { label, count }.
+   The longest bar fills the width, and every other bar is drawn
+   in proportion to it — that is what the percentage works out.
+   ------------------------------------------------------------ */
+function drawChart(container, items) {
+  container.textContent = "";   // clear whatever was there before
+
+  if (items.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "chart-empty";
+    empty.textContent = "No data yet.";
+    container.appendChild(empty);
+    return;
+  }
+
+  // Math.max(...) finds the biggest count. The "..." spreads the
+  // list out into separate arguments, as Math.max needs.
+  const biggest = Math.max.apply(
+    null,
+    items.map(function (i) { return i.count; })
+  );
+
+  items.forEach(function (item) {
+    const row = document.createElement("div");
+    row.className = "chart-row";
+
+    // The label on the left
+    const label = document.createElement("span");
+    label.className = "chart-label";
+    label.textContent = item.label;
+
+    // The track is the light grey groove; the fill is the navy bar
+    const track = document.createElement("div");
+    track.className = "chart-track";
+
+    const fill = document.createElement("div");
+    fill.className = "chart-fill";
+
+    // Work out how wide this bar should be, as a percentage of the
+    // longest one. Guard against dividing by zero.
+    const percent = biggest > 0 ? (item.count / biggest) * 100 : 0;
+
+    // Give every bar a sliver of width so a count of 1 is visible.
+    fill.style.width = Math.max(percent, 3) + "%";
+
+    track.appendChild(fill);
+
+    // The number on the right
+    const count = document.createElement("span");
+    count.className = "chart-count";
+    count.textContent = item.count;
+
+    row.appendChild(label);
+    row.appendChild(track);
+    row.appendChild(count);
+    container.appendChild(row);
+  });
+}
+
+
+/* Work out the numbers and put them on the page. */
+function renderAnalytics() {
+  const stats = computeStats(allSubmissions);
+
+  // ---------- The three summary numbers ----------
+  statStudents.textContent = stats.totalStudents;
+  statEntries.textContent = stats.totalEntries;
+  statDistinct.textContent = Object.keys(stats.subjectCounts).length;
+
+  // ---------- Grade distribution ----------
+  // Start from our fixed best-to-worst order, then add any grade
+  // that turned up but isn't on the list (e.g. "?" from a row we
+  // couldn't fully read).
+  const knownGrades = GRADE_ORDER.slice();
+
+  Object.keys(stats.gradeCounts).forEach(function (g) {
+    if (knownGrades.indexOf(g) === -1) knownGrades.push(g);
+  });
+
+  const gradeItems = knownGrades
+    .map(function (g) {
+      return { label: g, count: stats.gradeCounts[g] || 0 };
+    })
+    // Hide grades nobody scored, so the chart isn't full of zeros
+    .filter(function (item) {
+      return item.count > 0;
+    });
+
+  drawChart(gradeChart, gradeItems);
+
+  // ---------- Most common subjects ----------
+  const subjectItems = Object.keys(stats.subjectCounts)
+    .map(function (name) {
+      return { label: name, count: stats.subjectCounts[name] };
+    })
+    // Sort biggest first
+    .sort(function (a, b) {
+      return b.count - a.count;
+    })
+    // Only show the top 8, or the chart gets very long
+    .slice(0, 8);
+
+  drawChart(subjectChart, subjectItems);
 }
 
 
