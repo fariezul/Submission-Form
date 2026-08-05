@@ -202,7 +202,7 @@ async function loadSubmissions() {
   // already in the right order when it arrives.
   const url =
     config.SUPABASE_URL +
-    "/rest/v1/submission?select=id,name,email,phone,created_at" +
+    "/rest/v1/submission?select=id,name,email,phone,spm_results,created_at" +
     "&order=created_at.desc";
 
   try {
@@ -311,6 +311,61 @@ function makeCell(text) {
 }
 
 
+/* Helper: build the SPM results cell.
+   ------------------------------------------------------------
+   The database column is jsonb, so Supabase hands it back already
+   turned into a real JavaScript array, like:
+
+     [ { subject: "Matematik", grade: "A+" },
+       { subject: "Fizik",     grade: "B"  } ]
+
+   We draw each one as a small "pill" — the subject name with the
+   grade in a navy badge beside it.
+   ------------------------------------------------------------ */
+function makeSpmCell(results) {
+  const td = document.createElement("td");
+
+  // Older rows were saved before the SPM section existed, so this
+  // can be null. Array.isArray() also protects against anything
+  // unexpected being in the column.
+  if (!Array.isArray(results) || results.length === 0) {
+    td.textContent = "—";
+    td.className = "spm-empty";
+    return td;
+  }
+
+  // A container so the pills wrap neatly onto more than one line.
+  const wrap = document.createElement("div");
+  wrap.className = "spm-list";
+
+  results.forEach(function (item) {
+    // Guard against a malformed entry (e.g. missing grade).
+    if (!item || typeof item !== "object") return;
+
+    const pill = document.createElement("span");
+    pill.className = "spm-pill";
+
+    // Subject name. textContent, never innerHTML — same reason as
+    // the other cells: whatever is stored is treated as plain text.
+    const subject = document.createElement("span");
+    subject.className = "spm-pill-subject";
+    subject.textContent = item.subject || "?";
+
+    // The grade badge.
+    const grade = document.createElement("span");
+    grade.className = "spm-pill-grade";
+    grade.textContent = item.grade || "?";
+
+    pill.appendChild(subject);
+    pill.appendChild(grade);
+    wrap.appendChild(pill);
+  });
+
+  td.appendChild(wrap);
+  return td;
+}
+
+
 function render() {
   // Search first, then sort what's left.
   const visible = applySort(applySearch(allSubmissions));
@@ -324,6 +379,7 @@ function render() {
     tr.appendChild(makeCell(row.name || "—"));
     tr.appendChild(makeCell(row.email || "—"));
     tr.appendChild(makeCell(row.phone || "—"));
+    tr.appendChild(makeSpmCell(row.spm_results));
     tr.appendChild(makeCell(formatDate(row.created_at)));
     tableBody.appendChild(tr);
   });
