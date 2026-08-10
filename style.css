@@ -300,22 +300,48 @@ body {
 /* ---- One rule per page. Drop a matching image into the project
         folder and it appears automatically. ---- */
 
+/*
+   WHY EACH ONE HAS ITS OWN background-position
+   ------------------------------------------------------------
+   These photographs are portrait — taller than they are wide — but
+   a hero banner is wide and short. With background-size: cover the
+   browser scales the picture to fill the width, so only about a
+   fifth of its height ends up visible: a horizontal band.
+
+   background-position decides WHICH band. The second value is the
+   vertical one: 0% is the very top of the photo, 50% the middle,
+   100% the bottom. Each value below is chosen so the important
+   part of that particular photo lands inside the band.
+
+   If you swap a photo, adjust its percentage: lower to show more
+   of the top, higher to show more of the bottom.
+   ------------------------------------------------------------ */
+
+/* Convocation photo — 22% keeps the face and the event backdrop
+   in frame. The default 50% would have cropped to the waist. */
 .hero-photo-home {
   background-image:
-    linear-gradient(135deg, rgba(11, 31, 58, 0.93) 0%, rgba(23, 51, 92, 0.86) 100%),
+    linear-gradient(135deg, rgba(11, 31, 58, 0.9) 0%, rgba(23, 51, 92, 0.82) 100%),
     url("hero-home.jpg");
+  background-position: center 22%;
 }
 
+/* Repair photo — 55% frames the gloved hands, the grinder and the
+   top of the sanded repair patch: the actual work. */
 .hero-photo-repair {
   background-image:
-    linear-gradient(135deg, rgba(11, 31, 58, 0.93) 0%, rgba(23, 51, 92, 0.86) 100%),
+    linear-gradient(135deg, rgba(11, 31, 58, 0.9) 0%, rgba(23, 51, 92, 0.82) 100%),
     url("hero-composite-repair.jpg");
+  background-position: center 55%;
 }
 
+/* Robot cell photo — 40% frames the teach pendant and the robot
+   arm rather than the ceiling or the floor. */
 .hero-photo-coordination {
   background-image:
-    linear-gradient(135deg, rgba(11, 31, 58, 0.93) 0%, rgba(23, 51, 92, 0.86) 100%),
+    linear-gradient(135deg, rgba(11, 31, 58, 0.9) 0%, rgba(23, 51, 92, 0.82) 100%),
     url("hero-production-coordination.jpg");
+  background-position: center 40%;
 }
 
 .hero-compact {
@@ -326,6 +352,88 @@ body {
   max-width: 800px;
   margin: 0 auto;
 }
+
+/* ---------- SPLIT HERO: words beside a photograph ---------- */
+
+/* The split hero reads left-aligned rather than centred, because
+   the photo now balances the right-hand side. */
+.hero-split {
+  text-align: left;
+  padding: 50px 24px;
+}
+
+.hero-split-inner {
+  max-width: 1060px;
+  margin: 0 auto;
+  display: grid;
+  /* 1fr = the text takes all the leftover space.
+     360px = the photo column stays a fixed, predictable width. */
+  grid-template-columns: 1fr 360px;
+  gap: 46px;
+  align-items: center;
+}
+
+/* <figure> has a default indent in browsers; remove it. */
+.hero-figure {
+  margin: 0;
+}
+
+.hero-figure-img {
+  display: block;
+  width: 100%;
+
+  /* height: auto is essential. The <img> tag carries height="1080",
+     and without this the browser uses that number literally and the
+     aspect-ratio below is ignored. */
+  height: auto;
+
+  /* aspect-ratio holds the frame at 4:5 whatever the source is.
+     object-fit: cover fills that frame without squashing, and
+     object-position pulls the crop upwards so the face stays in
+     view rather than the floor. */
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 20%;
+
+  border-radius: var(--radius);
+  /* A pale inner edge separates the photo from the navy behind it */
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.38);
+}
+
+/* On the split hero the text block keeps its own alignment */
+.hero-split .hero-actions {
+  justify-content: flex-start;
+}
+
+/* Below 860px there isn't room for two columns, so the hero stacks:
+   words first, photo underneath, everything centred again.
+   This breakpoint is separate from the 560px phone one because the
+   split layout runs out of room much earlier than the rest of the
+   page does. */
+@media (max-width: 860px) {
+  .hero-split {
+    text-align: center;
+    padding: 42px 20px;
+  }
+
+  .hero-split-inner {
+    grid-template-columns: 1fr;   /* one column = stacked */
+    gap: 30px;
+    justify-items: center;
+  }
+
+  .hero-split .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-figure {
+    /* Keep the photo a sensible size once it is on its own row */
+    max-width: 280px;
+    width: 100%;
+  }
+}
+
 
 /* ---------- The portrait in the hero ---------- */
 .hero-portrait {
