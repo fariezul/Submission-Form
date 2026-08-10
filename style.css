@@ -327,6 +327,24 @@ body {
   margin: 0 auto;
 }
 
+/* ---------- The portrait in the hero ---------- */
+.hero-portrait {
+  display: block;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 22px;
+  /* border-radius: 50% turns the square into a circle */
+  border-radius: 50%;
+  /* "cover" crops the image to fill the circle instead of
+     squashing it. object-position: top keeps the face in frame,
+     because on a tall portrait the head sits near the top. */
+  object-fit: cover;
+  object-position: top center;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  background-color: var(--white);
+}
+
 .hero-eyebrow {
   font-size: 12px;
   font-weight: 600;
@@ -1428,6 +1446,12 @@ input.input-error:focus {
   /* Profile pages on a phone */
   .hero {
     padding: 40px 18px 38px;
+  }
+
+  .hero-portrait {
+    width: 116px;
+    height: 116px;
+    margin-bottom: 18px;
   }
 
   .hero h1 {

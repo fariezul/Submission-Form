@@ -104,6 +104,22 @@
     -->
     <section class="hero hero-photo hero-photo-home">
       <div class="hero-inner">
+
+        <!--
+          THE PORTRAIT
+          It starts hidden. nav.js shows it only once the browser
+          confirms the file loaded, so if the image is missing the
+          page looks normal instead of showing a broken-image icon.
+        -->
+        <img
+          src="farizul-portrait.png"
+          alt="Ts. Mohd Farizul Bin Jaafar"
+          class="hero-portrait is-hidden"
+          id="heroPortrait"
+          width="400"
+          height="600"
+        />
+
         <p class="hero-eyebrow">TVETMARA Masjid Tanah · Melaka, Malaysia</p>
 
         <!-- The single most important heading on the page. There
