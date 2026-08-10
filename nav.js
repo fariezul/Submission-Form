@@ -8,37 +8,6 @@
 
 "use strict";
 
-/* ------------------------------------------------------------
-   THE HERO PORTRAIT
-   ------------------------------------------------------------
-   The portrait starts hidden in the HTML. We only reveal it once
-   the browser confirms the image actually loaded.
-
-   Why bother? If the file is missing, a normal <img> shows a
-   broken-image icon and an empty gap. Checking first means the
-   page simply looks like it never had a portrait.
-
-   img.complete is true if the image already finished loading
-   before this script ran — which happens with cached images — so
-   we check that as well as listening for the load event.
-   ------------------------------------------------------------ */
-(function () {
-  const portrait = document.getElementById("heroPortrait");
-  if (!portrait) return;
-
-  function reveal() {
-    portrait.classList.remove("is-hidden");
-  }
-
-  if (portrait.complete && portrait.naturalWidth > 0) {
-    reveal();                                  // already loaded
-  } else {
-    portrait.addEventListener("load", reveal); // loaded just now
-    // On error we do nothing, so it stays hidden.
-  }
-})();
-
-
 (function () {
   const toggle = document.getElementById("menuToggle");
   const menu = document.getElementById("menuDropdown");
