@@ -256,12 +256,66 @@ body {
    ============================================================ */
 
 /* ---------- HERO (the dark navy banner) ---------- */
+/*
+   HOW THE BLENDED PHOTO WORKS
+   ------------------------------------------------------------
+   A hero can carry TWO background layers stacked on top of each
+   other. Listed in background-image, the FIRST one sits on top:
+
+     1. a navy gradient (the tint)
+     2. the photograph (underneath)
+
+   "background-blend-mode: multiply" mixes those two layers rather
+   than the top one simply hiding the bottom one. Multiply keeps
+   the darker value of each pixel, so the photo takes on the navy
+   colour and everything gets darker — which is exactly what makes
+   white text stay readable over a busy photo.
+
+   The gradient uses rgba() colours. The fourth number is the
+   opacity: 0.92 means 92% solid. Lower it to let more of the photo
+   show through; raise it if text is hard to read.
+
+   IF A PHOTO IS MISSING nothing breaks — the browser just fails to
+   load that layer and the navy gradient shows on its own, exactly
+   as the site looked before.
+   ------------------------------------------------------------ */
 .hero {
   background-color: var(--navy-900);
   /* A subtle diagonal gradient stops the block looking flat */
   background-image: linear-gradient(135deg, #0b1f3a 0%, #17335c 100%);
+  /* cover = fill the whole banner, cropping rather than squashing */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 62px 24px 58px;
   text-align: center;
+}
+
+/* Any hero that has a photo behind it.
+   Add this class alongside a .hero-photo-* class below. */
+.hero-photo {
+  background-blend-mode: multiply;
+}
+
+/* ---- One rule per page. Drop a matching image into the project
+        folder and it appears automatically. ---- */
+
+.hero-photo-home {
+  background-image:
+    linear-gradient(135deg, rgba(11, 31, 58, 0.93) 0%, rgba(23, 51, 92, 0.86) 100%),
+    url("hero-home.jpg");
+}
+
+.hero-photo-repair {
+  background-image:
+    linear-gradient(135deg, rgba(11, 31, 58, 0.93) 0%, rgba(23, 51, 92, 0.86) 100%),
+    url("hero-composite-repair.jpg");
+}
+
+.hero-photo-coordination {
+  background-image:
+    linear-gradient(135deg, rgba(11, 31, 58, 0.93) 0%, rgba(23, 51, 92, 0.86) 100%),
+    url("hero-production-coordination.jpg");
 }
 
 .hero-compact {
