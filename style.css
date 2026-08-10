@@ -153,6 +153,51 @@ body {
   gap: 12px;
 }
 
+/* The row holding the Share and Admin Login buttons */
+.footer-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  /* On a very narrow phone they drop onto two lines */
+  flex-wrap: wrap;
+}
+
+/* The Share button — solid navy, so it reads as the one students
+   are meant to use. Admin Login stays quiet beside it. */
+.btn-share {
+  padding: 7px 16px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--white);
+  background-color: var(--navy-600);
+  border: 1px solid var(--navy-600);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-share:hover {
+  background-color: var(--navy-700);
+}
+
+.btn-share:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(27, 58, 107, 0.25);
+}
+
+/* The "Link copied" confirmation line */
+.share-status {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--success);
+  font-weight: 600;
+  /* A long URL must wrap rather than stretch the card */
+  overflow-wrap: anywhere;
+}
+
+
 /* The small outlined "Admin Login" button.
    ------------------------------------------------------------
    It is an <a> link, not a <button>, because it navigates to

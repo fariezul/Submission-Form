@@ -41,6 +41,10 @@ const spmRows = document.getElementById("spmRows");
 const addSubjectButton = document.getElementById("addSubjectButton");
 const spmError = document.getElementById("spmError");
 
+// The share button and its little confirmation line
+const shareButton = document.getElementById("shareButton");
+const shareStatus = document.getElementById("shareStatus");
+
 
 /* ------------------------------------------------------------
    STEP 2 — Supabase settings
@@ -502,4 +506,95 @@ form.addEventListener("submit", async function (event) {
     submitButton.disabled = false;
     submitButton.textContent = "Submit Registration";
   }
+});
+
+
+/* ============================================================
+   STEP 8 — THE SHARE BUTTON
+   ============================================================
+   Sharing works differently on phones and on computers, so we try
+   the best option available:
+
+   1. PHONES (and some tablets) have a built-in share sheet — the
+      panel that slides up offering WhatsApp, Telegram, email and
+      so on. We reach it with navigator.share(). This is the nicest
+      option because the person picks whichever app they like.
+
+   2. COMPUTERS usually don't have that. So instead we copy the
+      link straight to the clipboard and tell them we've done it.
+
+   3. If even copying is blocked, we show the link on screen so it
+      can be copied by hand.
+
+   Checking what the browser supports before using it is called
+   "feature detection", and it's how you write code that works
+   everywhere without breaking on older browsers.
+   ============================================================ */
+
+/* The address we want people to share.
+   ------------------------------------------------------------
+   We build it from origin + pathname rather than using the full
+   location.href, because href would include any "?something=..."
+   bits on the end — and we want a clean link.
+   ------------------------------------------------------------ */
+function getShareUrl() {
+  return window.location.origin + window.location.pathname;
+}
+
+
+/* Show a short message under the buttons, then hide it again. */
+function showShareStatus(message) {
+  shareStatus.textContent = message;
+  shareStatus.classList.remove("is-hidden");
+
+  // setTimeout runs something later. 4000 = 4000 milliseconds,
+  // so the message disappears after four seconds.
+  setTimeout(function () {
+    shareStatus.classList.add("is-hidden");
+  }, 4000);
+}
+
+
+shareButton.addEventListener("click", async function () {
+  const url = getShareUrl();
+
+  // What we want to share: a title, a sentence, and the link.
+  const shareData = {
+    title: "TVETMARA Masjid Tanah — Student Registration",
+    text: "Register here for TVETMARA Masjid Tanah:",
+    url: url,
+  };
+
+  // ---------- Option 1: the phone's own share sheet ----------
+  // navigator.share only exists on browsers that support it, so we
+  // check before calling it.
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      // Success — the share sheet handled everything, so there is
+      // nothing more for us to say.
+      return;
+    } catch (error) {
+      // The person tapped "Cancel". That is not a real error, so we
+      // quietly stop instead of showing a warning.
+      if (error && error.name === "AbortError") return;
+
+      // Anything else: fall through and try copying instead.
+    }
+  }
+
+  // ---------- Option 2: copy to the clipboard ----------
+  // navigator.clipboard only works on secure (https) pages.
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(url);
+      showShareStatus("Link copied. Paste it anywhere to share.");
+      return;
+    } catch (error) {
+      // Copying was blocked — fall through to the last option.
+    }
+  }
+
+  // ---------- Option 3: show the link to copy by hand ----------
+  showShareStatus(url);
 });
