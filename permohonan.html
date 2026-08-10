@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<!--
+  index.html — the STRUCTURE of the page.
+  Think of HTML as the skeleton: it says what things exist.
+  CSS (style.css) makes it look good, JS (app.js) makes it work.
+-->
+<html lang="en">
+<head>
+  <!-- Tells the browser which character set to use (supports accents, symbols) -->
+  <meta charset="UTF-8" />
+
+  <!-- Makes the page scale properly on phones -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Text shown in the browser tab -->
+  <title>Permohonan TVETMARA | Student Registration — Masjid Tanah</title>
+
+  <meta name="description" content="Permohonan TVETMARA Masjid Tanah — student registration form for TVET composite technology programmes. Submit your details and SPM results online." />
+  <link rel="canonical" href="https://www.farizuljaafar.com/permohonan.html" />
+
+  <!-- Link to our stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ===== TOP BAR WITH NAVIGATION ===== -->
+  <header class="site-header site-header-nav">
+    <div class="header-inner">
+
+      <!--
+        THE LOGO
+        "alt" is the text a screen reader announces, and what shows
+        if the image ever fails to load.
+
+        width and height match the real pixel size of the file, so
+        the browser can reserve the right space BEFORE the image
+        downloads and the page doesn't jump while loading.
+      -->
+      <a href="index.html" class="header-logo-link" aria-label="Home">
+        <img
+          src="logo.png"
+          alt="TVETMARA Masjid Tanah"
+          class="brand-logo"
+          width="515"
+          height="100"
+        />
+      </a>
+
+      <!-- The same drop-down menu as every other page -->
+      <nav class="main-nav" aria-label="Main">
+        <button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="menuDropdown">
+          Menu <span class="menu-caret" aria-hidden="true">▾</span>
+        </button>
+        <ul class="menu-dropdown is-hidden" id="menuDropdown">
+          <li><a href="composite-repair.html">Composite Repair</a></li>
+          <li><a href="coordination.html">Coordination</a></li>
+          <li><a href="permohonan.html">Permohonan TVETMARA</a></li>
+        </ul>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ============================================ -->
+  <main class="page">
+
+    <!-- The "card" is the white box that holds the form -->
+    <section class="card" aria-labelledby="form-title">
+
+      <div class="card-header">
+        <h1 id="form-title">Student Registration</h1>
+        <p class="card-subtitle">
+          Please provide your contact details. All fields are required.
+        </p>
+      </div>
+
+      <!--
+        SUCCESS MESSAGE
+        It starts hidden (the "is-hidden" class). JavaScript removes
+        that class after the data saves successfully.
+      -->
+      <div id="successMessage" class="alert alert-success is-hidden" role="status">
+        <strong>Submission received.</strong>
+        Thank you — your details have been recorded.
+      </div>
+
+      <!--
+        ERROR MESSAGE
+        Shown only if something goes wrong talking to Supabase.
+        role="alert" tells screen readers to announce it.
+      -->
+      <div id="errorMessage" class="alert alert-error is-hidden" role="alert"></div>
+
+      <!--
+        THE FORM
+        novalidate = "browser, don't show your own popup warnings" —
+        we write our own validation in app.js so we can style it.
+      -->
+      <form id="contactForm" novalidate>
+
+        <!-- ---------- Name field ---------- -->
+        <div class="field">
+          <!-- "for" must match the input's "id" so clicking the label focuses it -->
+          <label for="name">Full Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Jane Smith"
+            autocomplete="name"
+          />
+          <!-- Empty box where JavaScript will write an error, if any -->
+          <p class="error-text" id="nameError"></p>
+        </div>
+
+        <!-- ---------- Email field ---------- -->
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="jane.smith@company.com"
+            autocomplete="email"
+          />
+          <p class="error-text" id="emailError"></p>
+        </div>
+
+        <!-- ---------- Phone field ---------- -->
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <!--
+            inputmode="numeric" makes phones show a number keypad.
+            We still check the value in JavaScript, because a user
+            could always paste letters in.
+          -->
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            inputmode="numeric"
+            placeholder="60123456789"
+            autocomplete="tel"
+          />
+          <p class="hint">Digits only — no spaces, dashes or brackets.</p>
+          <p class="error-text" id="phoneError"></p>
+        </div>
+
+        <!-- ---------- SPM results section ---------- -->
+        <div class="field">
+          <!--
+            This is a group of controls rather than one input, so we use
+            a <fieldset> with a <legend> instead of a <label>. That tells
+            screen readers "everything inside belongs to this heading".
+          -->
+          <fieldset class="spm-fieldset">
+            <legend>SPM Results</legend>
+            <p class="hint hint-top">
+              Add each subject you sat for and the grade you obtained.
+            </p>
+
+            <!--
+              Empty container. JavaScript inserts the subject rows here,
+              so the number of rows can grow and shrink as the student
+              clicks Add / Remove.
+            -->
+            <div id="spmRows"></div>
+
+            <!--
+              type="button" is important! Inside a <form>, a button with
+              no type defaults to "submit" and would send the form.
+            -->
+            <button type="button" class="btn-add" id="addSubjectButton">
+              + Add Subject
+            </button>
+
+            <p class="error-text" id="spmError"></p>
+          </fieldset>
+        </div>
+
+        <!-- ---------- Submit button ---------- -->
+        <button type="submit" class="btn-submit" id="submitButton">
+          Submit Registration
+        </button>
+
+      </form>
+
+      <div class="card-footer">
+        <p>Created by Farizul Jaafar</p>
+
+        <!-- The two footer buttons, side by side -->
+        <div class="footer-buttons">
+
+          <!--
+            SHARE BUTTON
+            This is a real <button> (not a link) because it performs
+            an action rather than going to another page.
+          -->
+          <button type="button" class="btn-share" id="shareButton">
+            Share This Form
+          </button>
+
+          <!--
+            Link to the admin page.
+            An <a> tag is a link: "href" is where it goes. We style it
+            to look like a small outlined button.
+
+            It is safe for students to see this. The admin page asks
+            for a sign-in before it will show any data.
+          -->
+          <a href="admin.html" class="btn-admin-link">Admin Login</a>
+        </div>
+
+        <!--
+          A small line where JavaScript confirms the link was copied.
+          role="status" makes screen readers announce it politely.
+        -->
+        <p class="share-status is-hidden" id="shareStatus" role="status"></p>
+      </div>
+
+    </section>
+  </main>
+
+  <!--
+    SCRIPT
+    app.js holds everything: the Supabase settings, the validation
+    rules, and the code that saves the form. No build step, no
+    server — this page is plain static files.
+  -->
+  <script src="nav.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

@@ -73,6 +73,99 @@ body {
   border-bottom: 3px solid var(--navy-600);
 }
 
+/* Header variant that holds a logo AND a menu, side by side */
+.site-header-nav .header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* The logo becomes a link back to the home page */
+.header-logo-link {
+  display: block;
+  line-height: 0;   /* removes the extra space under an inline image */
+}
+
+/* ---------- THE DROP-DOWN MENU ---------- */
+
+/* position: relative makes this the anchor point that the drop-down
+   panel positions itself against. */
+.main-nav {
+  position: relative;
+}
+
+.menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--navy-900);
+  background-color: var(--white);
+  border: 1px solid #c8d0dd;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.menu-toggle:hover {
+  background-color: var(--navy-100);
+  border-color: var(--navy-600);
+}
+
+.menu-toggle:focus-visible {
+  outline: none;
+  border-color: var(--navy-600);
+  box-shadow: 0 0 0 3px rgba(27, 58, 107, 0.15);
+}
+
+.menu-caret {
+  font-size: 10px;
+}
+
+/* The panel that drops down.
+   position: absolute lifts it out of the normal flow so it floats
+   over the page instead of pushing content down.
+   right: 0 lines its right edge up with the button. */
+.menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);   /* just below the button */
+  min-width: 220px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;         /* no bullet points */
+  background-color: var(--white);
+  border: 1px solid var(--navy-100);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(11, 31, 58, 0.13);
+  /* z-index decides what sits on top when things overlap.
+     A high number keeps the menu above the page content. */
+  z-index: 50;
+}
+
+.menu-dropdown a {
+  display: block;
+  padding: 10px 13px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--navy-900);
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.menu-dropdown a:hover,
+.menu-dropdown a:focus-visible {
+  background-color: var(--navy-100);
+  outline: none;
+}
+
 /* ---------- The logo image ---------- */
 .brand-logo {
   /* "display: block" + "margin: 0 auto" is the classic way to centre
@@ -89,6 +182,397 @@ body {
   /* Safety net: on a very narrow phone, shrink rather than overflow
      the screen. */
   max-width: 100%;
+}
+
+
+/* ============================================================
+   PROFILE PAGES
+   ============================================================
+   Used by index.html, composite-repair.html and coordination.html.
+   The form and admin pages ignore all of this.
+   ============================================================ */
+
+/* ---------- HERO (the dark navy banner) ---------- */
+.hero {
+  background-color: var(--navy-900);
+  /* A subtle diagonal gradient stops the block looking flat */
+  background-image: linear-gradient(135deg, #0b1f3a 0%, #17335c 100%);
+  padding: 62px 24px 58px;
+  text-align: center;
+}
+
+.hero-compact {
+  padding: 46px 24px 42px;
+}
+
+.hero-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: #8fa5c8;
+  margin-bottom: 14px;
+}
+
+.hero h1 {
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.3px;
+  color: var(--white);
+}
+
+.hero-role {
+  margin-top: 14px;
+  font-size: 17px;
+  line-height: 1.5;
+  color: #cdd8ea;
+}
+
+.hero-credentials {
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #8fa5c8;
+}
+
+.hero-actions {
+  margin-top: 26px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-hero-primary,
+.btn-hero-secondary {
+  display: inline-block;
+  padding: 12px 26px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-hero-primary {
+  color: var(--navy-900);
+  background-color: var(--white);
+  border: 1px solid var(--white);
+}
+
+.btn-hero-primary:hover {
+  background-color: #e3eaf6;
+}
+
+.btn-hero-secondary {
+  color: var(--white);
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.btn-hero-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ---------- PAGE BODY ---------- */
+.content-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px 20px;
+}
+
+.section {
+  padding: 40px 0;
+  border-bottom: 1px solid var(--navy-100);
+}
+
+/* :last-child = the final section on the page. No line under it. */
+.section:last-child {
+  border-bottom: none;
+}
+
+.section h2 {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--navy-600);
+  margin-bottom: 18px;
+  /* A short navy rule under each heading */
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--navy-100);
+}
+
+.section p {
+  margin-bottom: 12px;
+  color: var(--text-dark);
+  line-height: 1.68;
+}
+
+.lead {
+  font-size: 16.5px;
+  color: var(--navy-900) !important;
+}
+
+.sub-head {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--navy-900);
+  margin-bottom: 10px;
+}
+
+/* ---------- The four numbers under the profile summary ---------- */
+.stat-strip {
+  margin-top: 26px;
+  display: grid;
+  /* auto-fit + minmax makes the columns reflow by themselves:
+     four across on a desktop, two on a phone, no media query. */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.strip-item {
+  padding: 16px 14px;
+  background-color: var(--page-bg);
+  border-left: 3px solid var(--navy-600);
+  border-radius: var(--radius);
+}
+
+.strip-num {
+  display: block;
+  font-size: 25px;
+  font-weight: 700;
+  color: var(--navy-900);
+  line-height: 1.1;
+}
+
+.strip-label {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ---------- Card grids ---------- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.info-card {
+  padding: 18px 19px;
+  background-color: var(--white);
+  border: 1px solid var(--navy-100);
+  border-top: 3px solid var(--navy-600);
+  border-radius: var(--radius);
+}
+
+.info-card h3 {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--navy-900);
+  margin-bottom: 7px;
+}
+
+.info-card p {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.card-year {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  color: var(--navy-600);
+  margin-bottom: 5px;
+}
+
+/* ---------- Experience timeline ---------- */
+.timeline-item {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px dashed var(--navy-100);
+}
+
+.timeline-item:last-child {
+  border-bottom: none;
+}
+
+.timeline-period {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy-600);
+  padding-top: 2px;
+}
+
+.timeline-body h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy-900);
+}
+
+.timeline-org {
+  font-size: 13px;
+  color: var(--text-muted) !important;
+  margin: 2px 0 8px !important;
+}
+
+.timeline-body p {
+  font-size: 14px;
+}
+
+/* ---------- Lists ---------- */
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 26px;
+}
+
+.clean-list {
+  list-style: none;
+  padding: 0;
+}
+
+.clean-list li {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-dark);
+}
+
+/* ::before inserts a small navy square as a custom bullet */
+.clean-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 5px;
+  height: 5px;
+  background-color: var(--navy-600);
+}
+
+.training-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 10px;
+}
+
+.training-list li {
+  padding: 12px 14px;
+  background-color: var(--page-bg);
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+/* ---------- Contact ---------- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.contact-item {
+  padding: 16px 18px;
+  background-color: var(--page-bg);
+  border-radius: var(--radius);
+  font-size: 14px;
+}
+
+/* Makes the address box span the full width of the grid */
+.contact-item-wide {
+  grid-column: 1 / -1;
+}
+
+.contact-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.contact-item a {
+  color: var(--navy-600);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.contact-item a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Call-to-action block ---------- */
+.section-cta {
+  text-align: center;
+}
+
+.section-cta h2 {
+  border-bottom: none;
+  font-size: 18px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--navy-900);
+  padding-bottom: 0;
+  margin-bottom: 8px;
+}
+
+.section-cta .btn-hero-primary {
+  margin-top: 14px;
+  color: var(--white);
+  background-color: var(--navy-600);
+  border-color: var(--navy-600);
+}
+
+.section-cta .btn-hero-primary:hover {
+  background-color: var(--navy-700);
+}
+
+/* ---------- Page footer ---------- */
+.site-footer {
+  margin-top: 20px;
+  padding: 26px 24px;
+  background-color: var(--navy-900);
+  text-align: center;
+  font-size: 12.5px;
+  color: #8fa5c8;
+}
+
+.footer-links {
+  margin-top: 8px;
+}
+
+.footer-links a {
+  color: #cdd8ea;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
 }
 
 
@@ -812,6 +1296,33 @@ input.input-error:focus {
 
   .brand-logo {
     height: 34px;
+  }
+
+  /* Profile pages on a phone */
+  .hero {
+    padding: 40px 18px 38px;
+  }
+
+  .hero h1 {
+    font-size: 27px;
+  }
+
+  .hero-role {
+    font-size: 15px;
+  }
+
+  .content-wrap {
+    padding: 0 16px 16px;
+  }
+
+  .section {
+    padding: 30px 0;
+  }
+
+  /* Timeline stacks: date above the description */
+  .timeline-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
   }
 
   /* Admin page: stack the heading and Sign Out button */

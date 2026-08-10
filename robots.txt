@@ -1,0 +1,12 @@
+# robots.txt tells search engine crawlers what they may look at.
+# "User-agent: *" means "these rules apply to every search engine".
+
+User-agent: *
+Allow: /
+
+# The admin page holds student data behind a login. There is no
+# reason for it to appear in search results.
+Disallow: /admin.html
+
+# Pointing crawlers at the sitemap helps them find every page.
+Sitemap: https://www.farizuljaafar.com/sitemap.xml
