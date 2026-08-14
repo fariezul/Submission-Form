@@ -229,6 +229,106 @@ body {
 }
 
 
+/* ============================================================
+   THE ACTIVITY SUB-TABS
+   ============================================================
+   A second row below the main tabs, on a tinted background so the
+   two levels of navigation are visually distinct. Ten links won't
+   fit on a phone, so this row scrolls sideways.
+   ============================================================ */
+
+.subtab-bar {
+  background-color: var(--page-bg);
+  border-bottom: 1px solid var(--navy-100);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.subtab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.subtab-bar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 9px 24px;
+  display: flex;
+  gap: 6px;
+}
+
+/* Small pills rather than underlined tabs, so they read as a level
+   below the main navigation. */
+.subtab {
+  padding: 6px 13px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--navy-600);
+  text-decoration: none;
+  background-color: var(--white);
+  border: 1px solid var(--navy-100);
+  border-radius: 20px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease,
+              border-color 0.15s ease;
+}
+
+.subtab:hover {
+  border-color: var(--navy-600);
+  background-color: var(--navy-100);
+}
+
+/* The activity you are currently viewing: solid navy */
+.subtab-active {
+  color: var(--white);
+  background-color: var(--navy-600);
+  border-color: var(--navy-600);
+}
+
+.subtab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(27, 58, 107, 0.2);
+}
+
+/* The breadcrumb link in an activity hero */
+.crumb-link {
+  color: #8fa5c8;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(143, 165, 200, 0.4);
+}
+
+.crumb-link:hover {
+  color: var(--white);
+  border-bottom-color: var(--white);
+}
+
+
+/* ---------- The "under construction" placeholder ---------- */
+.section-construction {
+  text-align: center;
+  padding: 60px 0 54px;
+  border-bottom: none;
+}
+
+.construction-note {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--navy-900) !important;
+  margin-bottom: 6px !important;
+}
+
+.construction-sub {
+  font-size: 14px;
+  color: var(--text-muted) !important;
+  margin-bottom: 22px !important;
+}
+
+/* .btn-plain is defined with the admin page styles and reused here */
+.section-construction .btn-plain {
+  display: inline-block;
+  text-decoration: none;
+}
+
+
 /* ---------- The logo image ---------- */
 .brand-logo {
   /* "display: block" + "margin: 0 auto" is the classic way to centre
@@ -1369,6 +1469,15 @@ input.input-error:focus {
   .tab {
     padding: 12px 11px;
     font-size: 12.5px;
+  }
+
+  .subtab-bar-inner {
+    padding: 8px 12px;
+  }
+
+  .subtab {
+    padding: 6px 11px;
+    font-size: 11.5px;
   }
 
   /* Profile pages on a phone */
