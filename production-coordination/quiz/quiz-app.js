@@ -59,6 +59,18 @@
     locked: false,       // true while feedback is showing
     finished: false,
     lastResult: null,
+
+    /* Every attempt finished in THIS sitting, oldest first. It is
+       what the result screens list back to the student, so they
+       can see themselves improving across retries.
+
+       Kept in memory on purpose. It covers exactly one session —
+       the same span as session_id — and is cleared when the
+       student goes back to the welcome screen. Reading it from
+       the database instead would need a new read permission on a
+       table the public key deliberately cannot see, and would
+       show nothing different. */
+    history: [],
   };
 
 
@@ -544,10 +556,93 @@
     };
     state.lastResult = result;
 
+    // Record it before painting, so the screen can list this
+    // attempt along with the ones before it.
+    state.history.push(result);
+
     if (result.completed) showPerfect(result);
     else showFailed(result);
 
     saveResult(result);
+  }
+
+
+  /* ----------------------------------------------------------
+     THE ATTEMPT HISTORY
+     ----------------------------------------------------------
+     Shown on both result screens. The last row is the attempt
+     that just finished, and it is marked so the student can pick
+     it out of the list at a glance.
+
+     Note what this does NOT do: it never says which questions
+     were missed. It reports scores only, which keeps the rule
+     that a wrong answer is never revealed.
+     ---------------------------------------------------------- */
+  function renderHistory(listEl, summaryEl) {
+    if (!listEl) return;
+
+    listEl.innerHTML = "";
+
+    const attempts = state.history;
+    const currentIndex = attempts.length - 1;
+
+    attempts.forEach(function (a, index) {
+      const row = document.createElement("li");
+      row.className = "attempt-row";
+      if (index === currentIndex) row.classList.add("is-current");
+      if (a.completed) row.classList.add("is-pass");
+
+      const label = document.createElement("span");
+      label.className = "attempt-label";
+      label.textContent = "Attempt " + a.attemptNumber;
+
+      const score = document.createElement("span");
+      score.className = "attempt-score";
+      score.textContent = a.score + " / " + a.totalQuestions;
+
+      const pct = document.createElement("span");
+      pct.className = "attempt-pct";
+      pct.textContent = Math.round(a.percentage) + "%";
+
+      const time = document.createElement("span");
+      time.className = "attempt-time";
+      // A timed-out attempt is called out, because its time is
+      // just the limit and would otherwise look like a real one.
+      time.textContent = a.timedOut ? "Time up" : Engine.formatTime(a.durationSeconds);
+
+      const mark = document.createElement("span");
+      mark.className = "attempt-mark";
+      mark.setAttribute("aria-hidden", "true");
+      mark.textContent = a.completed ? "🏆" : "";
+
+      // Screen readers get the outcome in words, not just a colour.
+      row.setAttribute(
+        "aria-label",
+        "Attempt " + a.attemptNumber + ": " + a.score + " out of " + a.totalQuestions +
+        ", " + Math.round(a.percentage) + " percent, " +
+        (a.completed ? "completed" : "not completed") +
+        (index === currentIndex ? ", this attempt" : "")
+      );
+
+      row.appendChild(label);
+      row.appendChild(score);
+      row.appendChild(pct);
+      row.appendChild(time);
+      row.appendChild(mark);
+      listEl.appendChild(row);
+    });
+
+    if (summaryEl) {
+      const best = attempts.reduce(function (top, a) {
+        return a.score > top ? a.score : top;
+      }, 0);
+
+      summaryEl.textContent =
+        attempts.length === 1
+          ? "This is your first attempt in this session."
+          : attempts.length + " attempts this session · best so far " +
+            best + " / " + Engine.QUESTIONS_PER_ATTEMPT;
+    }
   }
 
 
@@ -645,6 +740,8 @@
     $("resultRule").textContent =
       "You need 30 / 30 to complete this challenge.";
 
+    renderHistory($("resultHistoryList"), $("resultHistorySummary"));
+
     showScreen("result");
     Audio.fail();
   }
@@ -676,6 +773,8 @@
         ? "First attempt"
         : "Attempt " + result.attemptNumber;
 
+    renderHistory($("perfectHistoryList"), $("perfectHistorySummary"));
+
     showScreen("perfect");
     Celebration.celebrate();
     Audio.celebrate();
@@ -696,12 +795,15 @@
     Audio.stopMusic();
     stopTicking();
 
-    // A fresh sitting next time: new session id, attempt 1.
+    // A fresh sitting next time: new session id, attempt 1, and
+    // an empty history — the list covers one session, not one
+    // person, so it starts over with the session.
     state.sessionId = null;
     state.attemptNumber = 0;
     state.questions = [];
     state.responses = [];
     state.lastResult = null;
+    state.history = [];
 
     showScreen("welcome");
   }

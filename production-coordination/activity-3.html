@@ -328,6 +328,14 @@
           You need 30 / 30 to complete this challenge.
         </p>
 
+        <!-- Every attempt from this session. Scores only — it
+             never says which questions were missed. -->
+        <section class="attempt-history" aria-labelledby="resultHistoryTitle">
+          <h3 class="attempt-history-title" id="resultHistoryTitle">Your Attempts</h3>
+          <ol class="attempt-list" id="resultHistoryList"></ol>
+          <p class="attempt-summary" id="resultHistorySummary"></p>
+        </section>
+
         <button type="button" class="quiz-btn" id="tryAgainButton">
           🔁 Try Again
         </button>
@@ -368,6 +376,14 @@
         <p class="result-message">
           A perfect run — zero defects. Your time is on the leaderboard.
         </p>
+
+        <!-- The same history as the failed screen, so a student
+             who fought their way to 30/30 can see the climb. -->
+        <section class="attempt-history" aria-labelledby="perfectHistoryTitle">
+          <h3 class="attempt-history-title" id="perfectHistoryTitle">Your Attempts</h3>
+          <ol class="attempt-list" id="perfectHistoryList"></ol>
+          <p class="attempt-summary" id="perfectHistorySummary"></p>
+        </section>
 
         <button type="button" class="quiz-btn" id="perfectLeaderboardButton">
           🏆 View Leaderboard

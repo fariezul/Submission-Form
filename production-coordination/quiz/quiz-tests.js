@@ -616,6 +616,81 @@ check("a fresh sitting gets a different session id", function () {
   assert(Engine.createSessionId() !== Engine.createSessionId());
 });
 
+/* The attempt history shown on both result screens. It lives in
+   memory in quiz-app.js; these check the shape of what it holds
+   and the rules it has to obey. */
+section("The attempt history");
+
+function finishedAttempt(number, correctCount, opts) {
+  const marks = Engine.scoreAttempt(responses(correctCount, 30), 30);
+  return Object.assign({
+    score: marks.score,
+    totalQuestions: marks.totalQuestions,
+    percentage: marks.percentage,
+    completed: marks.completed,
+    timedOut: false,
+    durationSeconds: 180,
+    attemptNumber: number,
+  }, opts || {});
+}
+
+check("history grows by one per attempt, in order", function () {
+  const history = [];
+  [24, 28, 30].forEach(function (score, i) {
+    history.push(finishedAttempt(i + 1, score));
+  });
+
+  assertEqual(history.length, 3);
+  assertEqual(history.map((a) => a.attemptNumber).join(","), "1,2,3");
+  assertEqual(history.map((a) => a.score).join(","), "24,28,30");
+});
+
+check("only the perfect attempt is marked completed", function () {
+  const history = [24, 29, 30].map(function (s, i) { return finishedAttempt(i + 1, s); });
+  assertEqual(history.filter((a) => a.completed).length, 1, "exactly one pass expected");
+  assertEqual(history[0].completed, false, "24/30 must not be a pass");
+  assertEqual(history[1].completed, false, "29/30 must not be a pass");
+  assertEqual(history[2].completed, true, "30/30 must be a pass");
+});
+
+check("the best score is the highest, not the last", function () {
+  // A student can score worse on a retry — "best" must not just
+  // read the final row.
+  const history = [28, 19, 22].map(function (s, i) { return finishedAttempt(i + 1, s); });
+  const best = history.reduce(function (top, a) { return a.score > top ? a.score : top; }, 0);
+  assertEqual(best, 28);
+});
+
+check("a timed-out attempt is carried in the history", function () {
+  const a = finishedAttempt(2, 11, { timedOut: true, durationSeconds: 600 });
+  assertEqual(a.timedOut, true);
+  assertEqual(a.completed, false, "a timed-out attempt can never be a pass");
+});
+
+check("the history never carries anything about the answers", function () {
+  // The rule for this activity: a wrong answer is never revealed.
+  // The history lists scores, so it must not carry responses,
+  // question ids or any part of the key.
+  const a = finishedAttempt(1, 24);
+  const keys = Object.keys(a).sort().join(",");
+  assertEqual(keys,
+    "attemptNumber,completed,durationSeconds,percentage,score,timedOut,totalQuestions",
+    "unexpected fields on a history entry");
+
+  const asText = JSON.stringify(a);
+  assert(!asText.includes("questionId"), "history leaked question ids");
+  assert(!asText.includes("correctAnswer"), "history leaked the answer key");
+  assert(!asText.includes("selected"), "history leaked what was selected");
+});
+
+check("both result screens have somewhere to put the history", function () {
+  const html = fs.readFileSync(path.join(HERE, "..", "activity-3.html"), "utf8");
+  ["resultHistoryList", "resultHistorySummary",
+   "perfectHistoryList", "perfectHistorySummary"].forEach(function (id) {
+    assert(html.includes('id="' + id + '"'), "activity-3.html is missing #" + id);
+  });
+});
+
 
 /* ==========================================================
    WHAT GETS SENT TO THE DATABASE
