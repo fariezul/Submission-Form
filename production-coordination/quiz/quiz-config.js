@@ -38,6 +38,14 @@ window.QUIZ_CONFIG = {
 
   /* Created by the SQL migration. */
   TABLE: "quiz_attempts",
+
+  /* The hall of fame: perfect scores only, ranked by speed. */
   LEADERBOARD_FUNCTION: "quiz_leaderboard",
   LEADERBOARD_SIZE: 10,
+
+  /* The live class scoreboard on the result screens: everyone's
+     most recent attempts, pass or fail. 15 rather than 10 so the
+     panel still looks busy once a few students have retried. */
+  RECENT_FUNCTION: "quiz_recent_attempts",
+  RECENT_SIZE: 15,
 };

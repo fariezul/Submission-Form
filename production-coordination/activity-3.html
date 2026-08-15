@@ -328,10 +328,15 @@
           You need 30 / 30 to complete this challenge.
         </p>
 
-        <!-- Every attempt from this session. Scores only — it
-             never says which questions were missed. -->
+        <!-- The live class scoreboard: everyone's most recent
+             attempts, pass or fail. Scores only — it never says
+             which questions anyone missed. -->
         <section class="attempt-history" aria-labelledby="resultHistoryTitle">
-          <h3 class="attempt-history-title" id="resultHistoryTitle">Your Attempts</h3>
+          <div class="attempt-history-head">
+            <h3 class="attempt-history-title" id="resultHistoryTitle">📊 Class Scoreboard</h3>
+            <button type="button" class="attempt-refresh" id="resultHistoryRefresh"
+                    aria-label="Refresh the class scoreboard">↻</button>
+          </div>
           <ol class="attempt-list" id="resultHistoryList"></ol>
           <p class="attempt-summary" id="resultHistorySummary"></p>
         </section>
@@ -377,10 +382,15 @@
           A perfect run — zero defects. Your time is on the leaderboard.
         </p>
 
-        <!-- The same history as the failed screen, so a student
-             who fought their way to 30/30 can see the climb. -->
+        <!-- The same scoreboard as the failed screen, so a
+             student who has just gone perfect can see where they
+             sit against everyone else. -->
         <section class="attempt-history" aria-labelledby="perfectHistoryTitle">
-          <h3 class="attempt-history-title" id="perfectHistoryTitle">Your Attempts</h3>
+          <div class="attempt-history-head">
+            <h3 class="attempt-history-title" id="perfectHistoryTitle">📊 Class Scoreboard</h3>
+            <button type="button" class="attempt-refresh" id="perfectHistoryRefresh"
+                    aria-label="Refresh the class scoreboard">↻</button>
+          </div>
           <ol class="attempt-list" id="perfectHistoryList"></ol>
           <p class="attempt-summary" id="perfectHistorySummary"></p>
         </section>

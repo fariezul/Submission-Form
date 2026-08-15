@@ -70,7 +70,12 @@ It creates:
 | `quiz_attempts` | one row per finished attempt, pass or fail |
 | 3 indexes | one partial index just for the leaderboard |
 | RLS policy | the public key may `INSERT` and nothing else |
-| `quiz_leaderboard()` | the only way the browser can read anything |
+| `quiz_leaderboard()` | perfect scores only, ranked by speed |
+| `quiz_recent_attempts()` | the live class scoreboard on the result screens |
+
+Those two functions are the **only** way the browser can read
+anything. Neither can return a session id, a question set or a
+student's responses.
 
 ### How to tell it worked
 
@@ -370,3 +375,26 @@ which sixteenths it plays on.
 
 **Speed never affects the mark.** It is only the tie-break for
 ranking students who already scored 30/30.
+
+**The result screens show a live class scoreboard.** The last 15
+attempts by everyone, pass or fail, newest first, with the
+student's own rows marked "YOU". It is there to be competitive:
+someone who has just scored 24 can see a 29 two rows down.
+
+Be aware of what that publishes. The quiz URL is public, so
+**every student's score — including their failures — is readable
+by anyone who has the link, under their full name.** That is a
+deliberate change from the leaderboard, which only ever showed
+successes. If you would rather it were less exposed, the options
+in rough order of effort are:
+
+- show fewer rows — `RECENT_SIZE` in `quiz-config.js`
+- drop the class column, or show only a first name — edit
+  `buildScoreRow()` in `quiz-app.js`
+- restrict the function to perfect scores like the leaderboard —
+  add `where completed = true` to `quiz_recent_attempts()`
+- remove the panel entirely — delete the two
+  `attempt-history` sections from `activity-3.html`
+
+What is never exposed, in any of these: which questions anyone
+got wrong. The function returns scores only.

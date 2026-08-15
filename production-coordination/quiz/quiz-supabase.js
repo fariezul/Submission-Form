@@ -162,9 +162,55 @@
   }
 
 
+  /* ----------------------------------------------------------
+     READING THE LIVE CLASS SCOREBOARD
+     ----------------------------------------------------------
+     The most recent attempts by everyone, for the panel on the
+     result screens. Like the leaderboard it goes through a
+     function rather than selecting from the table, so the public
+     key still cannot read session ids, question sets or
+     responses — only the scores.
+     ---------------------------------------------------------- */
+  async function fetchRecentAttempts(limit) {
+    const url = config.SUPABASE_URL + "/rest/v1/rpc/" + config.RECENT_FUNCTION;
+
+    try {
+      const response = await fetchWithTimeout(
+        url,
+        {
+          method: "POST",
+          headers: requestHeaders(),
+          body: JSON.stringify({ row_limit: limit || config.RECENT_SIZE }),
+        },
+        10000
+      );
+
+      if (!response.ok) {
+        const details = await response.text();
+        return {
+          ok: false,
+          error: "Could not load the scoreboard (" + response.status + "): " + details,
+        };
+      }
+
+      const rows = await response.json();
+      return { ok: true, rows: Array.isArray(rows) ? rows : [] };
+    } catch (err) {
+      return {
+        ok: false,
+        error:
+          err && err.name === "AbortError"
+            ? "The scoreboard took too long to load."
+            : (err && err.message) || String(err),
+      };
+    }
+  }
+
+
   root.QuizDatabase = {
     saveAttempt: saveAttempt,
     fetchLeaderboard: fetchLeaderboard,
+    fetchRecentAttempts: fetchRecentAttempts,
   };
 
 })(window);

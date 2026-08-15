@@ -59,18 +59,6 @@
     locked: false,       // true while feedback is showing
     finished: false,
     lastResult: null,
-
-    /* Every attempt finished in THIS sitting, oldest first. It is
-       what the result screens list back to the student, so they
-       can see themselves improving across retries.
-
-       Kept in memory on purpose. It covers exactly one session —
-       the same span as session_id — and is cleared when the
-       student goes back to the welcome screen. Reading it from
-       the database instead would need a new read permission on a
-       table the public key deliberately cannot see, and would
-       show nothing different. */
-    history: [],
   };
 
 
@@ -556,10 +544,6 @@
     };
     state.lastResult = result;
 
-    // Record it before painting, so the screen can list this
-    // attempt along with the ones before it.
-    state.history.push(result);
-
     if (result.completed) showPerfect(result);
     else showFailed(result);
 
@@ -568,81 +552,138 @@
 
 
   /* ----------------------------------------------------------
-     THE ATTEMPT HISTORY
+     THE LIVE CLASS SCOREBOARD
      ----------------------------------------------------------
-     Shown on both result screens. The last row is the attempt
-     that just finished, and it is marked so the student can pick
-     it out of the list at a glance.
+     Shown on both result screens: the most recent attempts by
+     EVERYONE, pass or fail, newest first. The point is
+     competitive — a student who has just scored 24 sees that
+     someone in the next row got 29, and wants another go.
 
-     Note what this does NOT do: it never says which questions
-     were missed. It reports scores only, which keeps the rule
-     that a wrong answer is never revealed.
+     The student's own rows are marked "YOU", so they can find
+     themselves in the list and see where they sit.
+
+     Note what this does NOT show, for anyone: which questions
+     were missed. Scores only. The rule that a wrong answer is
+     never revealed holds here exactly as it does everywhere else.
+
+     It is drawn from the database rather than from memory,
+     because it has to include other people. That means it can
+     fail — so it renders its own loading and error states and
+     never takes the result screen down with it.
      ---------------------------------------------------------- */
-  function renderHistory(listEl, summaryEl) {
-    if (!listEl) return;
+
+  /* Is this row the student who is looking at the screen?
+     Name and class are free text, so compare them the same way
+     the database does when it groups the leaderboard: trimmed
+     and case-insensitive. */
+  function isOwnRow(row) {
+    return (
+      Engine.cleanText(row.student_name).toLowerCase() ===
+        state.studentName.toLowerCase() &&
+      Engine.cleanText(row.class_name).toLowerCase() ===
+        state.className.toLowerCase()
+    );
+  }
+
+  function buildScoreRow(row) {
+    const li = document.createElement("li");
+    li.className = "attempt-row";
+
+    const mine = isOwnRow(row);
+    if (mine) li.classList.add("is-you");
+    if (row.completed) li.classList.add("is-pass");
+
+    const who = document.createElement("span");
+    who.className = "attempt-who";
+
+    const name = document.createElement("span");
+    name.className = "attempt-name";
+    name.textContent = row.student_name;
+
+    const klass = document.createElement("span");
+    klass.className = "attempt-class";
+    klass.textContent = mine ? row.class_name + " · YOU" : row.class_name;
+
+    who.appendChild(name);
+    who.appendChild(klass);
+
+    const score = document.createElement("span");
+    score.className = "attempt-score";
+    score.textContent = row.score + " / " + row.total_questions;
+
+    const pct = document.createElement("span");
+    pct.className = "attempt-pct";
+    pct.textContent = Math.round(row.percentage) + "%";
+
+    const mark = document.createElement("span");
+    mark.className = "attempt-mark";
+    mark.setAttribute("aria-hidden", "true");
+    // A pass gets a trophy; a timed-out attempt gets a clock, so
+    // a low score is not mistaken for someone giving up.
+    mark.textContent = row.completed ? "🏆" : (row.timed_out ? "⏱️" : "");
+
+    li.setAttribute(
+      "aria-label",
+      row.student_name + ", " + row.class_name + ": " +
+      row.score + " out of " + row.total_questions + ", " +
+      (row.completed ? "completed" : "not completed") +
+      (mine ? ", your attempt" : "")
+    );
+
+    li.appendChild(who);
+    li.appendChild(score);
+    li.appendChild(pct);
+    li.appendChild(mark);
+    return li;
+  }
+
+  /* Fills the scoreboard on whichever result screen is showing.
+     Called once when the screen appears, and again if the student
+     taps Refresh. */
+  async function loadScoreboard(listEl, statusEl) {
+    if (!listEl || !statusEl) return;
+
+    statusEl.className = "attempt-summary is-pending";
+    statusEl.textContent = "Loading the class scoreboard…";
+
+    const outcome = await Database.fetchRecentAttempts();
+
+    if (!outcome.ok) {
+      // The student still has their own score on screen. This
+      // panel simply says it could not load, and nothing else
+      // breaks.
+      statusEl.className = "attempt-summary is-error";
+      statusEl.textContent = "The scoreboard could not be loaded.";
+      listEl.innerHTML = "";
+      if (window.console) console.error("[Zero Defect Rush]", outcome.error);
+      return;
+    }
 
     listEl.innerHTML = "";
 
-    const attempts = state.history;
-    const currentIndex = attempts.length - 1;
+    if (outcome.rows.length === 0) {
+      statusEl.className = "attempt-summary is-empty";
+      statusEl.textContent = "No attempts yet — you are the first!";
+      return;
+    }
 
-    attempts.forEach(function (a, index) {
-      const row = document.createElement("li");
-      row.className = "attempt-row";
-      if (index === currentIndex) row.classList.add("is-current");
-      if (a.completed) row.classList.add("is-pass");
-
-      const label = document.createElement("span");
-      label.className = "attempt-label";
-      label.textContent = "Attempt " + a.attemptNumber;
-
-      const score = document.createElement("span");
-      score.className = "attempt-score";
-      score.textContent = a.score + " / " + a.totalQuestions;
-
-      const pct = document.createElement("span");
-      pct.className = "attempt-pct";
-      pct.textContent = Math.round(a.percentage) + "%";
-
-      const time = document.createElement("span");
-      time.className = "attempt-time";
-      // A timed-out attempt is called out, because its time is
-      // just the limit and would otherwise look like a real one.
-      time.textContent = a.timedOut ? "Time up" : Engine.formatTime(a.durationSeconds);
-
-      const mark = document.createElement("span");
-      mark.className = "attempt-mark";
-      mark.setAttribute("aria-hidden", "true");
-      mark.textContent = a.completed ? "🏆" : "";
-
-      // Screen readers get the outcome in words, not just a colour.
-      row.setAttribute(
-        "aria-label",
-        "Attempt " + a.attemptNumber + ": " + a.score + " out of " + a.totalQuestions +
-        ", " + Math.round(a.percentage) + " percent, " +
-        (a.completed ? "completed" : "not completed") +
-        (index === currentIndex ? ", this attempt" : "")
-      );
-
-      row.appendChild(label);
-      row.appendChild(score);
-      row.appendChild(pct);
-      row.appendChild(time);
-      row.appendChild(mark);
-      listEl.appendChild(row);
+    outcome.rows.forEach(function (row) {
+      listEl.appendChild(buildScoreRow(row));
     });
 
-    if (summaryEl) {
-      const best = attempts.reduce(function (top, a) {
-        return a.score > top ? a.score : top;
-      }, 0);
+    // A line that gives the student something to aim at.
+    const best = outcome.rows.reduce(function (top, r) {
+      return r.score > top ? r.score : top;
+    }, 0);
+    const passes = outcome.rows.filter(function (r) { return r.completed; }).length;
 
-      summaryEl.textContent =
-        attempts.length === 1
-          ? "This is your first attempt in this session."
-          : attempts.length + " attempts this session · best so far " +
-            best + " / " + Engine.QUESTIONS_PER_ATTEMPT;
-    }
+    statusEl.className = "attempt-summary is-ok";
+    statusEl.textContent =
+      "Last " + outcome.rows.length + " attempts · best " +
+      best + " / " + Engine.QUESTIONS_PER_ATTEMPT +
+      (passes > 0
+        ? " · " + passes + (passes === 1 ? " perfect score" : " perfect scores")
+        : " · nobody has scored 30 / 30 yet");
   }
 
 
@@ -707,6 +748,17 @@
 
     if (outcome.ok) {
       setSaveStatus("Result saved.", "ok", false);
+
+      /* Reload the scoreboard now the row is actually in the
+         database. The first load fires the moment the screen
+         appears, which is usually a beat before the save lands —
+         without this second pass the student would not find
+         their own attempt in the list. */
+      loadScoreboard(
+        result.completed ? $("perfectHistoryList") : $("resultHistoryList"),
+        result.completed ? $("perfectHistorySummary") : $("resultHistorySummary")
+      );
+
       // Only now is it safe to say the leaderboard will show it.
       if (result.completed) loadLeaderboard();
     } else if (outcome.retryable) {
@@ -740,11 +792,23 @@
     $("resultRule").textContent =
       "You need 30 / 30 to complete this challenge.";
 
-    renderHistory($("resultHistoryList"), $("resultHistorySummary"));
-
     showScreen("result");
     Audio.fail();
+
+    // Fired after the screen is up, so a slow database never
+    // delays the student seeing their own score.
+    loadScoreboard($("resultHistoryList"), $("resultHistorySummary"));
   }
+
+  $("resultHistoryRefresh").addEventListener("click", function () {
+    Audio.tap();
+    loadScoreboard($("resultHistoryList"), $("resultHistorySummary"));
+  });
+
+  $("perfectHistoryRefresh").addEventListener("click", function () {
+    Audio.tap();
+    loadScoreboard($("perfectHistoryList"), $("perfectHistorySummary"));
+  });
 
   $("tryAgainButton").addEventListener("click", function () {
     Audio.unlock();
@@ -773,11 +837,11 @@
         ? "First attempt"
         : "Attempt " + result.attemptNumber;
 
-    renderHistory($("perfectHistoryList"), $("perfectHistorySummary"));
-
     showScreen("perfect");
     Celebration.celebrate();
     Audio.celebrate();
+
+    loadScoreboard($("perfectHistoryList"), $("perfectHistorySummary"));
   }
 
   $("perfectHomeButton").addEventListener("click", function () {
@@ -795,15 +859,12 @@
     Audio.stopMusic();
     stopTicking();
 
-    // A fresh sitting next time: new session id, attempt 1, and
-    // an empty history — the list covers one session, not one
-    // person, so it starts over with the session.
+    // A fresh sitting next time: new session id, attempt 1.
     state.sessionId = null;
     state.attemptNumber = 0;
     state.questions = [];
     state.responses = [];
     state.lastResult = null;
-    state.history = [];
 
     showScreen("welcome");
   }

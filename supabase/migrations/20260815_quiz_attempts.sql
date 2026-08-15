@@ -258,6 +258,68 @@ revoke all on function public.quiz_leaderboard(integer) from public;
 grant execute on function public.quiz_leaderboard(integer) to anon, authenticated;
 
 
+-- ------------------------------------------------------------
+-- 7. The live class scoreboard
+-- ------------------------------------------------------------
+-- Feeds the panel on the result screens: the most recent attempts
+-- by EVERYONE, pass or fail, so a student finishing their turn
+-- can see what the rest of the class is scoring and want to beat
+-- it.
+--
+-- HOW THIS DIFFERS FROM quiz_leaderboard()
+--   leaderboard      perfect scores only, best time per student,
+--                    ranked by speed — the hall of fame
+--   recent_attempts  everything, newest first, one row per
+--                    attempt — the live feed
+--
+-- BE AWARE OF WHAT THIS PUBLISHES
+--   The quiz page is public, so this makes every student's score
+--   — including their failures — readable by anyone who has the
+--   URL, under their full name. That is deliberate: it is what
+--   makes the scoreboard motivating. But it is a real change from
+--   quiz_leaderboard(), which only ever showed successes.
+--
+--   Still withheld, even here: session_id, attempt_number, the
+--   question set, and the responses. Nothing that reveals which
+--   questions a student got wrong ever leaves the database.
+create or replace function public.quiz_recent_attempts(row_limit integer default 15)
+returns table (
+  student_name     text,
+  class_name       text,
+  score            integer,
+  total_questions  integer,
+  percentage       numeric,
+  duration_seconds integer,
+  completed        boolean,
+  timed_out        boolean,
+  attempted_at     timestamptz
+)
+language sql
+security definer
+set search_path = public, pg_temp
+stable
+as $$
+  select a.student_name,
+         a.class_name,
+         a.score,
+         a.total_questions,
+         a.percentage,
+         a.duration_seconds,
+         a.completed,
+         a.timed_out,
+         a.created_at as attempted_at
+  from public.quiz_attempts a
+  order by a.created_at desc
+  limit least(greatest(coalesce(row_limit, 15), 1), 50);
+$$;
+
+comment on function public.quiz_recent_attempts(integer) is
+  'Most recent attempts by all students, pass or fail, newest first. Returns scores only - never session ids, question sets or responses. Safe to expose to anon.';
+
+revoke all on function public.quiz_recent_attempts(integer) from public;
+grant execute on function public.quiz_recent_attempts(integer) to anon, authenticated;
+
+
 -- ============================================================
 -- USEFUL QUERIES FOR THE LECTURER (run in the SQL editor)
 -- ============================================================
