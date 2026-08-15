@@ -1,0 +1,1117 @@
+/* ============================================================
+   quiz.css — ZERO DEFECT RUSH
+   ============================================================
+   Loaded AFTER the site's style.css, so the header, tab bars and
+   footer keep looking like the rest of the site and only the
+   quiz itself gets the arcade treatment.
+
+   Written mobile-first: the plain rules describe the phone
+   layout, and the media queries near the bottom add what a
+   bigger screen can afford. Everything is comfortable at 360px.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   PALETTE
+   ------------------------------------------------------------
+   Deep indigo carries most of the weight, with a hot magenta
+   accent and one warm gold for anything celebratory. It is
+   energetic without drifting into a children's cartoon, and it
+   sits apart from the navy site chrome so the game reads as a
+   distinct space.
+   ------------------------------------------------------------ */
+.quiz-root {
+  --q-deep:      #16104a;
+  --q-deep-2:    #241668;
+  --q-violet:    #5b21b6;
+  --q-magenta:   #e0218a;
+  --q-gold:      #ffc93c;
+  --q-cyan:      #22d3ee;
+  --q-green:     #16a34a;
+  --q-green-lit: #22c55e;
+  --q-red:       #dc2626;
+
+  --q-ink:       #ffffff;
+  --q-ink-soft:  rgba(255, 255, 255, 0.78);
+  --q-ink-faint: rgba(255, 255, 255, 0.55);
+
+  --q-card:      rgba(255, 255, 255, 0.09);
+  --q-card-line: rgba(255, 255, 255, 0.20);
+
+  --q-radius:    16px;
+  --q-radius-lg: 22px;
+
+  /* 48px keeps every tappable thing at or above the size a
+     thumb can hit reliably. */
+  --q-tap:       48px;
+}
+
+
+/* ------------------------------------------------------------
+   THE STAGE
+   ------------------------------------------------------------ */
+.quiz-root {
+  position: relative;
+  color: var(--q-ink);
+  background:
+    radial-gradient(circle at 15% 12%, rgba(224, 33, 138, 0.42), transparent 45%),
+    radial-gradient(circle at 85% 8%,  rgba(34, 211, 238, 0.30), transparent 42%),
+    radial-gradient(circle at 50% 100%, rgba(91, 33, 182, 0.55), transparent 55%),
+    linear-gradient(160deg, var(--q-deep) 0%, var(--q-deep-2) 55%, #180f52 100%);
+
+  /* Respect the notch and the home indicator on a phone. */
+  padding:
+    24px
+    max(16px, env(safe-area-inset-right))
+    max(28px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+
+  min-height: 78vh;
+  overflow: hidden;   /* keeps the decorative blobs off the scrollbar */
+}
+
+/* While a question is on screen the quiz takes the whole
+   viewport, so a phone shows the game and nothing else. */
+body.quiz-playing .site-header,
+body.quiz-playing .tab-bar,
+body.quiz-playing .subtab-bar,
+body.quiz-playing .site-footer,
+body.quiz-playing .quiz-intro-block {
+  display: none;
+}
+
+body.quiz-playing .quiz-root {
+  min-height: 100vh;
+  min-height: 100dvh;   /* dvh accounts for the mobile browser bar */
+}
+
+.quiz-screen {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.quiz-screen[hidden] { display: none; }
+
+
+/* ------------------------------------------------------------
+   SHARED PIECES
+   ------------------------------------------------------------ */
+.quiz-title {
+  font-size: clamp(2rem, 9vw, 3.1rem);
+  line-height: 1.02;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin: 0;
+  background: linear-gradient(100deg, #fff 10%, var(--q-gold) 55%, var(--q-magenta) 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Fallback for anything that cannot clip a gradient to text. */
+  -webkit-text-fill-color: transparent;
+}
+
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .quiz-title { color: var(--q-gold); -webkit-text-fill-color: currentColor; }
+}
+
+.quiz-tagline {
+  margin: 10px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--q-ink-soft);
+}
+
+.quiz-panel {
+  background: var(--q-card);
+  border: 1px solid var(--q-card-line);
+  border-radius: var(--q-radius-lg);
+  padding: 20px 18px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.quiz-panel + .quiz-panel { margin-top: 16px; }
+
+/* Big primary action — START, TRY AGAIN, SUBMIT. */
+.quiz-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  padding: 16px 22px;
+  border: none;
+  border-radius: var(--q-radius);
+  font-family: inherit;
+  font-size: 1.12rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #2a0a1a;
+  background: linear-gradient(180deg, var(--q-gold) 0%, #f59e0b 100%);
+  box-shadow: 0 6px 0 #b45309, 0 12px 22px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.10s ease, box-shadow 0.10s ease, filter 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;   /* no 300ms double-tap-zoom delay */
+}
+
+.quiz-btn:hover { filter: brightness(1.06); }
+
+/* Press the button "into" the page by shrinking its shadow. */
+.quiz-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #b45309, 0 6px 12px rgba(0, 0, 0, 0.35);
+}
+
+.quiz-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 6px 0 #78350f;
+}
+
+.quiz-btn-secondary {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--q-card-line);
+  color: var(--q-ink);
+  box-shadow: none;
+  font-size: 0.98rem;
+  min-height: var(--q-tap);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.quiz-btn-secondary:active { transform: translateY(2px); box-shadow: none; }
+
+.quiz-btn-row {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* Focus ring — visible for keyboard users, absent for mouse. */
+.quiz-root :focus-visible {
+  outline: 3px solid var(--q-cyan);
+  outline-offset: 3px;
+}
+
+
+/* ------------------------------------------------------------
+   SOUND TOGGLE
+   ------------------------------------------------------------ */
+.sound-toggle {
+  width: var(--q-tap);
+  height: var(--q-tap);
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  border-radius: 50%;
+  border: 1px solid var(--q-card-line);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--q-ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.sound-toggle:active { transform: scale(0.94); }
+
+
+/* ============================================================
+   SCREEN 1 — WELCOME
+   ============================================================ */
+.welcome-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.welcome-head-text { min-width: 0; }   /* lets long words wrap instead of pushing the button */
+
+.institution-block {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--q-card-line);
+  display: grid;
+  gap: 8px;
+}
+
+.institution-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.institution-label {
+  color: var(--q-ink-faint);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+  flex: 0 0 100%;
+}
+
+.institution-value { font-weight: 700; color: var(--q-ink); }
+
+/* --- the two text fields --- */
+.quiz-field { margin-bottom: 16px; }
+
+.quiz-field label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--q-ink);
+}
+
+.quiz-field input {
+  width: 100%;
+  min-height: 54px;
+  padding: 14px 16px;
+  font-family: inherit;
+  /* 16px minimum, or iOS Safari zooms the page when tapped. */
+  font-size: 1rem;
+  color: #14103c;
+  background: #ffffff;
+  border: 2px solid transparent;
+  border-radius: var(--q-radius);
+}
+
+.quiz-field input::placeholder { color: #8b93a7; }
+
+.quiz-field input:focus {
+  outline: none;
+  border-color: var(--q-cyan);
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.28);
+}
+
+.quiz-field input.input-error {
+  border-color: #ff8fa3;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.25);
+}
+
+.field-error {
+  display: none;
+  margin-top: 7px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffd0d6;
+}
+
+.field-error.is-visible { display: block; }
+
+/* The "before you start" note under the form. */
+.quiz-note {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--q-ink-faint);
+}
+
+
+/* ============================================================
+   SCREEN 2 — INSTRUCTIONS
+   ============================================================ */
+.briefing-who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin-bottom: 4px;
+  font-size: 1.05rem;
+}
+
+.briefing-who strong { font-weight: 900; }
+
+.briefing-who .briefing-class {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.rule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.rule-tile {
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--q-card-line);
+  border-radius: var(--q-radius);
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.rule-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--q-gold);
+}
+
+.rule-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--q-ink-soft);
+}
+
+.brief-list {
+  list-style: none;
+  display: grid;
+  gap: 11px;
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+.brief-list li {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--q-ink-soft);
+}
+
+.brief-list .brief-icon {
+  flex: 0 0 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 0.86rem;
+}
+
+.brief-warning {
+  margin-top: 16px;
+  padding: 13px 15px;
+  border-radius: var(--q-radius);
+  background: rgba(224, 33, 138, 0.20);
+  border: 1px solid rgba(224, 33, 138, 0.45);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+
+/* ============================================================
+   SCREEN 3 — THE GAME
+   ============================================================ */
+.game-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.game-brand {
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--q-ink-faint);
+  margin-right: auto;
+  /* Never let the title squeeze the timer off a 360px screen. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timer-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--q-card-line);
+  font-variant-numeric: tabular-nums;   /* stops the digits jittering */
+  font-weight: 900;
+  font-size: 1.12rem;
+}
+
+.timer-badge .timer-icon { font-size: 0.95rem; }
+
+/* Under a minute: a slow pulse. Under twenty seconds: faster,
+   red, and slightly larger. Noticeable, not alarming. */
+.timer-badge.is-warning {
+  background: rgba(255, 201, 60, 0.22);
+  border-color: rgba(255, 201, 60, 0.60);
+  color: var(--q-gold);
+  animation: timer-pulse 1.6s ease-in-out infinite;
+}
+
+.timer-badge.is-urgent {
+  background: rgba(220, 38, 38, 0.28);
+  border-color: rgba(255, 120, 120, 0.75);
+  color: #ffd9d9;
+  animation: timer-pulse 0.7s ease-in-out infinite;
+}
+
+@keyframes timer-pulse {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%      { transform: scale(1.06); opacity: 0.86; }
+}
+
+.progress-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.13);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--q-cyan), var(--q-magenta));
+  transition: width 0.35s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--q-ink-faint);
+  margin-bottom: 14px;
+}
+
+.progress-meta .score-chip { color: var(--q-gold); }
+
+/* --- the question card --- */
+.question-card {
+  background: var(--q-card);
+  border: 1px solid var(--q-card-line);
+  border-radius: var(--q-radius-lg);
+  padding: 18px 16px;
+}
+
+.question-card.is-entering { animation: question-in 0.32s ease-out; }
+
+@keyframes question-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.question-card.is-wrong-shake { animation: card-shake 0.36s ease-in-out; }
+
+@keyframes card-shake {
+  0%, 100%   { transform: translateX(0); }
+  20%, 60%   { transform: translateX(-7px); }
+  40%, 80%   { transform: translateX(7px); }
+}
+
+.question-type-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.18);
+  border: 1px solid rgba(34, 211, 238, 0.42);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #a5f3fc;
+}
+
+.question-text {
+  margin: 0 0 15px;
+  font-size: 1.16rem;
+  line-height: 1.42;
+  font-weight: 800;
+}
+
+/* --- the optional diagram --- */
+.question-image-wrap {
+  margin-bottom: 15px;
+  border-radius: var(--q-radius);
+  overflow: hidden;
+  background: #ffffff;
+  /* White plate behind the chart: every extracted diagram has a
+     white or light background of its own, and this stops a
+     transparent PNG turning unreadable on the dark stage. */
+  padding: 8px;
+}
+
+.question-image-wrap img {
+  display: block;
+  width: 100%;
+  height: auto;              /* keeps the aspect ratio — never squashed */
+  max-height: 40vh;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+/* If the file cannot be fetched, say so instead of showing a
+   broken-image icon. */
+.question-image-wrap.is-failed {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.question-image-wrap.is-failed img { display: none; }
+
+.question-image-wrap.is-failed::after {
+  content: "The image could not be loaded — answer from the question above.";
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--q-ink-soft);
+  text-align: center;
+}
+
+/* --- answer cards --- */
+.answer-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.answer-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 13px 15px;
+  text-align: left;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--q-ink);
+  background: rgba(255, 255, 255, 0.10);
+  border: 2px solid var(--q-card-line);
+  border-radius: var(--q-radius);
+  cursor: pointer;
+  transition: transform 0.10s ease, background 0.15s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.answer-card:hover { background: rgba(255, 255, 255, 0.16); }
+.answer-card:active { transform: scale(0.985); }
+
+/* The four slots get their own colour AND their own shape, so
+   they are never distinguished by colour alone. */
+.answer-slot-0 { border-color: rgba(224, 33, 138, 0.55); }
+.answer-slot-1 { border-color: rgba(34, 211, 238, 0.55); }
+.answer-slot-2 { border-color: rgba(255, 201, 60, 0.55); }
+.answer-slot-3 { border-color: rgba(34, 197, 94, 0.55); }
+
+.answer-badge {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  min-width: 42px;
+  height: 34px;
+  padding: 0 8px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.answer-slot-0 .answer-badge { color: #ff8fc7; }
+.answer-slot-1 .answer-badge { color: #7dd3fc; }
+.answer-slot-2 .answer-badge { color: #fde68a; }
+.answer-slot-3 .answer-badge { color: #86efac; }
+
+.answer-text { flex: 1 1 auto; min-width: 0; }
+
+/* True / False: two tall buttons side by side. */
+.answer-list-duo { grid-template-columns: 1fr 1fr; }
+
+.answer-list-duo .answer-card {
+  flex-direction: column;
+  gap: 8px;
+  min-height: 108px;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.answer-list-duo .answer-badge {
+  min-width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.25rem;
+}
+
+/* --- multiple-select --- */
+.answer-tick {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  border: 2px solid var(--q-card-line);
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: transparent;
+}
+
+.answer-card.is-selected {
+  background: rgba(34, 211, 238, 0.22);
+  border-color: var(--q-cyan);
+}
+
+.answer-card.is-selected .answer-tick {
+  background: var(--q-cyan);
+  border-color: var(--q-cyan);
+  color: #06283d;
+}
+
+.multi-submit-wrap { margin-top: 14px; }
+
+.multi-hint {
+  margin: 0 0 9px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--q-ink-faint);
+  text-align: center;
+}
+
+/* --- the correct / wrong flash --- */
+.feedback-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  pointer-events: none;   /* taps pass straight through */
+  animation: flash-in 0.20s ease-out;
+}
+
+.feedback-flash[hidden] { display: none; }
+
+.feedback-flash.is-correct { background: rgba(22, 163, 74, 0.90); }
+.feedback-flash.is-wrong   { background: rgba(220, 38, 38, 0.90); }
+
+.feedback-icon {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  font-size: 3.2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.feedback-flash.is-correct .feedback-icon { color: var(--q-green); animation: pop-in 0.34s cubic-bezier(0.2, 1.4, 0.4, 1); }
+.feedback-flash.is-wrong   .feedback-icon { color: var(--q-red);   animation: shake-in 0.36s ease-in-out; }
+
+.feedback-word {
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+@keyframes flash-in { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes pop-in {
+  0%   { transform: scale(0.3); }
+  70%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake-in {
+  0%   { transform: scale(0.6) rotate(0deg); }
+  40%  { transform: scale(1.05) rotate(-9deg); }
+  70%  { transform: scale(1) rotate(9deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+
+/* ============================================================
+   SCREENS 4 & 5 — RESULTS
+   ============================================================ */
+.result-screen { text-align: center; padding-top: 8px; }
+
+.result-headline {
+  font-size: clamp(1.9rem, 8.5vw, 2.8rem);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+  line-height: 1.05;
+}
+
+.result-screen .result-headline { color: var(--q-gold); }
+.perfect-screen .result-headline {
+  background: linear-gradient(100deg, var(--q-gold), #fff 50%, var(--q-gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shine 2.6s linear infinite;
+  background-size: 200% auto;
+}
+
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .perfect-screen .result-headline { color: var(--q-gold); -webkit-text-fill-color: currentColor; }
+}
+
+@keyframes shine {
+  to { background-position: 200% center; }
+}
+
+.result-student {
+  margin: 0 0 2px;
+  font-size: 1.3rem;
+  font-weight: 900;
+  /* A long name must wrap, not overflow the card. */
+  overflow-wrap: anywhere;
+}
+
+.result-class {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 4px 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.score-dial {
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  margin: 0 auto 16px;
+  width: 176px;
+  height: 176px;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.perfect-screen .score-dial {
+  border-color: var(--q-gold);
+  box-shadow: 0 0 34px rgba(255, 201, 60, 0.55);
+}
+
+.score-dial .score-main {
+  font-size: 2.5rem;
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-dial .score-pct {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--q-gold);
+}
+
+.score-dial .score-attempt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--q-ink-faint);
+}
+
+.trophy {
+  font-size: 4.6rem;
+  line-height: 1;
+  margin-bottom: 6px;
+  animation: trophy-in 0.75s cubic-bezier(0.2, 1.5, 0.4, 1);
+}
+
+@keyframes trophy-in {
+  0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+  60%  { transform: scale(1.2) rotate(8deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.perfect-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid var(--q-card-line);
+  font-size: 1.1rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.perfect-time .perfect-time-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--q-ink-faint);
+}
+
+.result-message {
+  margin: 0 auto 6px;
+  max-width: 34ch;
+  font-size: 1.02rem;
+  line-height: 1.5;
+  color: var(--q-ink-soft);
+}
+
+.result-rule {
+  margin: 0 auto 18px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--q-gold);
+}
+
+/* The honest little line about whether the row reached the
+   database. */
+.save-status {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-height: 1.3em;
+}
+
+.save-status.is-pending { color: var(--q-ink-faint); }
+.save-status.is-ok      { color: #86efac; }
+.save-status.is-error   { color: #ffb4b4; }
+
+.save-retry {
+  margin-left: 6px;
+  padding: 7px 14px;
+  min-height: 38px;
+  border-radius: 9px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* The canvas the confetti is drawn on. */
+.celebration-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 40;
+}
+
+
+/* ============================================================
+   SCREEN 6 — LEADERBOARD
+   ============================================================ */
+.board-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.board-head h2 {
+  margin: 0;
+  margin-right: auto;
+  font-size: 1.35rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.board-subtitle {
+  margin: 0 0 4px;
+  font-size: 0.88rem;
+  color: var(--q-ink-faint);
+  font-weight: 700;
+}
+
+.board-status {
+  margin: 10px 0 14px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  min-height: 1.2em;
+}
+
+.board-status.is-pending { color: var(--q-ink-faint); }
+.board-status.is-ok      { color: var(--q-ink-soft); }
+.board-status.is-empty   { color: var(--q-gold); }
+.board-status.is-error   { color: #ffb4b4; }
+
+.board-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+}
+
+.board-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--q-radius);
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--q-card-line);
+}
+
+.board-row-top {
+  background: rgba(255, 201, 60, 0.15);
+  border-color: rgba(255, 201, 60, 0.42);
+}
+
+.board-rank {
+  flex: 0 0 40px;
+  font-size: 1.3rem;
+  font-weight: 900;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.board-who {
+  flex: 1 1 auto;
+  min-width: 0;      /* required for the ellipsis below to work */
+  display: grid;
+  gap: 1px;
+}
+
+/* Full names are shown in full — a long name wraps onto a second
+   line rather than being cut off with an ellipsis. Being named on
+   this board is the reward, so the name must never be clipped. */
+.board-name {
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.board-class {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--q-ink-faint);
+}
+
+.board-time {
+  flex: 0 0 auto;
+  font-size: 1.12rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--q-gold);
+}
+
+
+/* ============================================================
+   THE INTRO BLOCK ABOVE THE GAME
+   ============================================================
+   Plain site styling, so the page still reads as part of the
+   site before the student starts playing.
+   ============================================================ */
+.quiz-intro-block { margin-bottom: 0; }
+
+
+/* ============================================================
+   BIGGER SCREENS
+   ============================================================
+   The phone layout is the baseline; these only add what extra
+   width genuinely improves.
+   ============================================================ */
+@media (min-width: 620px) {
+  .quiz-root { padding: 34px 28px 40px; }
+
+  .rule-grid { grid-template-columns: repeat(4, 1fr); }
+
+  /* Four answers in two columns, once there is room for the
+     text not to wrap awkwardly. */
+  .answer-list { grid-template-columns: 1fr 1fr; }
+  .answer-list-duo { grid-template-columns: 1fr 1fr; }
+
+  .quiz-btn-row { grid-template-columns: repeat(2, 1fr); }
+  .quiz-btn-row .quiz-btn-wide { grid-column: 1 / -1; }
+
+  .question-text { font-size: 1.3rem; }
+  .score-dial { width: 200px; height: 200px; }
+  .score-dial .score-main { font-size: 2.9rem; }
+}
+
+@media (min-width: 900px) {
+  .quiz-screen { max-width: 820px; }
+  .question-image-wrap img { max-height: 46vh; }
+}
+
+/* A short landscape phone: shrink the tall bits so a question
+   and its answers still fit without scrolling. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .answer-list-duo .answer-card { min-height: 74px; }
+  .question-image-wrap img { max-height: 30vh; }
+  .trophy { font-size: 3rem; }
+  .score-dial { width: 132px; height: 132px; }
+  .score-dial .score-main { font-size: 1.9rem; }
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================
+   Someone who has asked their device to calm animations down
+   still gets every colour, every state and every message — the
+   movement is what goes, not the information. The confetti is
+   skipped in JavaScript for the same reason.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .quiz-root *,
+  .quiz-root *::before,
+  .quiz-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .question-card.is-entering,
+  .question-card.is-wrong-shake,
+  .timer-badge.is-warning,
+  .timer-badge.is-urgent {
+    animation: none !important;
+  }
+
+  /* The urgent timer still has to stand out without pulsing. */
+  .timer-badge.is-urgent { border-width: 2px; }
+}

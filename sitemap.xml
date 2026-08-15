@@ -34,4 +34,17 @@
     <priority>0.9</priority>
   </url>
 
+  <!--
+    The activity pages are still placeholders and carry a noindex
+    tag, so they are deliberately absent here. Activity 3 is the
+    exception: it holds the Zero Defect Rush quiz, so it has real
+    content, no noindex, and belongs in the sitemap.
+  -->
+  <url>
+    <loc>https://www.farizuljaafar.com/production-coordination/activity-3.html</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>
