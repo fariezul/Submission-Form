@@ -84,11 +84,13 @@ create table if not exists public.quiz_attempts (
   constraint quiz_attempts_percentage_range
     check (percentage >= 0 and percentage <= 100),
 
-  -- 300 s is the real limit; the extra headroom absorbs a slow
+  -- 600 s is the real limit; the extra headroom absorbs a slow
   -- final submit or a slightly odd device clock. Anything past
-  -- that is not a real attempt.
+  -- that is not a real attempt. (Kept in step with TIME_LIMIT_MS
+  -- in quiz-engine.js — see the ALTER in section 2b, which is
+  -- what actually updates a table that already exists.)
   constraint quiz_attempts_duration_range
-    check (duration_seconds >= 0 and duration_seconds <= 600),
+    check (duration_seconds >= 0 and duration_seconds <= 900),
 
   -- "completed" is not free-form: it must agree with the score.
   -- This is what stops a crafted request claiming a perfect
@@ -118,6 +120,27 @@ create table if not exists public.quiz_attempts (
 
 comment on table public.quiz_attempts is
   'Every Zero Defect Rush attempt, pass or fail. Written by the public anon key; readable only by the service role and the quiz_leaderboard() function.';
+
+
+-- ------------------------------------------------------------
+-- 2b. Bringing an EXISTING table up to date
+-- ------------------------------------------------------------
+-- "create table if not exists" above does nothing when the table
+-- is already there — including leaving its old constraints in
+-- place. So any constraint that changes after the first run has
+-- to be dropped and re-added explicitly, right here.
+--
+-- August 2026: the time limit went from 5 minutes to 10, because
+-- students were running out of time before question 30. The old
+-- constraint capped duration_seconds at 600, which a full
+-- 10-minute attempt now reaches exactly, leaving no headroom for
+-- a slow final submit. Raised to 900.
+alter table public.quiz_attempts
+  drop constraint if exists quiz_attempts_duration_range;
+
+alter table public.quiz_attempts
+  add constraint quiz_attempts_duration_range
+  check (duration_seconds >= 0 and duration_seconds <= 900);
 
 
 -- ------------------------------------------------------------

@@ -7,7 +7,7 @@ Improvement**, living at:
 /production-coordination/activity-3.html
 ```
 
-30 questions · 30 marks · 5 minutes · **30/30 required to pass** ·
+30 questions · 30 marks · 10 minutes · **30/30 required to pass** ·
 unlimited attempts.
 
 Every question comes from `Chapter3_Corrective_Action_Process_C.pptx`
@@ -157,7 +157,7 @@ supabase-form-app/
 ├── production-coordination/
 │   ├── activity-3.html              the page — six screens in one file
 │   ├── quiz/
-│   │   ├── quiz-questions.js        THE QUESTION BANK (224 questions)
+│   │   ├── quiz-questions.js        THE QUESTION BANK (50 questions)
 │   │   ├── quiz-engine.js           shuffling, marking, the clock
 │   │   ├── quiz-app.js              screens and game flow
 │   │   ├── quiz-audio.js            arcade sound, generated in-browser
@@ -166,13 +166,31 @@ supabase-form-app/
 │   │   ├── quiz-config.js           Supabase URL + anon key
 │   │   ├── quiz.css                 the arcade theme
 │   │   └── quiz-tests.js            the checks (section 9)
-│   └── quiz-images/                 5 diagrams taken from the slides
+│   └── quiz-images/                 4 diagrams taken from the slides
 └── supabase/migrations/
     └── 20260815_quiz_attempts.sql   the database setup
 ```
 
 **Question bank:** `production-coordination/quiz/quiz-questions.js`
 **Quiz images:** `production-coordination/quiz-images/`
+
+### Why the bank is 50 and not larger
+
+It started at 224. In August 2026 it was cut to the 50 questions
+that test a **concept** — what a tool is for, what a step means,
+how a sequence runs. Everything that only tested recall of a
+worked example from a slide was removed: the 145 °C die
+temperature, the Pareto activity's defect counts, the Check Sheet
+tallies, the 14 July night shift, the resin trolley. Those
+illustrate the ideas well in a lecture, but knowing the number is
+not knowing the topic.
+
+The trade-off is variety. 30 questions are drawn from 50, so
+roughly 60% of a paper repeats on the next attempt and a student
+who retries three or four times will have seen all of them. If
+that becomes a problem, add more **concept** questions rather than
+restoring the example ones. The removed questions are all in git
+history if any is ever wanted back.
 
 ### Checking a question against your slides
 
@@ -208,7 +226,9 @@ fail silently and do real damage:
 - exactly 30 questions per attempt, never a repeat
 - shuffling never changes which answer is correct
 - a score can never exceed 30, and only 30/30 counts as completed
-- the clock reads a full 5:00 until START, and expires at exactly 300 s
+- the clock reads a full 10:00 until START, and expires at exactly 600 s
+- the limit in `quiz-engine.js`, the wording on the page and the SQL
+  duration constraint all still agree with each other
 - unanswered questions do not score
 - a retry keeps the session id, increments the attempt number and
   serves a different paper
@@ -241,7 +261,10 @@ Code:
    > `multiple-select`, `image-choice` and `sequence-choice`. Keep
    > the per-type pools deep enough for the quotas in
    > `quiz-engine.js`. Extract any diagrams worth asking about into
-   > `production-coordination/quiz-images/`. Then run
+   > `production-coordination/quiz-images/`. Ask about CONCEPTS
+   > only — what a tool is for, what a step means, how a sequence
+   > runs — and do not write questions that merely test recall of
+   > a worked example's numbers. Then run
    > `node production-coordination/quiz/quiz-tests.js` and fix
    > anything that fails.
 
@@ -269,6 +292,28 @@ const TYPE_QUOTAS = {
 The remaining 19 are drawn at random from whatever is left. Raise a
 number and you get more of that type — as long as the bank has
 enough of them, which `quiz-tests.js` checks.
+
+### Changing the time limit
+
+It went from 5 to 10 minutes in August 2026 because students were
+running out of time before question 30. The limit lives in **four**
+places, and they must agree:
+
+| Where | What to change |
+|---|---|
+| `quiz/quiz-engine.js` | `TIME_LIMIT_MS` — the value actually enforced |
+| `activity-3.html` | the `10:00` rule tile, the briefing warning, and the starting value of `#timerValue` |
+| `supabase/migrations/…sql` | the `duration_seconds` cap — must sit **above** the limit, or a full timeout gets rejected |
+| `quiz/quiz-tests.js` | the clock expectations |
+
+`quiz-tests.js` guards the two couplings that are easy to miss: it
+fails if the SQL cap is not above the limit, and if the page shows
+a different time from the one the engine enforces.
+
+**If the table already exists in Supabase**, editing the migration
+file is not enough — `create table if not exists` skips an existing
+table. Re-run the whole migration; section 2b drops and re-adds the
+duration constraint so an existing table is brought up to date.
 
 ---
 
@@ -311,6 +356,17 @@ localStorage.
 with the Web Audio API, so there are no audio files, no licensing
 question, and nothing extra to download. It is fully playable
 muted.
+
+The background music is a four-bar game-show loop at 128 BPM —
+kick on 1 and 3, snare backbeat on 2 and 4, off-beat hats, a
+driving bass and a syncopated arpeggio over Am–F–C–G, with a fill
+on the last bar. It is sequenced with **lookahead scheduling**:
+notes are booked onto the audio clock a quarter-second ahead at
+exact times, because `setInterval` on its own is far too imprecise
+for music and the beat would stumble every time the browser got
+busy. To change the groove, edit the step lists near the top of the
+music section in `quiz-audio.js` — each part is just a list of
+which sixteenths it plays on.
 
 **Speed never affects the mark.** It is only the tie-break for
 ranking students who already scored 30/30.

@@ -26,8 +26,8 @@
   const Database = window.QuizDatabase;
 
   /* How long the correct/wrong flash stays up before the next
-     question slides in. Long enough to read, short enough to
-     keep 30 questions inside five minutes. */
+     question slides in. Long enough to read, short enough that
+     the flashes never eat a meaningful part of the clock. */
   const FEEDBACK_MS = 850;
 
 

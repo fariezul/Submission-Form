@@ -16,7 +16,18 @@
      SETTINGS
      ---------------------------------------------------------- */
   const QUESTIONS_PER_ATTEMPT = 30;
-  const TIME_LIMIT_MS = 5 * 60 * 1000;   // 300 000 ms = 5:00
+
+  /* The whole attempt must fit inside this. Raised from 5 to 10
+     minutes in August 2026 — students were running out of time
+     before reaching question 30.
+
+     If you change it again, three other things must move with it:
+       - the wording on activity-3.html (the rule tile, the
+         briefing warning, the starting value of the timer)
+       - the duration_seconds constraint in the SQL migration,
+         which needs headroom above the new limit
+       - the clock tests in quiz-tests.js */
+  const TIME_LIMIT_MS = 10 * 60 * 1000;   // 600 000 ms = 10:00
 
   /* How many of each type we try to include in every attempt.
      ----------------------------------------------------------
