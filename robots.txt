@@ -8,5 +8,9 @@ Allow: /
 # reason for it to appear in search results.
 Disallow: /admin.html
 
+# The FARIZUL blacklist editor holds people's names and phone numbers
+# behind a password. Same reasoning.
+Disallow: /farizul/admin
+
 # Pointing crawlers at the sitemap helps them find every page.
 Sitemap: https://www.farizuljaafar.com/sitemap.xml

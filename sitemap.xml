@@ -35,6 +35,19 @@
   </url>
 
   <!--
+    FARIZUL is the licence plate scanner. The page is served from a separate
+    deployment through the rewrite in vercel.json, but it is a real page on
+    this site as far as visitors and search engines are concerned. Its own
+    admin screen is kept out of search by robots.txt.
+  -->
+  <url>
+    <loc>https://www.farizuljaafar.com/farizul.html</loc>
+    <lastmod>2026-08-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!--
     The activity pages are still placeholders and carry a noindex
     tag, so they are deliberately absent here. Activity 3 is the
     exception: it holds the Zero Defect Rush quiz, so it has real

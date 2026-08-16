@@ -1,0 +1,37 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+
+  "_comment": [
+    "The FARIZUL plate scanner is a separate Next.js deployment, because it",
+    "needs a server for its database and plate-reader keys and this site is",
+    "plain static files. These rewrites hand /farizul.html and everything",
+    "under /farizul/ over to that deployment, so visitors stay on",
+    "www.farizuljaafar.com the whole time and never see the other address.",
+    "",
+    "Same-origin matters here: the scanner asks for camera permission, and",
+    "asking as farizuljaafar.com is far more reliable than asking from a",
+    "different domain in a frame.",
+    "",
+    "There is deliberately no farizul.html file in this repo any more. Vercel",
+    "checks real files BEFORE rewrites, so a file of that name would win and",
+    "the rewrite would never run.",
+    "",
+    "The scanner app sets basePath '/farizul', so its pages, assets and API",
+    "routes all live under that prefix and one wildcard rule covers them."
+  ],
+
+  "rewrites": [
+    {
+      "source": "/farizul.html",
+      "destination": "https://plate-guard-indol.vercel.app/farizul"
+    },
+    {
+      "source": "/farizul",
+      "destination": "https://plate-guard-indol.vercel.app/farizul"
+    },
+    {
+      "source": "/farizul/:match*",
+      "destination": "https://plate-guard-indol.vercel.app/farizul/:match*"
+    }
+  ]
+}
