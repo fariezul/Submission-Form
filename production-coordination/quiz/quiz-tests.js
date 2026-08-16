@@ -686,6 +686,91 @@ check("both result screens have somewhere to put the scoreboard", function () {
   });
 });
 
+/* The visit counter. It writes to page_visits and is deliberately
+   fire-and-forget, so these check the contract rather than the
+   behaviour: that it collects nothing identifying, and that the
+   table it writes to is insert-only. */
+section("The visit counter");
+
+const visitsSql = fs.readFileSync(
+  path.join(HERE, "..", "..", "supabase", "migrations", "20260816_page_visits.sql"),
+  "utf8"
+);
+const visitsJs = fs.readFileSync(path.join(HERE, "quiz-visits.js"), "utf8");
+
+/* These checks look for forbidden words, so they have to read the
+   CODE and not the prose around it. A comment saying "no
+   fingerprint is collected" must not read as a fingerprint being
+   collected. */
+function stripSqlComments(sql) {
+  return sql.replace(/--[^\n]*/g, "");
+}
+
+function stripJsComments(js) {
+  return js.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+}
+
+check("the migration creates page_visits, insert-only", function () {
+  assert(/create table if not exists public\.page_visits/.test(visitsSql),
+    "page_visits table is missing");
+  assert(/alter table public\.page_visits enable row level security/.test(visitsSql),
+    "RLS is not enabled on page_visits");
+  assert(/for insert/.test(visitsSql), "no insert policy");
+  assert(/revoke select, update, delete on public\.page_visits from anon/.test(visitsSql),
+    "anon can still read or change the visit log");
+});
+
+check("nothing identifying is stored", function () {
+  // The columns are fixed deliberately. If someone later adds an
+  // IP or user agent column, this fails and makes them think
+  // about it rather than doing it by accident.
+  const table = stripSqlComments(visitsSql.slice(
+    visitsSql.indexOf("create table if not exists public.page_visits"),
+    visitsSql.indexOf("comment on table public.page_visits")
+  ));
+  ["ip", "ip_address", "user_agent", "useragent", "fingerprint",
+   "latitude", "longitude", "location", "email"].forEach(function (col) {
+    assert(!new RegExp("\\b" + col + "\\b", "i").test(table),
+      "page_visits must not store " + col);
+  });
+
+  // And the browser must not be sending any of it either.
+  const sending = stripJsComments(visitsJs);
+  ["userAgent", "navigator.platform", "geolocation", "screen.width"].forEach(function (thing) {
+    assert(!sending.includes(thing), "quiz-visits.js must not read " + thing);
+  });
+});
+
+check("the counter records one visit per tab session", function () {
+  const code = stripJsComments(visitsJs);
+  assert(/sessionStorage/.test(code),
+    "visits should be deduplicated with sessionStorage");
+  assert(!/localStorage/.test(code),
+    "localStorage would make a returning student never count again");
+});
+
+check("the counter marks before sending, not after", function () {
+  // Marking after the request returns would let a slow network
+  // produce a double count.
+  const markAt = visitsJs.indexOf("markCounted();", visitsJs.indexOf("function recordVisit"));
+  const fetchAt = visitsJs.indexOf("fetch(", visitsJs.indexOf("function recordVisit"));
+  assert(markAt > -1 && fetchAt > -1, "could not find the mark and the fetch");
+  assert(markAt < fetchAt, "recordVisit must mark the visit before sending it");
+});
+
+check("a failed visit can never surface to the student", function () {
+  assert(/\.catch\(/.test(visitsJs), "the fetch has no catch");
+  assert(/try\s*{/.test(visitsJs), "the send is not wrapped defensively");
+});
+
+check("the page loads the visit counter", function () {
+  const html = fs.readFileSync(path.join(HERE, "..", "activity-3.html"), "utf8");
+  assert(html.includes("quiz/quiz-visits.js"), "activity-3.html does not load quiz-visits.js");
+  // It has to come after the config it reads its settings from.
+  assert(html.indexOf("quiz/quiz-config.js") < html.indexOf("quiz/quiz-visits.js"),
+    "quiz-visits.js must load after quiz-config.js");
+});
+
 check("a student is matched to their own rows regardless of spacing or case", function () {
   // buildScoreRow marks "YOU" using this comparison; a student
   // who typed "  ahmad  firdaus " must still match the row saved

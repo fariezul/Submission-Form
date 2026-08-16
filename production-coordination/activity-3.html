@@ -497,6 +497,12 @@
   <!-- Load order matters: config and data first, then the logic
        that uses them, then the app that drives it all. -->
   <script src="quiz/quiz-config.js"></script>
+
+  <!-- Records that the page was opened, then gets out of the way.
+       Loaded early and on its own so it still counts a student who
+       opens the link and leaves before anything else runs. -->
+  <script src="quiz/quiz-visits.js"></script>
+
   <script src="quiz/quiz-questions.js"></script>
   <script src="quiz/quiz-engine.js"></script>
   <script src="quiz/quiz-audio.js"></script>
