@@ -1,0 +1,301 @@
+/* ============================================================
+   quiz-stats.css — the private stats page
+   ============================================================
+   Loaded after style.css, so the header, section cards and
+   footer keep the site's navy-and-white look. This file only
+   adds the pieces the stats page needs.
+   ============================================================ */
+
+.is-hidden { display: none !important; }
+
+
+/* ------------------------------------------------------------
+   SIGN IN
+   ------------------------------------------------------------ */
+.stats-login { max-width: 380px; margin-top: 18px; }
+
+.stats-login .quiz-field { margin-bottom: 14px; }
+
+.stats-login label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-dark);
+}
+
+.stats-login input {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 13px;
+  font-family: inherit;
+  font-size: 1rem;               /* 16px — stops iOS zooming on focus */
+  color: var(--text-dark);
+  background: var(--white);
+  border: 1px solid var(--navy-100);
+  border-radius: var(--radius);
+}
+
+.stats-login input:focus {
+  outline: none;
+  border-color: var(--navy-600);
+  box-shadow: 0 0 0 3px rgba(27, 58, 107, 0.15);
+}
+
+.stats-error {
+  margin-top: 12px;
+  padding: 10px 13px;
+  border-radius: var(--radius);
+  background: var(--error-bg);
+  color: var(--error);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+
+/* ------------------------------------------------------------
+   HEADER OF THE STATS SECTION
+   ------------------------------------------------------------ */
+.stats-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.stats-head > div:first-child { margin-right: auto; }
+
+.stats-head h2 { margin-bottom: 2px; }
+
+.stats-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn-small {
+  padding: 9px 15px;
+  font-size: 0.86rem;
+  min-height: 40px;
+}
+
+.stats-sub {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.stats-h3 {
+  margin: 30px 0 6px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy-600);
+}
+
+.stats-note {
+  margin: 0 0 14px;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 62ch;
+}
+
+.stats-note code {
+  font-size: 0.84em;
+  background: var(--navy-100);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.stats-empty {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Shown when a funnel step reads over 100% — see renderFunnel. */
+.stats-warning {
+  margin: 10px 0 0;
+  padding: 10px 13px;
+  border-radius: var(--radius);
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+
+/* ------------------------------------------------------------
+   THE HEADLINE TILES
+   ------------------------------------------------------------
+   Two columns on a phone, four once there is room. A lecturer
+   checking this between classes is as likely to be on a phone as
+   at a desk.
+   ------------------------------------------------------------ */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 18px 0 8px;
+}
+
+.stat-tile {
+  padding: 16px 14px;
+  border: 1px solid var(--navy-100);
+  border-radius: var(--radius);
+  background: var(--white);
+  text-align: center;
+}
+
+.stat-tile-gold {
+  background: #fffbeb;
+  border-color: #fcd34d;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--navy-600);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-tile-gold .stat-value { color: #b45309; }
+
+.stat-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.stat-grid-small .stat-value { font-size: 1.45rem; }
+
+
+/* ------------------------------------------------------------
+   THE FUNNEL
+   ------------------------------------------------------------ */
+.funnel {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.funnel-step {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  padding: 11px 13px;
+  border: 1px solid var(--navy-100);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.funnel-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.funnel-bar {
+  display: block;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--navy-100);
+  overflow: hidden;
+}
+
+.funnel-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--navy-600);
+}
+
+.funnel-value {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: pre;   /* keeps the gap before the bracketed % */
+}
+
+
+/* ------------------------------------------------------------
+   TABLES
+   ------------------------------------------------------------ */
+/* Wide tables scroll inside their own box rather than pushing the
+   page sideways. */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--navy-100);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 9px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--navy-100);
+  white-space: nowrap;
+}
+
+.stats-table th {
+  background: #f7f9fc;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.stats-table tbody tr:last-child td { border-bottom: none; }
+
+.stats-table td:not(:first-child) { font-variant-numeric: tabular-nums; }
+
+.cell-good { color: var(--success); font-weight: 700; }
+
+.cell-mono {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.86em;
+}
+
+/* The little block bars in the last column. */
+.cell-bar {
+  color: var(--navy-600);
+  letter-spacing: -1px;
+  font-size: 0.7rem;
+}
+
+
+/* ------------------------------------------------------------
+   BIGGER SCREENS
+   ------------------------------------------------------------ */
+@media (min-width: 620px) {
+  .stat-grid { grid-template-columns: repeat(4, 1fr); }
+
+  .stat-value { font-size: 2.2rem; }
+
+  /* Once there is room, the funnel reads better as label, bar and
+     number on one line. */
+  .funnel-step {
+    grid-template-columns: 15em 1fr 9em;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .funnel-value { text-align: right; }
+}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<!--
+  quiz-stats.html — the numbers behind Zero Defect Rush
+
+  A PRIVATE page. It requires a Supabase sign-in, exactly like
+  admin.html does, because it reads data students must never see.
+
+  Note the robots tag: this page should never appear in a search
+  result. The sign-in is what actually protects it, but there is
+  no reason to advertise it either.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <title>Quiz Stats — Zero Defect Rush</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="quiz-stats.css" />
+</head>
+
+<body>
+
+  <header class="site-header site-header-nav">
+    <div class="header-inner">
+      <a href="index.html" class="header-logo-link" aria-label="Home">
+        <img src="logo.png" alt="TVETMARA Masjid Tanah" class="brand-logo" width="515" height="100" />
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="content-wrap">
+
+      <!-- ================================================
+           SIGN IN
+           ================================================ -->
+      <section class="section" id="loginCard">
+        <h2>Quiz Stats</h2>
+        <p class="lead">
+          Zero Defect Rush — Chapter 3. Sign in with your Supabase
+          account to see the numbers.
+        </p>
+
+        <form id="loginForm" novalidate class="stats-login">
+          <div class="quiz-field">
+            <label for="adminEmail">Email</label>
+            <input type="email" id="adminEmail" autocomplete="username" required />
+          </div>
+
+          <div class="quiz-field">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" autocomplete="current-password" required />
+          </div>
+
+          <button type="submit" class="btn-plain" id="loginButton">Sign In</button>
+          <p class="stats-error is-hidden" id="loginError" role="alert"></p>
+        </form>
+      </section>
+
+
+      <!-- ================================================
+           THE STATS
+           ================================================ -->
+      <section class="section is-hidden" id="statsCard">
+
+        <div class="stats-head">
+          <div>
+            <h2>Quiz Stats</h2>
+            <p class="stats-sub" id="activityRange">—</p>
+          </div>
+          <div class="stats-head-actions">
+            <button type="button" class="btn-plain btn-small" id="refreshButton">↻ Refresh</button>
+            <button type="button" class="btn-plain btn-small" id="signOutButton">Sign Out</button>
+          </div>
+        </div>
+
+        <p class="stats-error is-hidden" id="dataError" role="alert"></p>
+
+        <!-- Headline tiles -->
+        <div class="stat-grid" id="statGrid">
+          <div class="stat-tile">
+            <span class="stat-value" id="statVisits">—</span>
+            <span class="stat-label">Opened the page</span>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-value" id="statStarted">—</span>
+            <span class="stat-label">Started a quiz</span>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-value" id="statAttempts">—</span>
+            <span class="stat-label">Attempts finished</span>
+          </div>
+          <div class="stat-tile stat-tile-gold">
+            <span class="stat-value" id="statPerfect">—</span>
+            <span class="stat-label">Perfect scores</span>
+          </div>
+        </div>
+
+        <div class="stat-grid stat-grid-small">
+          <div class="stat-tile">
+            <span class="stat-value" id="statStudentsPassed">—</span>
+            <span class="stat-label">Students who passed</span>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-value" id="statAvg">—</span>
+            <span class="stat-label">Average score / 30</span>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-value" id="statTimedOut">—</span>
+            <span class="stat-label">Ran out of time</span>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-value" id="statToday">—</span>
+            <span class="stat-label">Attempts today</span>
+          </div>
+        </div>
+
+        <!-- The funnel -->
+        <h3 class="stats-h3">The Funnel</h3>
+        <p class="stats-note">
+          Every step counts <strong>people</strong>, not attempts — retries are
+          in the tiles above, not here. Where the numbers fall away tells you
+          where to look: a big drop between <em>opened</em> and <em>played</em>
+          means the briefing screen is putting students off; a small
+          <em>reached 30/30</em> means the perfect-score rule is biting, which
+          is the intention, but worth knowing.
+        </p>
+        <ol class="funnel" id="funnel"></ol>
+        <p class="stats-warning is-hidden" id="funnelWarning"></p>
+
+        <!-- By class -->
+        <h3 class="stats-h3">By Class</h3>
+        <div class="table-scroll">
+          <table class="stats-table" id="classTable">
+            <thead>
+              <tr>
+                <th>Class</th><th>Students</th><th>Attempts</th>
+                <th>Passes</th><th>Avg</th><th>Best</th>
+              </tr>
+            </thead>
+            <tbody id="classBody"></tbody>
+          </table>
+        </div>
+        <p class="stats-empty is-hidden" id="classEmpty">No attempts recorded yet.</p>
+
+        <!-- Hardest questions -->
+        <h3 class="stats-h3">Most Often Answered Wrongly</h3>
+        <p class="stats-note">
+          The teaching signal. Look each id up in
+          <code>production-coordination/quiz/quiz-questions.js</code> to see the
+          wording and its <code>sourceSlide</code>, then re-teach that point.
+        </p>
+        <div class="table-scroll">
+          <table class="stats-table" id="hardTable">
+            <thead>
+              <tr><th>Question</th><th>Seen</th><th>Wrong</th><th>% wrong</th><th></th></tr>
+            </thead>
+            <tbody id="hardBody"></tbody>
+          </table>
+        </div>
+        <p class="stats-empty is-hidden" id="hardEmpty">No answers recorded yet.</p>
+
+        <!-- Daily -->
+        <h3 class="stats-h3">Last 14 Days</h3>
+        <div class="table-scroll">
+          <table class="stats-table" id="dailyTable">
+            <thead>
+              <tr><th>Day</th><th>Visits</th><th>Attempts</th><th>Perfect</th><th></th></tr>
+            </thead>
+            <tbody id="dailyBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 Ts. Mohd Farizul Bin Jaafar · TVETMARA Masjid Tanah</p>
+  </footer>
+
+  <script src="production-coordination/quiz/quiz-config.js"></script>
+  <script src="quiz-stats.js"></script>
+</body>
+</html>
