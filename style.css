@@ -83,10 +83,54 @@ body {
   gap: 16px;
 }
 
-/* The logo becomes a link back to the home page */
+/* THE HEADER LOCKUP
+   ------------------------------------------------------------
+   A small square mark beside the name, both inside one link back
+   to the home page. text-decoration: none stops the browser
+   underlining the name, since it sits inside a link.
+   ------------------------------------------------------------ */
 .header-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+}
+
+/* The fj mark. It is a rounded square in the artwork, so a small
+   border-radius here keeps the edges tidy at this size. */
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
   display: block;
-  line-height: 0;   /* removes the extra space under an inline image */
+}
+
+/* THE WORDMARK: FarizulJaafar.com
+   ------------------------------------------------------------
+   Uses the same sans-serif as the rest of the site. The name is
+   distinguished by weight and colour rather than by a different
+   typeface.
+   ------------------------------------------------------------ */
+.brand-name {
+  font-size: 17px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* The name itself: heavy and navy, slightly tightened so the two
+   words read as one mark. */
+.brand-name-main {
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  color: var(--navy-900);
+}
+
+/* The ".com" is the same weight as the name, kept a shade brighter
+   so the two parts still read as name then domain. */
+.brand-name-tld {
+  font-weight: 700;
+  color: var(--navy-600);
+  letter-spacing: -0.1px;
 }
 
 /* ---------- THE DROP-DOWN MENU ---------- */
@@ -345,6 +389,319 @@ body {
   /* Safety net: on a very narrow phone, shrink rather than overflow
      the screen. */
   max-width: 100%;
+}
+
+
+/* ============================================================
+   LINKEDIN-STYLE PROFILE (index.html only)
+   ============================================================
+   The pattern: a grey page background with a stack of white cards.
+   Each card is one section. The top card carries a coloured cover
+   strip with a round avatar overlapping its lower edge.
+   ============================================================ */
+
+.profile-body {
+  background-color: var(--page-bg);
+}
+
+.profile-main {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 20px 16px 30px;
+  /* A vertical stack with an even gap between the cards */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* One white card */
+.pcard {
+  background-color: var(--white);
+  border: 1px solid var(--navy-100);
+  border-radius: 8px;
+  padding: 22px 26px;
+}
+
+/* The top card holds the cover strip, so its own padding is zero
+   and the padding moves to the inner body. */
+.pcard-top {
+  padding: 0;
+  overflow: hidden;   /* keeps the cover corners rounded */
+}
+
+/* The cover strip. Kept shallow and in a softer mid-navy: a tall
+   block of deep navy is heavy on the eye, and this is only meant to
+   frame the avatar, not dominate the page. */
+.cover {
+  height: 72px;
+  background-color: var(--navy-600);
+  background-image: linear-gradient(120deg, #1b3a6b 0%, #2a508c 60%, #23447a 100%);
+}
+
+.pcard-body {
+  padding: 0 26px 24px;
+}
+
+/* THE AVATAR
+   margin-top with a negative value pulls the circle upwards so it
+   straddles the bottom edge of the cover — the LinkedIn look. */
+.avatar {
+  width: 104px;
+  height: 104px;
+  margin-top: -52px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  border: 4px solid var(--white);
+  background-color: var(--navy-600);
+  color: var(--white);
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  /* flex centring puts any fallback initials dead centre */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(11, 31, 58, 0.2);
+}
+
+/* THE PHOTOGRAPH IN THE AVATAR
+   ------------------------------------------------------------
+   profile-photo.jpg is a studio headshot, so only a modest zoom is
+   needed to bring the head to fill the circle.
+
+     background-size: 128%   the picture is drawn slightly larger
+                             than the circle, then cropped to it
+     background-position     which part of that enlarged picture
+                             sits inside the circle. The first
+                             number is across, the second down.
+
+   To re-frame: larger first number moves the crop right, larger
+   second number moves it down. A larger background-size zooms in.
+   ------------------------------------------------------------ */
+.avatar-photo {
+  background-image: url("profile-photo.webp");
+  background-size: 128%;
+  background-position: 53% 17%;
+  background-repeat: no-repeat;
+  background-color: var(--navy-100);
+}
+
+.p-name {
+  font-size: 27px;
+  font-weight: 700;
+  color: var(--navy-900);
+  line-height: 1.2;
+}
+
+.p-headline {
+  margin-top: 5px;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--text-dark);
+}
+
+.p-meta {
+  margin-top: 6px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+/* The small registration pills */
+.p-badges {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.badge {
+  padding: 4px 11px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--navy-600);
+  background-color: var(--navy-100);
+  border-radius: 20px;
+}
+
+.p-actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.btn-primary-sm,
+.btn-outline-sm {
+  display: inline-block;
+  padding: 8px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 20px;      /* pill buttons, as LinkedIn uses */
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary-sm {
+  color: var(--white);
+  background-color: var(--navy-600);
+  border: 1px solid var(--navy-600);
+}
+
+.btn-primary-sm:hover {
+  background-color: var(--navy-700);
+}
+
+.btn-outline-sm {
+  color: var(--navy-600);
+  background-color: var(--white);
+  border: 1px solid var(--navy-600);
+}
+
+.btn-outline-sm:hover {
+  background-color: var(--navy-100);
+}
+
+/* Card headings */
+.pcard-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy-900);
+  margin-bottom: 14px;
+}
+
+.pcard p {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text-dark);
+  margin-bottom: 11px;
+}
+
+/* ---------- One experience or education entry ---------- */
+.xp {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 14px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--navy-100);
+}
+
+.xp:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.xp:first-of-type {
+  padding-top: 0;
+}
+
+/* The organisation logo square. Holds either a real logo image or
+   a pair of initials as the fallback. */
+.xp-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  background-color: var(--navy-100);
+  color: var(--navy-600);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Stops the square being squeezed by a long entry beside it */
+  flex-shrink: 0;
+}
+
+/* A real logo fills the square.
+   object-fit: contain shows the WHOLE logo without cropping —
+   the opposite of cover, and the right choice for a badge or
+   crest that must not be cut. */
+.xp-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: var(--white);
+  padding: 3px;
+}
+
+.xp-body h3 {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--navy-900);
+}
+
+.xp-org {
+  font-size: 14px;
+  color: var(--text-dark) !important;
+  margin: 1px 0 0 !important;
+}
+
+.xp-dates {
+  font-size: 12.5px;
+  color: var(--text-muted) !important;
+  margin: 2px 0 8px !important;
+}
+
+.xp-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Skills ---------- */
+.skill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill {
+  padding: 6px 13px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--navy-900);
+  background-color: var(--page-bg);
+  border: 1px solid var(--navy-100);
+  border-radius: 20px;
+}
+
+/* Phone-sized adjustments for the profile */
+@media (max-width: 560px) {
+  .profile-main {
+    padding: 12px 10px 24px;
+  }
+
+  .pcard {
+    padding: 18px 17px;
+  }
+
+  .pcard-body {
+    padding: 0 17px 20px;
+  }
+
+  .cover {
+    height: 58px;
+  }
+
+  .avatar {
+    width: 84px;
+    height: 84px;
+    margin-top: -42px;
+    font-size: 28px;
+  }
+
+  .p-name {
+    font-size: 22px;
+  }
+
+  .xp {
+    grid-template-columns: 40px 1fr;
+    gap: 11px;
+  }
+
+  .xp-logo {
+    width: 40px;
+    height: 40px;
+    font-size: 12px;
+  }
 }
 
 
@@ -1457,8 +1814,14 @@ input.input-error:focus {
     padding: 14px 16px;
   }
 
-  .brand-logo {
-    height: 34px;
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .brand-name {
+    font-size: 16px;
   }
 
   /* Tabs on a phone: tighter, and they scroll sideways */

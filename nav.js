@@ -8,6 +8,39 @@
 
 "use strict";
 
+/* ------------------------------------------------------------
+   ORGANISATION LOGOS IN THE EXPERIENCE LIST
+   ------------------------------------------------------------
+   Each logo square contains a picture and a pair of initials. The
+   picture starts hidden. Only when the browser confirms it really
+   loaded do we show it and hide the initials.
+
+   That way a missing logo file leaves neat initials behind rather
+   than a broken-image icon.
+   ------------------------------------------------------------ */
+(function () {
+  const logos = document.querySelectorAll(".xp-logo-img");
+
+  logos.forEach(function (img) {
+    function swapIn() {
+      img.classList.remove("is-hidden");
+
+      // The initials sit next to the image inside the same square.
+      const initials = img.parentElement.querySelector(".xp-initials");
+      if (initials) initials.classList.add("is-hidden");
+    }
+
+    // A cached image may already be loaded before this code runs.
+    if (img.complete && img.naturalWidth > 0) {
+      swapIn();
+    } else {
+      img.addEventListener("load", swapIn);
+      // On error we do nothing, so the initials simply stay.
+    }
+  });
+})();
+
+
 (function () {
   const toggle = document.getElementById("menuToggle");
   const menu = document.getElementById("menuDropdown");

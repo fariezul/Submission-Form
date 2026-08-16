@@ -1,64 +1,68 @@
 <!DOCTYPE html>
 <!--
-  index.html — the professional profile page.
+  index.html — the professional profile page, laid out in the
+  LinkedIn pattern: a cover banner, an avatar overlapping it, the
+  name and headline, then a stack of white cards.
 
-  SEO NOTES (search engine optimisation), since you're learning:
-  Search engines read the <head> before anything else. The title,
-  the description, and the structured data at the bottom are what
-  decide how this page appears in Google results. The word "TVET"
-  appears in the title, the description, the main heading and the
-  body text — that consistency is what makes a page rank for a
-  term, far more than any hidden trickery.
+  SEO NOTES, since you're learning:
+  Search engines read the <head> first. The title, the description
+  and the structured data at the bottom decide how this page appears
+  in Google. The word "TVET" appears in the title, the description,
+  the main heading and the body text — that consistency is what makes
+  a page rank for a term.
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Browser tab icon and home-screen icon -->
+  <link rel="icon" type="image/png" href="logo-mark.png" />
+  <link rel="apple-touch-icon" href="logo-mark.png" />
+
   <!-- Google AdSense account verification -->
   <meta name="google-adsense-account" content="ca-pub-5727769215599307" />
 
   <!-- The blue clickable line in Google results. Keep under ~60
        characters so it isn't cut off. -->
-  <title>TVET Lecturer &amp; Composite Specialist | Ts. Mohd Farizul Jaafar</title>
+  <title>TVET Lecturer &amp; Composite Specialist | Ts. Farizul Jaafar</title>
 
-  <!-- The grey summary under the title in Google results.
-       Aim for 150-160 characters. -->
+  <!-- The grey summary under the title in Google results. -->
   <meta name="description" content="TVET Senior Lecturer at TVETMARA Masjid Tanah, Melaka. 18+ years in TVET education, aerospace composite manufacturing, repair and accreditation." />
 
-  <meta name="author" content="Ts. Mohd Farizul Bin Jaafar" />
+  <meta name="author" content="Ts. Farizul Jaafar" />
 
   <!-- "canonical" tells Google which address is the real one, so
        www and non-www versions aren't treated as duplicates. -->
   <link rel="canonical" href="https://www.farizuljaafar.com/" />
 
-  <!-- Open Graph: controls how the link looks when shared on
-       WhatsApp, Facebook or LinkedIn. -->
+  <!-- Open Graph: how the link looks when shared on WhatsApp,
+       Facebook or LinkedIn. -->
   <meta property="og:type" content="profile" />
-  <meta property="og:title" content="Ts. Mohd Farizul Jaafar — TVET Lecturer &amp; Composite Technology Specialist" />
+  <meta property="og:title" content="Ts. Farizul Jaafar — TVET Lecturer &amp; Composite Technology Specialist" />
   <meta property="og:description" content="TVET Senior Lecturer at TVETMARA Masjid Tanah. Polymer and aerospace composite manufacturing, composite repair, TVET curriculum and accreditation." />
   <meta property="og:url" content="https://www.farizuljaafar.com/" />
-  <meta property="og:image" content="https://www.farizuljaafar.com/logo.png" />
+  <meta property="og:image" content="https://www.farizuljaafar.com/share-image.jpg" />
   <meta property="og:locale" content="en_MY" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Ts. Mohd Farizul Jaafar — TVET Lecturer &amp; Composite Specialist" />
+  <meta name="twitter:title" content="Ts. Farizul Jaafar — TVET Lecturer &amp; Composite Specialist" />
   <meta name="twitter:description" content="TVET Senior Lecturer at TVETMARA Masjid Tanah, Melaka. Composite manufacturing, repair and accreditation." />
 
   <link rel="stylesheet" href="style.css" />
 </head>
 
-<body>
+<body class="profile-body">
 
   <!-- ===== HEADER WITH NAVIGATION ===== -->
   <header class="site-header site-header-nav">
     <div class="header-inner">
 
       <a href="index.html" class="header-logo-link" aria-label="Home">
-        <img src="logo.png" alt="TVETMARA Masjid Tanah" class="brand-logo" width="515" height="100" />
+        <img src="logo-mark.png" alt="" class="brand-mark" width="200" height="200" />
+        <span class="brand-name"><span class="brand-name-main">FarizulJaafar</span><span class="brand-name-tld">.com</span></span>
       </a>
 
-      <!-- The drop-down menu -->
       <nav class="main-nav" aria-label="Main">
         <button
           type="button"
@@ -71,327 +75,363 @@
           <span class="menu-caret" aria-hidden="true">▾</span>
         </button>
 
-        <!-- Starts hidden; nav.js reveals it on click -->
         <ul class="menu-dropdown is-hidden" id="menuDropdown">
+          <li><a href="farizul.html">FARIZUL</a></li>
+          <li><a href="permohonan.html">Permohonan TVETMARA</a></li>
           <li><a href="composite-repair.html">Composite Repair</a></li>
           <li><a href="production-coordination.html">Production Coordination</a></li>
-          <li><a href="permohonan.html">Permohonan TVETMARA</a></li>
         </ul>
       </nav>
 
     </div>
   </header>
 
-  <!--
-    THE TAB BAR
-    Always-visible links to the main sections. The tab for the page
-    you are currently on is highlighted, and marked with
-    aria-current="page" so screen readers announce it as current.
-  -->
   <nav class="tab-bar" aria-label="Sections">
     <div class="tab-bar-inner">
       <a href="index.html" class="tab tab-active" aria-current="page">Profile</a>
+      <a href="farizul.html" class="tab">FARIZUL</a>
+      <a href="permohonan.html" class="tab">Permohonan TVETMARA</a>
       <a href="composite-repair.html" class="tab">Composite Repair</a>
       <a href="production-coordination.html" class="tab">Production Coordination</a>
-      <a href="permohonan.html" class="tab">Permohonan TVETMARA</a>
     </div>
   </nav>
 
-  <main>
+  <main class="profile-main">
 
-    <!-- ===== HERO ===== -->
-    <section class="hero">
-      <div class="hero-inner">
-        <p class="hero-eyebrow">TVETMARA Masjid Tanah · Melaka, Malaysia</p>
+    <!--
+      ===== THE PROFILE HEADER CARD =====
+      This is the LinkedIn arrangement: a coloured cover strip, an
+      avatar circle overlapping its bottom edge, then the name and
+      headline below.
+    -->
+    <section class="pcard pcard-top">
 
-        <!-- The single most important heading on the page. There
-             should be exactly one <h1>, and it should contain the
-             term you want to be found for. -->
-        <h1>Ts. Mohd Farizul Bin Jaafar</h1>
+      <div class="cover"></div>
 
-        <p class="hero-role">
-          TVET Senior Lecturer &amp; Polymer&nbsp;Composite Engineering
+      <div class="pcard-body">
+
+        <!--
+          THE AVATAR
+          The photograph is applied as a CSS background rather than
+          an <img>, because background-size and background-position
+          let us zoom into the face of a full-length photo. See
+          .avatar-photo in style.css.
+
+          role="img" with aria-label means screen readers announce it
+          as a picture of a person, not as an empty box.
+        -->
+        <div
+          class="avatar avatar-photo"
+          role="img"
+          aria-label="Ts. Farizul Jaafar"
+        ></div>
+
+        <!-- The one <h1> on the page, carrying the search term -->
+        <h1 class="p-name">Farizul Jaafar</h1>
+
+        <p class="p-headline">
+          TVET Senior Lecturer · Polymer &amp; Composite Engineering
           Technology Specialist
         </p>
 
-        <p class="hero-credentials">
-          Professional Technologist (Material Science Technology), MBOT ·
-          Graduate Engineer (Process), BEM
+        <p class="p-meta">
+          TVETMARA Masjid Tanah · Melaka, Malaysia
         </p>
 
-        <div class="hero-actions">
-          <a href="permohonan.html" class="btn-hero-primary">Permohonan TVETMARA</a>
-          <a href="#contact" class="btn-hero-secondary">Contact</a>
+        <!-- Small pills for the professional registrations -->
+        <div class="p-badges">
+          <span class="badge">Professional Technologist, MBOT</span>
+          <span class="badge">Graduate Engineer (Process), BEM</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== ABOUT ===== -->
+    <section class="pcard" id="about">
+      <h2 class="pcard-title">About</h2>
+      <p>
+        Senior Lecturer and polymer-composite engineering technology
+        specialist with over <strong>18 years of experience in TVET
+        education</strong>, composite manufacturing, aerospace composite
+        processes, technical training, curriculum development, assessment
+        verification and accreditation support.
+      </p>
+      <p>
+        Strong practical background in injection moulding, lay-up, vacuum
+        bagging, infusion, compression moulding, pultrusion, resin transfer
+        moulding, filament winding and composite repair — with professional
+        contributions to MBOT/TTAC accreditation, JPK verification, portfolio
+        assessment and applied industrial projects across Malaysian TVET
+        institutions.
+      </p>
+
+      <div class="stat-strip">
+        <div class="strip-item"><span class="strip-num">18+</span><span class="strip-label">Years in TVET</span></div>
+        <div class="strip-item"><span class="strip-num">10</span><span class="strip-label">Courses &amp; competency areas</span></div>
+        <div class="strip-item"><span class="strip-num">5</span><span class="strip-label">Innovation awards</span></div>
+        <div class="strip-item"><span class="strip-num">7+</span><span class="strip-label">Accreditation panels</span></div>
+      </div>
+    </section>
+
+    <!-- ===== EXPERIENCE ===== -->
+    <section class="pcard" id="experience">
+      <h2 class="pcard-title">Experience</h2>
+
+      <!--
+        Each role is an <article>: a self-contained item. The small
+        square holds initials in place of a company logo.
+      -->
+      <!--
+        The logo square holds BOTH a picture and a set of initials.
+        nav.js hides the initials only once the picture has really
+        loaded, so a missing logo file leaves the initials showing
+        instead of a broken-image icon.
+      -->
+      <article class="xp">
+        <div class="xp-logo">
+          <img src="mara-logo.png" alt="" class="xp-logo-img is-hidden" />
+          <span class="xp-initials">MA</span>
+        </div>
+        <div class="xp-body">
+          <h3>Senior Lecturer</h3>
+          <p class="xp-org">Majlis Amanah Rakyat (MARA) · TVETMARA Masjid Tanah</p>
+          <p class="xp-dates">2008 – Present · Melaka, Malaysia</p>
+          <p>
+            Teach diploma students in polymer composite processing and aerospace
+            composite manufacturing. Develop teaching materials, assessment
+            instruments, rubrics and competency-based workshop activities;
+            deliver technical training in composite manufacturing, repair,
+            tooling, mould fabrication and process coordination; support
+            programme quality assurance, external verification and accreditation
+            preparation.
+          </p>
+        </div>
+      </article>
+
+      <article class="xp">
+        <div class="xp-logo">
+          <img src="sirim-logo.png" alt="" class="xp-logo-img is-hidden" />
+          <span class="xp-initials">SB</span>
+        </div>
+        <div class="xp-body">
+          <h3>Associate Researcher</h3>
+          <p class="xp-org">Advanced Material Research Centre (AMREC), SIRIM Berhad</p>
+          <p class="xp-dates">2007 – 2008 · Kedah, Malaysia</p>
+          <p>
+            Research on phenolic-resin and aramid-fibre composite materials for
+            high-impact applications, including laboratory processing, testing,
+            analysis and documentation.
+          </p>
+        </div>
+      </article>
+
+      <article class="xp">
+        <div class="xp-logo" aria-hidden="true">BT</div>
+        <div class="xp-body">
+          <h3>R&amp;D Engineer</h3>
+          <p class="xp-org">BT Automotive System Sdn. Bhd.</p>
+          <p class="xp-dates">2006 · Malaysia</p>
+          <p>
+            R&amp;D and troubleshooting for injection-moulded plastic parts used
+            in the central switch of PROTON vehicles, supporting corrective
+            actions and process improvements aligned with TS 16949.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===== EDUCATION ===== -->
+    <section class="pcard" id="education">
+      <h2 class="pcard-title">Education</h2>
+
+      <article class="xp">
+        <div class="xp-logo">
+          <img src="utem-logo.png" alt="" class="xp-logo-img is-hidden" />
+          <span class="xp-initials">UT</span>
+        </div>
+        <div class="xp-body">
+          <h3>Universiti Teknikal Malaysia Melaka</h3>
+          <p class="xp-org">Master of Manufacturing Engineering (Advanced Materials)</p>
+        </div>
+      </article>
+
+      <article class="xp">
+        <div class="xp-logo">
+          <img src="usm-logo.png" alt="" class="xp-logo-img is-hidden" />
+          <span class="xp-initials">US</span>
+        </div>
+        <div class="xp-body">
+          <h3>Universiti Sains Malaysia</h3>
+          <p class="xp-org">Bachelor of Engineering (Hons) Polymer Engineering</p>
+        </div>
+      </article>
+
+      <article class="xp">
+        <div class="xp-logo" aria-hidden="true">JPK</div>
+        <div class="xp-body">
+          <h3>Jabatan Pembangunan Kemahiran</h3>
+          <p class="xp-org">Advanced Diploma in Composite Manufacturing Technology</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===== LICENCES ===== -->
+    <section class="pcard" id="licences">
+      <h2 class="pcard-title">Licences &amp; Certifications</h2>
+      <ul class="clean-list">
+        <li><strong>Professional Technologist</strong> — Material Science Technology, Malaysian Board of Technologists (MBOT) · PT18070156</li>
+        <li><strong>Graduate Engineer (Process)</strong> — Board of Engineers Malaysia (BEM) · G1191907A</li>
+      </ul>
+    </section>
+
+    <!-- ===== SKILLS ===== -->
+    <section class="pcard" id="skills">
+      <h2 class="pcard-title">Skills</h2>
+      <div class="skill-list">
+        <span class="skill">Composite Manufacturing</span>
+        <span class="skill">Aerospace Composite Repair</span>
+        <span class="skill">Resin Transfer Moulding</span>
+        <span class="skill">Vacuum Bagging &amp; Infusion</span>
+        <span class="skill">Pultrusion</span>
+        <span class="skill">Filament Winding</span>
+        <span class="skill">Compression Moulding</span>
+        <span class="skill">Injection Moulding</span>
+        <span class="skill">Composite Tooling &amp; Mould Fabrication</span>
+        <span class="skill">Polymer Materials</span>
+        <span class="skill">TVET Curriculum Development</span>
+        <span class="skill">Competency-Based Training</span>
+        <span class="skill">Assessment &amp; Verification</span>
+        <span class="skill">MBOT TTAC Accreditation</span>
+        <span class="skill">JPK Panel &amp; Portfolio Assessment</span>
+      </div>
+    </section>
+
+    <!-- ===== ACCREDITATION ===== -->
+    <section class="pcard" id="accreditation">
+      <h2 class="pcard-title">Accreditation &amp; External Appointments</h2>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Year</th><th>Role</th><th>Scope</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2026–2028</td><td>Penasihat Luar</td><td>Kolej Vokasional Datuk Seri Mohd Zin — Kementerian Pendidikan Malaysia</td></tr>
+            <tr><td>2026</td><td>Ahli Panel Penilai Akreditasi</td><td>MBOT TTAC — Diploma in Engineering Technology in Aerospace Composite Manufacturing, DRB-HICOM University</td></tr>
+            <tr><td>2026</td><td>Pegawai Penilai / PP-PPT</td><td>JPK portfolio assessor, Pembuatan Komposit (MT-011-2:2014), ADTEC Taiping</td></tr>
+            <tr><td>2026</td><td>Panel Penilai Projek Diploma</td><td>UTeM FTKIP — Pertandingan Inovasi Rekabentuk</td></tr>
+            <tr><td>2024</td><td>Panel Pentauliahan</td><td>JPK programme renewal, ADTEC Taiping</td></tr>
+            <tr><td>2023</td><td>External Verifier</td><td>Aircraft Structure Maintenance (Composite), IKBN Pekan</td></tr>
+            <tr><td>2022–2023</td><td>WIM Development Panel</td><td>Aerospace Composite Structure Repair Operation &amp; Inspection (C331-016-3:2021), JPK</td></tr>
+            <tr><td>2019–Present</td><td>Evaluation Panel</td><td>Technology and Technical Accreditation Council (TTAC), MBOT</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== PROJECTS ===== -->
+    <section class="pcard" id="projects">
+      <h2 class="pcard-title">Projects</h2>
+      <div class="card-grid">
+        <article class="info-card">
+          <span class="card-year">2018 – 2019</span>
+          <h3>Airbus A320 Spoiler &amp; Underwing</h3>
+          <p>Development and fabrication using the Resin Transfer Moulding
+          process for Aerospace Malaysia Innovation Centre (AMIC).</p>
+        </article>
+        <article class="info-card">
+          <span class="card-year">2017</span>
+          <h3>Airbus A320 Spoiler Wedges</h3>
+          <p>Development and fabrication using the Pultrusion process for
+          Aerospace Malaysia Innovation Centre (AMIC).</p>
+        </article>
+        <article class="info-card">
+          <span class="card-year">2007 – 2008</span>
+          <h3>High-Impact Composite Research</h3>
+          <p>Applied research on phenolic-resin and aramid-fibre composite
+          materials at AMREC, SIRIM Berhad.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== HONOURS ===== -->
+    <section class="pcard" id="awards">
+      <h2 class="pcard-title">Honours &amp; Awards</h2>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Year</th><th>Event</th><th>Award</th><th>Awarded By</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2025</td><td>Infineon Week — Self-Healing Epoxy Coatings</td><td>1st Runner Up</td><td>UTeM / Infineon</td></tr>
+            <tr><td>2024</td><td>iCompex 2024</td><td>Gold</td><td>Ministry of Higher Education</td></tr>
+            <tr><td>2020</td><td>Green Technology Innovation Competition</td><td>Best Project</td><td>Kolej Universiti Islam Malaysia</td></tr>
+            <tr><td>2018</td><td>iCompex 2018</td><td>Gold</td><td>Ministry of Higher Education</td></tr>
+            <tr><td>2018</td><td>International Eureka Innovation Exhibition</td><td>Bronze</td><td>UniKL</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== TRAINING ===== -->
+    <section class="pcard" id="training">
+      <h2 class="pcard-title">Professional Training</h2>
+      <ul class="training-list">
+        <li><strong>Basic Composite Repair for Technicians</strong> — AIRBUS Training &amp; Flight Operations, Toulouse, France <span class="muted">(2016)</span></li>
+        <li><strong>RTM and Infusion for Aeronautics</strong> — Institut de Soudure Group, France <span class="muted">(2020)</span></li>
+        <li><strong>Closed Mould Technology (RTM, Light-RTM)</strong> — MVP Ltd, United Kingdom <span class="muted">(2011)</span></li>
+        <li><strong>Composite Processing: Filament Winding</strong> — SIRIM Berhad <span class="muted">(2025)</span></li>
+        <li><strong>Aerospace RTM Prototype Manufacturing</strong> — AMIC <span class="muted">(2019)</span></li>
+        <li><strong>Scientific Injection Moulding</strong> — German-Malaysian Institute <span class="muted">(2018)</span></li>
+        <li><strong>Composite Repair Technique</strong> — Malaysia Institute of Aviation Technology <span class="muted">(2010)</span></li>
+        <li><strong>Digital Lean Application Using Collaborative Robot</strong> — IKTBN Sepang <span class="muted">(2024)</span></li>
+      </ul>
+    </section>
+
+    <!-- ===== CONTACT ===== -->
+    <section class="pcard" id="contact">
+      <h2 class="pcard-title">Contact</h2>
+      <div class="contact-grid">
+        <div class="contact-item">
+          <span class="contact-label">Email</span>
+          <a href="mailto:mfarizul@mara.gov.my">mfarizul@mara.gov.my</a>
+        </div>
+        <div class="contact-item contact-item-wide">
+          <span class="contact-label">Institution</span>
+          <span>TVETMARA Masjid Tanah, KM 1, Persiaran Paya Lebar,
+          Ramuan China Besar, 78300 Masjid Tanah, Melaka, Malaysia</span>
         </div>
       </div>
     </section>
 
-    <div class="content-wrap">
-
-      <!-- ===== PROFILE ===== -->
-      <section class="section" id="profile">
-        <h2>Professional Profile</h2>
-        <p class="lead">
-          Senior Lecturer and polymer-composite engineering technology
-          specialist with over <strong>18 years of experience in TVET
-          education</strong>, composite manufacturing, aerospace composite
-          processes, technical training, curriculum development, assessment
-          verification and accreditation support.
-        </p>
-        <p>
-          Strong practical background in injection moulding, lay-up, vacuum
-          bagging, infusion, compression moulding, pultrusion, resin transfer
-          moulding, filament winding and composite repair — with professional
-          contributions to MBOT/TTAC accreditation, JPK verification, portfolio
-          assessment and applied industrial projects across Malaysian TVET
-          institutions.
-        </p>
-
-        <div class="stat-strip">
-          <div class="strip-item"><span class="strip-num">18+</span><span class="strip-label">Years in TVET</span></div>
-          <div class="strip-item"><span class="strip-num">10</span><span class="strip-label">Courses &amp; competency areas</span></div>
-          <div class="strip-item"><span class="strip-num">5</span><span class="strip-label">Innovation awards</span></div>
-          <div class="strip-item"><span class="strip-num">7+</span><span class="strip-label">Accreditation panels</span></div>
-        </div>
-      </section>
-
-      <!-- ===== COMPETENCIES ===== -->
-      <section class="section" id="expertise">
-        <h2>Core Competencies</h2>
-        <div class="card-grid">
-
-          <article class="info-card">
-            <h3>Composite Manufacturing</h3>
-            <p>Wet and dry lay-up, vacuum bagging, infusion, RTM, compression
-            moulding, pultrusion and filament winding.</p>
-          </article>
-
-          <article class="info-card">
-            <h3>Aerospace Composite Repair</h3>
-            <p>Composite repair techniques, structure repair operations and
-            inspection, with Airbus-based training exposure.</p>
-          </article>
-
-          <article class="info-card">
-            <h3>TVET Teaching</h3>
-            <p>Competency-based training, workshop delivery, practical
-            assessment, WIM development and TVET curriculum support.</p>
-          </article>
-
-          <article class="info-card">
-            <h3>Materials Engineering</h3>
-            <p>Polymer materials, reinforcing fibres, tooling, mould
-            fabrication, processing troubleshooting and applied R&amp;D.</p>
-          </article>
-
-          <article class="info-card">
-            <h3>Assessment &amp; QA</h3>
-            <p>JSPB, rubrics, theory and practical assessment papers, marking
-            schemes, verification and item improvement.</p>
-          </article>
-
-          <article class="info-card">
-            <h3>Accreditation Panels</h3>
-            <p>MBOT TTAC, JPK panels, external verifier roles, portfolio
-            assessment and professional advisory services.</p>
-          </article>
-
-        </div>
-      </section>
-
-      <!-- ===== EXPERIENCE ===== -->
-      <section class="section" id="experience">
-        <h2>Professional Experience</h2>
-
-        <article class="timeline-item">
-          <div class="timeline-period">2008 – Present</div>
-          <div class="timeline-body">
-            <h3>Senior Lecturer</h3>
-            <p class="timeline-org">Majlis Amanah Rakyat (MARA), TVETMARA Masjid Tanah, Melaka</p>
-            <p>Teach diploma students in polymer composite processing and
-            aerospace composite manufacturing. Develop teaching materials,
-            assessment instruments, rubrics and competency-based workshop
-            activities; deliver technical training in composite manufacturing,
-            repair, tooling, mould fabrication and process coordination; support
-            programme quality assurance, external verification and accreditation
-            preparation.</p>
-          </div>
-        </article>
-
-        <article class="timeline-item">
-          <div class="timeline-period">2007 – 2008</div>
-          <div class="timeline-body">
-            <h3>Associate Researcher</h3>
-            <p class="timeline-org">Advanced Material Research Centre (AMREC), SIRIM Berhad, Kedah</p>
-            <p>Research on phenolic-resin and aramid-fibre composite materials
-            for high-impact applications, including laboratory processing,
-            testing, analysis and documentation.</p>
-          </div>
-        </article>
-
-        <article class="timeline-item">
-          <div class="timeline-period">2006</div>
-          <div class="timeline-body">
-            <h3>R&amp;D Engineer</h3>
-            <p class="timeline-org">BT Automotive System Sdn. Bhd.</p>
-            <p>R&amp;D and troubleshooting for injection-moulded plastic parts
-            used in the central switch of PROTON vehicles, supporting corrective
-            actions and process improvements aligned with TS 16949.</p>
-          </div>
-        </article>
-      </section>
-
-      <!-- ===== QUALIFICATIONS ===== -->
-      <section class="section" id="qualifications">
-        <h2>Qualifications &amp; Membership</h2>
-        <div class="two-col">
-          <div>
-            <h3 class="sub-head">Academic</h3>
-            <ul class="clean-list">
-              <li><strong>Master of Manufacturing Engineering</strong> (Advanced Materials) — Universiti Teknikal Malaysia Melaka</li>
-              <li><strong>Bachelor of Engineering (Hons) Polymer Engineering</strong> — Universiti Sains Malaysia</li>
-              <li><strong>Advanced Diploma in Composite Manufacturing Technology</strong> — Jabatan Pembangunan Kemahiran</li>
-            </ul>
-          </div>
-          <div>
-            <h3 class="sub-head">Professional Membership</h3>
-            <ul class="clean-list">
-              <li><strong>Professional Technologist</strong> — Material Science Technology, MBOT (PT18070156)</li>
-              <li><strong>Graduate Engineer (Process)</strong> — Board of Engineers Malaysia (G1191907A)</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== ACCREDITATION ===== -->
-      <section class="section" id="accreditation">
-        <h2>Accreditation &amp; External Appointments</h2>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr><th>Year</th><th>Role</th><th>Scope</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>2026</td><td>Ahli Panel Penilai Akreditasi</td><td>MBOT TTAC — Diploma in Engineering Technology in Aerospace Composite Manufacturing, DRB-HICOM University</td></tr>
-              <tr><td>2026</td><td>Pegawai Penilai / PP-PPT</td><td>JPK portfolio assessor, Pembuatan Komposit (MT-011-2:2014), ADTEC Taiping</td></tr>
-              <tr><td>2026</td><td>Panel Penilai Projek Diploma</td><td>UTeM FTKIP — Pertandingan Inovasi Rekabentuk</td></tr>
-              <tr><td>2024</td><td>Panel Pentauliahan</td><td>JPK programme renewal, ADTEC Taiping</td></tr>
-              <tr><td>2023</td><td>External Verifier</td><td>Aircraft Structure Maintenance (Composite), IKBN Pekan</td></tr>
-              <tr><td>2022–2023</td><td>WIM Development Panel</td><td>Aerospace Composite Structure Repair Operation &amp; Inspection (C331-016-3:2021), JPK</td></tr>
-              <tr><td>2019–Present</td><td>Evaluation Panel</td><td>Technology and Technical Accreditation Council (TTAC), MBOT</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ===== PROJECTS ===== -->
-      <section class="section" id="projects">
-        <h2>Selected Technical Projects</h2>
-        <div class="card-grid">
-          <article class="info-card">
-            <span class="card-year">2018 – 2019</span>
-            <h3>Airbus A320 Spoiler &amp; Underwing</h3>
-            <p>Development and fabrication using the Resin Transfer Moulding
-            process for Aerospace Malaysia Innovation Centre (AMIC).</p>
-          </article>
-          <article class="info-card">
-            <span class="card-year">2017</span>
-            <h3>Airbus A320 Spoiler Wedges</h3>
-            <p>Development and fabrication using the Pultrusion process for
-            Aerospace Malaysia Innovation Centre (AMIC).</p>
-          </article>
-          <article class="info-card">
-            <span class="card-year">2007 – 2008</span>
-            <h3>High-Impact Composite Research</h3>
-            <p>Applied research on phenolic-resin and aramid-fibre composite
-            materials at AMREC, SIRIM Berhad.</p>
-          </article>
-        </div>
-      </section>
-
-      <!-- ===== AWARDS ===== -->
-      <section class="section" id="awards">
-        <h2>Awards &amp; Innovation Recognition</h2>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr><th>Year</th><th>Event</th><th>Award</th><th>Awarded By</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>2025</td><td>Infineon Week — Self-Healing Epoxy Coatings</td><td>1st Runner Up</td><td>UTeM / Infineon</td></tr>
-              <tr><td>2024</td><td>iCompex 2024</td><td>Gold</td><td>Ministry of Higher Education</td></tr>
-              <tr><td>2020</td><td>Green Technology Innovation Competition</td><td>Best Project</td><td>Kolej Universiti Islam Malaysia</td></tr>
-              <tr><td>2018</td><td>iCompex 2018</td><td>Gold</td><td>Ministry of Higher Education</td></tr>
-              <tr><td>2018</td><td>International Eureka Innovation Exhibition</td><td>Bronze</td><td>UniKL</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ===== TRAINING ===== -->
-      <section class="section" id="training">
-        <h2>Selected Professional Training</h2>
-        <ul class="training-list">
-          <li><strong>Basic Composite Repair for Technicians</strong> — AIRBUS Training &amp; Flight Operations, Toulouse, France <span class="muted">(2016)</span></li>
-          <li><strong>RTM and Infusion for Aeronautics</strong> — Institut de Soudure Group, France <span class="muted">(2020)</span></li>
-          <li><strong>Closed Mould Technology (RTM, Light-RTM)</strong> — MVP Ltd, United Kingdom <span class="muted">(2011)</span></li>
-          <li><strong>Composite Processing: Filament Winding</strong> — SIRIM Berhad <span class="muted">(2025)</span></li>
-          <li><strong>Aerospace RTM Prototype Manufacturing</strong> — AMIC <span class="muted">(2019)</span></li>
-          <li><strong>Scientific Injection Moulding</strong> — German-Malaysian Institute <span class="muted">(2018)</span></li>
-          <li><strong>Composite Repair Technique</strong> — Malaysia Institute of Aviation Technology <span class="muted">(2010)</span></li>
-          <li><strong>Digital Lean Application Using Collaborative Robot</strong> — IKTBN Sepang <span class="muted">(2024)</span></li>
-        </ul>
-      </section>
-
-      <!-- ===== CONTACT ===== -->
-      <section class="section" id="contact">
-        <h2>Contact</h2>
-        <div class="contact-grid">
-          <div class="contact-item">
-            <span class="contact-label">Email</span>
-            <a href="mailto:mfarizul@mara.gov.my">mfarizul@mara.gov.my</a>
-          </div>
-          <div class="contact-item">
-            <span class="contact-label">Telephone</span>
-            <a href="tel:+60192664836">+60 19 266 4836</a>
-          </div>
-          <div class="contact-item contact-item-wide">
-            <span class="contact-label">Institution</span>
-            <span>TVETMARA Masjid Tanah, KM 1, Persiaran Paya Lebar,
-            Ramuan China Besar, 78300 Masjid Tanah, Melaka, Malaysia</span>
-          </div>
-        </div>
-      </section>
-
-    </div>
   </main>
 
   <footer class="site-footer">
-    <p>&copy; 2026 Ts. Mohd Farizul Bin Jaafar · TVETMARA Masjid Tanah</p>
+    <p>&copy; 2026 Ts. Farizul Jaafar · TVETMARA Masjid Tanah</p>
     <p class="footer-links">
+      <a href="index.html">Profile</a> ·
+      <a href="farizul.html">FARIZUL</a> ·
+      <a href="permohonan.html">Permohonan TVETMARA</a> ·
       <a href="composite-repair.html">Composite Repair</a> ·
-      <a href="production-coordination.html">Production Coordination</a> ·
-      <a href="permohonan.html">Permohonan TVETMARA</a>
+      <a href="production-coordination.html">Production Coordination</a>
     </p>
   </footer>
 
   <!--
     STRUCTURED DATA
-    This block is invisible to visitors. It describes the page to
-    search engines in a format they understand exactly, which can
-    produce a richer result in Google. "@type": "Person" tells
-    Google this page is about a specific individual.
+    Invisible to visitors. It describes the page to search engines in
+    a format they understand exactly. The telephone number has been
+    removed at the owner's request.
   -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Person",
-    "name": "Ts. Mohd Farizul Bin Jaafar",
+    "name": "Ts. Farizul Jaafar",
     "jobTitle": "TVET Senior Lecturer, Polymer & Composite Engineering Technology",
     "description": "TVET Senior Lecturer and polymer-composite engineering technology specialist with over 18 years of experience in TVET education, composite manufacturing and aerospace composite processes.",
     "url": "https://www.farizuljaafar.com/",
     "email": "mailto:mfarizul@mara.gov.my",
-    "telephone": "+60192664836",
     "worksFor": {
       "@type": "EducationalOrganization",
       "name": "TVETMARA Masjid Tanah",
