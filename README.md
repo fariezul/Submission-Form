@@ -258,3 +258,34 @@ with a script. That's the normal trade-off for a public form, but on a
 live site it does mean the table can be spammed. If that becomes a
 problem, Supabase supports adding CAPTCHA protection, or you can move the
 insert behind an Edge Function that validates first.
+
+---
+
+## The FARIZUL page (`/farizul.html`)
+
+FARIZUL is the licence plate scanner. Unlike every other page here, it is
+**not a file in this repo** — it is a separate Next.js deployment, because
+it needs a server to hold its database and plate-reader keys, and this site
+is plain static files with no server at all.
+
+`vercel.json` bridges the two. It proxies `/farizul.html` and everything
+under `/farizul/` to that deployment, so visitors stay on
+`www.farizuljaafar.com` the whole time and never see the other address.
+
+Three things are worth knowing if you ever touch this:
+
+1. **There must be no `farizul.html` file in this repo.** Vercel matches
+   real files *before* rewrites, so a file of that name would win and the
+   rewrite would never run. The nav links across the site still point at
+   `farizul.html` — they resolve through the rewrite.
+
+2. **Serving it same-origin is deliberate.** The scanner asks for camera
+   permission, and asking as `farizuljaafar.com` is far more reliable than
+   asking from another domain inside an iframe, especially on iPhone.
+
+3. **`vercel.json` rejects properties it doesn't recognise.** JSON has no
+   comments, and adding a `_comment` key fails the build — which is why
+   this explanation lives here instead.
+
+The scanner app sets `basePath: "/farizul"`, so its pages, assets and API
+routes all sit under that prefix and one wildcard rule covers them.
