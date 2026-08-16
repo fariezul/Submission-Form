@@ -1,20 +1,5 @@
 <!DOCTYPE html>
-<!--
-  Composite Repair — Activity 1
-
-  A placeholder. When the real activity content is written, replace
-  the "under construction" section below.
-
-  NOTE ON THE ROBOTS TAG
-  While this page has no real content, noindex asks search engines
-  not to list it. Twenty near-empty pages in Google would dilute the
-  site. Delete that meta line once the activity is written.
-
-  NOTE ON THE ".." IN THE PATHS
-  This file sits inside the composite-repair/ folder, so ".." means
-  "go up one level to the main folder" where style.css and logo-mark.png
-  live.
--->
+<!-- Composite Repair — Activity 1: Basic Composite Challenge -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -24,12 +9,11 @@
   <link rel="icon" type="image/png" href="../logo-mark.png" />
   <link rel="apple-touch-icon" href="../logo-mark.png" />
 
-  <meta name="robots" content="noindex, follow" />
-
-  <title>Activity 1 | Composite Repair — Ts. Farizul Jaafar</title>
-  <meta name="description" content="Activity 1 of the Composite Repair TVET competency area at TVETMARA Masjid Tanah. Content in preparation." />
+  <title>Basic Composite Challenge | Composite Repair — Ts. Farizul Jaafar</title>
+  <meta name="description" content="Test your composite materials knowledge with a timed, interactive TVET quiz by Ts. Mohd Farizul Jaafar." />
 
   <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="activity-1.css" />
 </head>
 
 <body>
@@ -88,15 +72,28 @@
         <p class="hero-eyebrow">
           <a href="../composite-repair.html" class="crumb-link">Composite Repair</a>
         </p>
-        <h1>Activity 1</h1>
+        <h1>Basic Composite Challenge</h1>
+        <p class="activity-hero-copy">Activity 1 · Interactive knowledge challenge</p>
       </div>
     </section>
 
-    <div class="content-wrap">
-      <section class="section section-construction">
-        <p class="construction-note">This activity still under construction</p>
-        <p class="construction-sub">Content for this activity is being prepared.</p>
-        <a href="../composite-repair.html" class="btn-plain">Back to Composite Repair</a>
+    <div class="activity-wrap">
+      <section class="activity-intro" aria-labelledby="activity-instructions">
+        <div>
+          <p class="activity-label">ACTIVITY 1</p>
+          <h2 id="activity-instructions">Ready to test your composite knowledge?</h2>
+          <p>Enter your name and class below. You will receive 20 randomly selected questions and have five minutes to complete the challenge.</p>
+        </div>
+        <a class="activity-admin-link" href="activity-1-quiz/index.html?admin=1">Teacher dashboard</a>
+      </section>
+
+      <section class="quiz-embed" aria-label="Basic Composite Challenge quiz">
+        <iframe
+          src="activity-1-quiz/index.html"
+          title="Basic Composite Challenge"
+          loading="eager"
+          allow="autoplay"
+        ></iframe>
       </section>
     </div>
   </main>
