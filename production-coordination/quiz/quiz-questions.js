@@ -3,30 +3,47 @@
    ============================================================
    Every question here was written from ONE source only:
 
-     Chapter3_Corrective_Action_Process_C.pptx
+     Chapter3_Corrective_Action_Process_ .pptx
      "Corrective Action and Process Improvement"
+     56 slides · revised 3 September 2026
 
-   Nothing was added from the internet, from textbooks, or from
-   general knowledge. If a fact is not on a slide, there is no
+   ------------------------------------------------------------
+   SCOPE: SLIDES 1-36 ONLY
+   ------------------------------------------------------------
+   Slide 37 and everything after it is deliberately out of scope,
+   at the lecturer's instruction. So there is nothing here on the
+   8 Wastes / DOWNTIME, Kaizen, 5S, the closing summary or the
+   assignment — even though those slides exist in the deck.
+
+   If you later widen the scope, that is where the next questions
+   come from, and 3.5 Lean is the section that would benefit most:
+   it currently has only five questions because the cut-off falls
+   right after the Lean definition.
+
+   Nothing was added from the internet, a textbook, or general
+   knowledge. If a fact is not on slides 1-36, there is no
    question about it.
 
    ------------------------------------------------------------
-   WHY 50, AND WHICH 50
+   WHAT THIS REPLACED
    ------------------------------------------------------------
-   This bank was cut from 224 down to 50 in August 2026. The rule
-   for what stayed: a question has to test a CONCEPT the student
-   must carry out of the chapter — what a tool is for, what a step
-   means, how a sequence runs.
+   The previous bank was 50 questions built from the earlier
+   42-slide deck. The deck was revised, so the bank was rebuilt
+   rather than patched. Three changes in scope mattered:
 
-   What was removed was every question that only tested recall of
-   a worked EXAMPLE from a slide: the 145 °C die temperature, the
-   45 delamination defects in the Pareto activity, the 14 July
-   night shift, the resin trolley that saved 40 minutes. Those
-   illustrate the ideas well in a lecture, but knowing the number
-   is not knowing the topic.
+     Slide 11  Pareto is now "combines a bar graph and a
+               cumulative line graph".
+     Slide 23  A new Flow Chart definition slide.
+     Slide 24  A new symbol table, which adds ARROW — the old
+               four-symbol list did not have it.
+     Slide 36  Lean is now "a systematic approach to eliminating
+               waste and increasing value", with a Goal line. The
+               old FLOW and PULL bullets are gone, so the two
+               questions testing them were dropped rather than
+               carried over.
 
-   The removed questions are still in the project's git history if
-   any of them is ever wanted back.
+   The old bank is in git history if any question is ever wanted
+   back.
 
    ------------------------------------------------------------
    HOW TO READ A QUESTION OBJECT
@@ -36,27 +53,28 @@
      type          single-choice | true-false | multiple-select
                    | image-choice | sequence-choice
      question      the words the student reads
-     options       [{ id, text }]  — id is stable, text is shown
+     options       [{ id, text }] — id is stable, text is shown
      correctAnswer option id, or an ARRAY of ids for
                    multiple-select
      image         optional file inside ../quiz-images/
      imageAlt      required whenever image is set
-     sourceSlide   DEVELOPER ONLY — which slide proves the answer.
-                   Never rendered in the student interface. It is
-                   here so the lecturer can re-check the question
-                   against the teaching material later.
+     sourceSlide   DEVELOPER ONLY — the slide in the revised deck
+                   that proves the answer. Never shown to
+                   students; it is here so the lecturer can
+                   re-check a question against the teaching
+                   material.
 
    ------------------------------------------------------------
    THE FIRST OPTION IS ALWAYS THE CORRECT ONE
    ------------------------------------------------------------
-   That makes the bank quick to proofread. Students never see this
-   order: the engine shuffles the options on every question of
-   every attempt, and the correct answer is tracked by a stable
-   option id, never by position. See quiz-engine.js ->
+   That makes the bank quick to proofread. Students never see
+   this order: the engine shuffles the options on every question
+   of every attempt, and the correct answer is tracked by a
+   stable option id, never by position. See quiz-engine.js ->
    shuffleOptions().
 
    ------------------------------------------------------------
-   IF YOU REMOVE MORE QUESTIONS
+   IF YOU REMOVE QUESTIONS
    ------------------------------------------------------------
    Two floors must hold, and quiz-tests.js checks both:
      - at least 30 questions in total, or an attempt cannot be
@@ -74,9 +92,9 @@ const QUIZ_QUESTIONS = [
      3.1 — THE 7 QC TOOLS
      ========================================================== */
 
-  /* --- Overview --- */
+  /* --- Overview (slide 5) --- */
   {
-    id: "q019",
+    id: "v001",
     type: "single-choice",
     question: "How many QC tools are covered in sub-topic 3.1?",
     options: [
@@ -88,10 +106,62 @@ const QUIZ_QUESTIONS = [
     correctAnswer: "a",
     sourceSlide: 5,
   },
-
-  /* --- Tool 1 — Check Sheet --- */
   {
-    id: "q022",
+    id: "v002",
+    type: "single-choice",
+    question: "Which QC tool is used to collect the data?",
+    options: [
+      { id: "a", text: "Check Sheet" },
+      { id: "b", text: "Pareto Chart" },
+      { id: "c", text: "Control Chart" },
+      { id: "d", text: "Scatter Diagram" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 5,
+  },
+  {
+    id: "v003",
+    type: "single-choice",
+    question: "Which QC tool is used to find the root cause?",
+    options: [
+      { id: "a", text: "Cause & Effect" },
+      { id: "b", text: "Histogram" },
+      { id: "c", text: "Graph / Flow Chart" },
+      { id: "d", text: "Check Sheet" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 5,
+  },
+  {
+    id: "v004",
+    type: "single-choice",
+    question: "Which QC tool is used to test a relationship?",
+    options: [
+      { id: "a", text: "Scatter Diagram" },
+      { id: "b", text: "Check Sheet" },
+      { id: "c", text: "Pareto Chart" },
+      { id: "d", text: "Cause & Effect" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 5,
+  },
+  {
+    id: "v005",
+    type: "sequence-choice",
+    question: "Which sequence matches the lecture's numbering of tools 1 to 4?",
+    options: [
+      { id: "a", text: "Check Sheet → Histogram → Pareto Chart → Cause & Effect" },
+      { id: "b", text: "Histogram → Check Sheet → Cause & Effect → Pareto Chart" },
+      { id: "c", text: "Pareto Chart → Check Sheet → Histogram → Control Chart" },
+      { id: "d", text: "Cause & Effect → Pareto Chart → Histogram → Check Sheet" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 5,
+  },
+
+  /* --- Tool 1 · Check Sheet (slide 6) --- */
+  {
+    id: "v006",
     type: "single-choice",
     question: "A Check Sheet is a form used to collect data:",
     options: [
@@ -104,7 +174,7 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 6,
   },
   {
-    id: "q023",
+    id: "v007",
     type: "single-choice",
     question: "A Check Sheet counts using:",
     options: [
@@ -116,10 +186,21 @@ const QUIZ_QUESTIONS = [
     correctAnswer: "a",
     sourceSlide: 6,
   },
-
-  /* --- Tool 2 — Histogram --- */
   {
-    id: "q030",
+    id: "v008",
+    type: "true-false",
+    question: "A Check Sheet should be filled in as it happens, not from memory.",
+    options: [
+      { id: "t", text: "True" },
+      { id: "f", text: "False" },
+    ],
+    correctAnswer: "t",
+    sourceSlide: 6,
+  },
+
+  /* --- Tool 2 · Histogram (slides 7–8) --- */
+  {
+    id: "v009",
     type: "single-choice",
     question: "A Histogram is a graphical representation of:",
     options: [
@@ -132,7 +213,7 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 7,
   },
   {
-    id: "q216",
+    id: "v010",
     type: "true-false",
     question: "A Histogram groups measurements into ranges called bins.",
     options: [
@@ -143,7 +224,20 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 7,
   },
   {
-    id: "q034",
+    id: "v011",
+    type: "single-choice",
+    question: "On a Histogram, what does a tall centre with short tails indicate?",
+    options: [
+      { id: "a", text: "A healthy process" },
+      { id: "b", text: "A process that is out of control" },
+      { id: "c", text: "A negative link between two variables" },
+      { id: "d", text: "That 80% of problems come from 20% of causes" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 7,
+  },
+  {
+    id: "v012",
     type: "image-choice",
     question: "Which of the seven QC tools is shown in this chart?",
     image: "histogram-petal-length.png",
@@ -158,9 +252,9 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 8,
   },
 
-  /* --- Tool 3 — Pareto Chart --- */
+  /* --- Tool 3 · Pareto Chart (slides 11–12) --- */
   {
-    id: "q041",
+    id: "v013",
     type: "single-choice",
     question: "A Pareto Chart combines which two elements?",
     options: [
@@ -173,7 +267,20 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 11,
   },
   {
-    id: "q043",
+    id: "v014",
+    type: "single-choice",
+    question: "On a Pareto Chart, the bars are arranged:",
+    options: [
+      { id: "a", text: "In descending order" },
+      { id: "b", text: "In ascending order" },
+      { id: "c", text: "In alphabetical order" },
+      { id: "d", text: "In the order the defects were found" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 11,
+  },
+  {
+    id: "v015",
     type: "single-choice",
     question: "The Pareto principle described in the lecture says that about:",
     options: [
@@ -186,7 +293,7 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 11,
   },
   {
-    id: "q044",
+    id: "v016",
     type: "single-choice",
     question: "What is the job of a Pareto Chart?",
     options: [
@@ -199,11 +306,11 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 11,
   },
   {
-    id: "q046",
+    id: "v017",
     type: "image-choice",
     question: "Identify the QC tool shown here.",
     image: "pareto-casting-defects.png",
-    imageAlt: "A chart with bars in descending order and a rising cumulative percentage line, titled Pareto chart of titanium investment casting defects",
+    imageAlt: "A chart with bars in descending order and a rising cumulative percentage line",
     options: [
       { id: "a", text: "Pareto Chart" },
       { id: "b", text: "Histogram" },
@@ -214,9 +321,9 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 12,
   },
 
-  /* --- Tool 4 — Cause & Effect (Fishbone) --- */
+  /* --- Tool 4 · Cause & Effect (slides 14–17) --- */
   {
-    id: "q053",
+    id: "v018",
     type: "single-choice",
     question: "The Cause & Effect diagram sorts possible causes into how many families?",
     options: [
@@ -229,7 +336,7 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 14,
   },
   {
-    id: "q054",
+    id: "v019",
     type: "single-choice",
     question: "Another name for the Cause & Effect diagram is:",
     options: [
@@ -242,7 +349,7 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 14,
   },
   {
-    id: "q055",
+    id: "v020",
     type: "single-choice",
     question: "On a Fishbone diagram, where do you write the problem?",
     options: [
@@ -255,7 +362,20 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 14,
   },
   {
-    id: "q224",
+    id: "v021",
+    type: "single-choice",
+    question: "On a Fishbone diagram, what do the smaller arrows do?",
+    options: [
+      { id: "a", text: "Connect the sub-causes to the major causes" },
+      { id: "b", text: "Show the cumulative percentage" },
+      { id: "c", text: "Mark the upper and lower control limits" },
+      { id: "d", text: "Show the direction of material flow" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 14,
+  },
+  {
+    id: "v022",
     type: "multiple-select",
     question: "Which of these are 6M families on the Fishbone diagram?",
     options: [
@@ -264,11 +384,50 @@ const QUIZ_QUESTIONS = [
       { id: "c", text: "ENVIRONMENT" },
       { id: "d", text: "MAINTENANCE" },
     ],
-    correctAnswer: ["a","b","c"],
+    correctAnswer: ["a", "b", "c"],
     sourceSlide: 15,
   },
   {
-    id: "q067",
+    id: "v023",
+    type: "single-choice",
+    question: "\"Faulty gauge, no calibration record\" belongs to which 6M family?",
+    options: [
+      { id: "a", text: "MEASUREMENT" },
+      { id: "b", text: "MACHINE" },
+      { id: "c", text: "METHOD" },
+      { id: "d", text: "MAN" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 15,
+  },
+  {
+    id: "v024",
+    type: "single-choice",
+    question: "\"Humidity, dust, poor lighting\" belongs to which 6M family?",
+    options: [
+      { id: "a", text: "ENVIRONMENT" },
+      { id: "b", text: "MATERIAL" },
+      { id: "c", text: "MEASUREMENT" },
+      { id: "d", text: "MACHINE" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 15,
+  },
+  {
+    id: "v025",
+    type: "sequence-choice",
+    question: "Which sequence describes how to build a Fishbone diagram?",
+    options: [
+      { id: "a", text: "Problem at the head → 6M bones → causes on each bone → verify with data" },
+      { id: "b", text: "Causes on each bone → problem at the head → verify with data → 6M bones" },
+      { id: "c", text: "Verify with data → problem at the head → causes on each bone → 6M bones" },
+      { id: "d", text: "6M bones → verify with data → problem at the head → causes on each bone" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 16,
+  },
+  {
+    id: "v026",
     type: "image-choice",
     question: "Which of the seven QC tools is shown in this diagram?",
     image: "fishbone-diagram.jpg",
@@ -283,9 +442,9 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 17,
   },
 
-  /* --- Tool 5 — Control Chart --- */
+  /* --- Tool 5 · Control Chart (slides 19–20) --- */
   {
-    id: "q068",
+    id: "v027",
     type: "single-choice",
     question: "A Control Chart is a graph used to:",
     options: [
@@ -298,7 +457,31 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 19,
   },
   {
-    id: "q072",
+    id: "v028",
+    type: "single-choice",
+    question: "On a Control Chart, what is CL?",
+    options: [
+      { id: "a", text: "The process average" },
+      { id: "b", text: "The highest limit" },
+      { id: "c", text: "The lowest limit" },
+      { id: "d", text: "The cumulative line" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 19,
+  },
+  {
+    id: "v029",
+    type: "true-false",
+    question: "On a Control Chart, UCL is the lowest limit.",
+    options: [
+      { id: "t", text: "True" },
+      { id: "f", text: "False" },
+    ],
+    correctAnswer: "f",
+    sourceSlide: 19,
+  },
+  {
+    id: "v030",
     type: "single-choice",
     question: "On a Control Chart, a point outside the limits means you should:",
     options: [
@@ -311,7 +494,7 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 19,
   },
   {
-    id: "q217",
+    id: "v031",
     type: "multiple-select",
     question: "Which of these are the three lines on a Control Chart?",
     options: [
@@ -320,11 +503,24 @@ const QUIZ_QUESTIONS = [
       { id: "c", text: "LCL" },
       { id: "d", text: "PDCA" },
     ],
-    correctAnswer: ["a","b","c"],
+    correctAnswer: ["a", "b", "c"],
     sourceSlide: 19,
   },
   {
-    id: "q078",
+    id: "v032",
+    type: "multiple-select",
+    question: "According to the lecture, why is a Control Chart important? Select all that apply.",
+    options: [
+      { id: "a", text: "Detect problems early" },
+      { id: "b", text: "Reduce defects" },
+      { id: "c", text: "Monitor process variation" },
+      { id: "d", text: "Set the selling price of the part" },
+    ],
+    correctAnswer: ["a", "b", "c"],
+    sourceSlide: 20,
+  },
+  {
+    id: "v033",
     type: "image-choice",
     question: "Name the QC tool shown in this chart.",
     image: "control-chart-xbar.png",
@@ -339,9 +535,9 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 20,
   },
 
-  /* --- Tool 6 — Scatter Diagram --- */
+  /* --- Tool 6 · Scatter Diagram (slide 21) --- */
   {
-    id: "q079",
+    id: "v034",
     type: "single-choice",
     question: "A Scatter Diagram displays values for how many variables?",
     options: [
@@ -354,7 +550,20 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 21,
   },
   {
-    id: "q082",
+    id: "v035",
+    type: "single-choice",
+    question: "On a Scatter Diagram, points sloping down indicate:",
+    options: [
+      { id: "a", text: "A negative link" },
+      { id: "b", text: "A positive link" },
+      { id: "c", text: "No link" },
+      { id: "d", text: "An out-of-control process" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 21,
+  },
+  {
+    id: "v036",
     type: "true-false",
     question: "According to the lecture, a link shown on a Scatter Diagram is proof of cause.",
     options: [
@@ -365,22 +574,22 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 21,
   },
 
-  /* --- Tool 7 — Graph & Flow Chart --- */
+  /* --- Tool 7 · Graph & Flow Chart (slides 22–24) --- */
   {
-    id: "q084",
+    id: "v037",
     type: "single-choice",
-    question: "In a Flow Chart, which symbol means Start / End?",
+    question: "The lecture says a Graph should always:",
     options: [
-      { id: "a", text: "Oval" },
-      { id: "b", text: "Rectangle" },
-      { id: "c", text: "Diamond" },
-      { id: "d", text: "Parallelogram" },
+      { id: "a", text: "Label the axes and state the units" },
+      { id: "b", text: "Use six families of causes" },
+      { id: "c", text: "Include a cumulative percentage line" },
+      { id: "d", text: "Be drawn only by the quality department" },
     ],
     correctAnswer: "a",
     sourceSlide: 22,
   },
   {
-    id: "q090",
+    id: "v038",
     type: "single-choice",
     question: "What does a Flow Chart reveal?",
     options: [
@@ -393,24 +602,117 @@ const QUIZ_QUESTIONS = [
     sourceSlide: 22,
   },
   {
-    id: "q218",
-    type: "multiple-select",
-    question: "Which of these are Flow Chart symbols named in the lecture?",
+    id: "v039",
+    type: "single-choice",
+    question: "A Flow Chart is a diagram that shows:",
+    options: [
+      { id: "a", text: "The step-by-step flow of a process" },
+      { id: "b", text: "The distribution of numerical data" },
+      { id: "c", text: "Six families of possible causes" },
+      { id: "d", text: "The relationship between two variables" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 23,
+  },
+  {
+    id: "v040",
+    type: "single-choice",
+    question: "In a Flow Chart, which symbol represents the start or end of a process?",
     options: [
       { id: "a", text: "Oval" },
       { id: "b", text: "Rectangle" },
       { id: "c", text: "Diamond" },
+      { id: "d", text: "Parallelogram" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 24,
+  },
+  {
+    id: "v041",
+    type: "single-choice",
+    question: "In a Flow Chart, which symbol denotes a process or operation step?",
+    options: [
+      { id: "a", text: "Rectangle" },
+      { id: "b", text: "Oval" },
+      { id: "c", text: "Diamond" },
+      { id: "d", text: "Arrow" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 24,
+  },
+  {
+    id: "v042",
+    type: "single-choice",
+    question: "In a Flow Chart, which symbol signifies a point requiring a yes / no?",
+    options: [
+      { id: "a", text: "Diamond" },
+      { id: "b", text: "Rectangle" },
+      { id: "c", text: "Oval" },
+      { id: "d", text: "Parallelogram" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 24,
+  },
+  {
+    id: "v043",
+    type: "single-choice",
+    question: "In a Flow Chart, which symbol indicates the flow between steps?",
+    options: [
+      { id: "a", text: "Arrow" },
+      { id: "b", text: "Oval" },
+      { id: "c", text: "Diamond" },
+      { id: "d", text: "Rectangle" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 24,
+  },
+  {
+    id: "v044",
+    type: "single-choice",
+    question: "In a Flow Chart, which symbol is used for input or output operations?",
+    options: [
+      { id: "a", text: "Parallelogram" },
+      { id: "b", text: "Diamond" },
+      { id: "c", text: "Oval" },
+      { id: "d", text: "Arrow" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 24,
+  },
+  {
+    id: "v045",
+    type: "image-choice",
+    question: "In this table of Flow Chart symbols, which symbol means a decision point?",
+    image: "flowchart-symbols.png",
+    imageAlt: "A table of flow chart symbols listing Oval, Rectangle, Arrow, Diamond and Parallelogram with the function of each",
+    options: [
+      { id: "a", text: "Diamond" },
+      { id: "b", text: "Oval" },
+      { id: "c", text: "Rectangle" },
+      { id: "d", text: "Parallelogram" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 24,
+  },
+  {
+    id: "v046",
+    type: "multiple-select",
+    question: "Which of these are Flow Chart symbols named in the lecture?",
+    options: [
+      { id: "a", text: "Oval" },
+      { id: "b", text: "Diamond" },
+      { id: "c", text: "Parallelogram" },
       { id: "d", text: "Fishbone" },
     ],
-    correctAnswer: ["a","b","c"],
-    sourceSlide: 22,
+    correctAnswer: ["a", "b", "c"],
+    sourceSlide: 24,
   },
 
   /* ==========================================================
-     3.2 — PDCA CYCLE
+     3.2 — PDCA CYCLE  (slides 25–27)
      ========================================================== */
   {
-    id: "q092",
+    id: "v047",
     type: "single-choice",
     question: "What does PDCA stand for?",
     options: [
@@ -420,10 +722,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Predict – Detect – Contain – Analyse" },
     ],
     correctAnswer: "a",
-    sourceSlide: 23,
+    sourceSlide: 25,
   },
   {
-    id: "q094",
+    id: "v048",
     type: "single-choice",
     question: "In PDCA, what happens in the PLAN step?",
     options: [
@@ -433,10 +735,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Make it the standard" },
     ],
     correctAnswer: "a",
-    sourceSlide: 24,
+    sourceSlide: 26,
   },
   {
-    id: "q096",
+    id: "v049",
     type: "single-choice",
     question: "In PDCA, what happens in the CHECK step?",
     options: [
@@ -446,10 +748,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Update the SOP and brief all shifts." },
     ],
     correctAnswer: "a",
-    sourceSlide: 24,
+    sourceSlide: 26,
   },
   {
-    id: "q097",
+    id: "v050",
     type: "single-choice",
     question: "In PDCA, what happens in the ACT step?",
     options: [
@@ -459,10 +761,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Quarantine the affected parts" },
     ],
     correctAnswer: "a",
-    sourceSlide: 24,
+    sourceSlide: 26,
   },
   {
-    id: "q099",
+    id: "v051",
     type: "sequence-choice",
     question: "Which sequence is the correct PDCA Cycle?",
     options: [
@@ -472,10 +774,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "ACT → CHECK → DO → PLAN" },
     ],
     correctAnswer: "a",
-    sourceSlide: 24,
+    sourceSlide: 26,
   },
   {
-    id: "q102",
+    id: "v052",
     type: "true-false",
     question: "The lecture describes PDCA as a circle that you never stop going round.",
     options: [
@@ -483,14 +785,25 @@ const QUIZ_QUESTIONS = [
       { id: "f", text: "False" },
     ],
     correctAnswer: "t",
-    sourceSlide: 24,
+    sourceSlide: 26,
+  },
+  {
+    id: "v053",
+    type: "true-false",
+    question: "The lecture says the QC tools are used INSIDE the PDCA cycle.",
+    options: [
+      { id: "t", text: "True" },
+      { id: "f", text: "False" },
+    ],
+    correctAnswer: "t",
+    sourceSlide: 27,
   },
 
   /* ==========================================================
-     3.3 — 4W1H PROBLEM ANALYSIS
+     3.3 — 4W1H PROBLEM ANALYSIS  (slides 28–30)
      ========================================================== */
   {
-    id: "q109",
+    id: "v054",
     type: "single-choice",
     question: "The 4W1H analysis is made up of which five questions?",
     options: [
@@ -500,10 +813,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Plan, Do, Check, Act, Verify" },
     ],
     correctAnswer: "a",
-    sourceSlide: 27,
+    sourceSlide: 29,
   },
   {
-    id: "q110",
+    id: "v055",
     type: "single-choice",
     question: "Which extra question turns 4W1H into the classic 5W1H?",
     options: [
@@ -513,10 +826,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "HOW MUCH" },
     ],
     correctAnswer: "a",
-    sourceSlide: 27,
+    sourceSlide: 29,
   },
   {
-    id: "q111",
+    id: "v056",
     type: "single-choice",
     question: "In 4W1H, the WHO question asks about:",
     options: [
@@ -526,10 +839,23 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Who owns the machine" },
     ],
     correctAnswer: "a",
-    sourceSlide: 27,
+    sourceSlide: 29,
   },
   {
-    id: "q116",
+    id: "v057",
+    type: "single-choice",
+    question: "In 4W1H, the HOW question asks:",
+    options: [
+      { id: "a", text: "How does it happen, and how often?" },
+      { id: "b", text: "How much will the repair cost?" },
+      { id: "c", text: "How many operators are on shift?" },
+      { id: "d", text: "How the customer will be told?" },
+    ],
+    correctAnswer: "a",
+    sourceSlide: 29,
+  },
+  {
+    id: "v058",
     type: "true-false",
     question: "The lecture says you should not start fixing a problem until you can answer all five 4W1H questions.",
     options: [
@@ -537,16 +863,27 @@ const QUIZ_QUESTIONS = [
       { id: "f", text: "False" },
     ],
     correctAnswer: "t",
-    sourceSlide: 27,
+    sourceSlide: 29,
+  },
+  {
+    id: "v059",
+    type: "multiple-select",
+    question: "Which of these are among the FIVE questions of 4W1H?",
+    options: [
+      { id: "a", text: "WHAT" },
+      { id: "b", text: "WHERE" },
+      { id: "c", text: "WHO" },
+      { id: "d", text: "WHY" },
+    ],
+    correctAnswer: ["a", "b", "c"],
+    sourceSlide: 29,
   },
 
   /* ==========================================================
-     3.4 — CORRECTIVE AND PREVENTIVE ACTION
+     3.4 — CORRECTIVE AND PREVENTIVE ACTION  (slides 31–34)
      ========================================================== */
-
-  /* --- Corrective vs Preventive --- */
   {
-    id: "q123",
+    id: "v060",
     type: "single-choice",
     question: "Corrective Action deals with a problem that:",
     options: [
@@ -556,10 +893,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Only affects the customer" },
     ],
     correctAnswer: "a",
-    sourceSlide: 30,
+    sourceSlide: 32,
   },
   {
-    id: "q124",
+    id: "v061",
     type: "single-choice",
     question: "Preventive Action deals with a problem that:",
     options: [
@@ -569,10 +906,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Was already repaired" },
     ],
     correctAnswer: "a",
-    sourceSlide: 30,
+    sourceSlide: 32,
   },
   {
-    id: "q125",
+    id: "v062",
     type: "single-choice",
     question: "According to the lecture, repairing the part is only:",
     options: [
@@ -582,10 +919,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Standardisation" },
     ],
     correctAnswer: "a",
-    sourceSlide: 30,
+    sourceSlide: 32,
   },
   {
-    id: "q126",
+    id: "v063",
     type: "single-choice",
     question: "What triggers a Preventive Action?",
     options: [
@@ -595,12 +932,21 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "A completed repair" },
     ],
     correctAnswer: "a",
-    sourceSlide: 30,
+    sourceSlide: 32,
   },
-
-  /* --- The CAPA process --- */
   {
-    id: "q132",
+    id: "v064",
+    type: "true-false",
+    question: "Corrective Action is taken before a defect has happened.",
+    options: [
+      { id: "t", text: "True" },
+      { id: "f", text: "False" },
+    ],
+    correctAnswer: "f",
+    sourceSlide: 32,
+  },
+  {
+    id: "v065",
     type: "single-choice",
     question: "How many steps are in the CAPA Process taught in this chapter?",
     options: [
@@ -610,10 +956,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "6" },
     ],
     correctAnswer: "a",
-    sourceSlide: 31,
+    sourceSlide: 33,
   },
   {
-    id: "q134",
+    id: "v066",
     type: "single-choice",
     question: "In the CAPA Process, what does the Contain step mean?",
     options: [
@@ -623,10 +969,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Decide the action, owner and date" },
     ],
     correctAnswer: "a",
-    sourceSlide: 31,
+    sourceSlide: 33,
   },
   {
-    id: "q139",
+    id: "v067",
     type: "single-choice",
     question: "What is the final step of the CAPA Process?",
     options: [
@@ -636,10 +982,10 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Contain — quarantine affected parts" },
     ],
     correctAnswer: "a",
-    sourceSlide: 31,
+    sourceSlide: 33,
   },
   {
-    id: "q140",
+    id: "v068",
     type: "sequence-choice",
     question: "Which sequence matches the first four steps of the CAPA Process?",
     options: [
@@ -649,12 +995,23 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Identify → Analyse → Contain → Plan" },
     ],
     correctAnswer: "a",
-    sourceSlide: 31,
+    sourceSlide: 33,
   },
-
-  /* --- The 5 Whys --- */
   {
-    id: "q145",
+    id: "v069",
+    type: "multiple-select",
+    question: "Which of these are steps of the CAPA Process?",
+    options: [
+      { id: "a", text: "Contain" },
+      { id: "b", text: "Verify" },
+      { id: "c", text: "Standardise" },
+      { id: "d", text: "Sustain" },
+    ],
+    correctAnswer: ["a", "b", "c"],
+    sourceSlide: 33,
+  },
+  {
+    id: "v070",
     type: "single-choice",
     question: "In the 5 Whys, how long do you keep asking \"why?\"",
     options: [
@@ -664,53 +1021,57 @@ const QUIZ_QUESTIONS = [
       { id: "d", text: "Until the part is repaired" },
     ],
     correctAnswer: "a",
-    sourceSlide: 32,
+    sourceSlide: 34,
   },
 
   /* ==========================================================
-     3.5 — LEAN MANUFACTURING
+     3.5 — LEAN MANUFACTURING  (slides 35–36)
+     ----------------------------------------------------------
+     Scope stops at slide 36, so this covers the definition,
+     VALUE, WASTE and the goal — and nothing on the 8 Wastes,
+     Kaizen or 5S, which live on slide 37 onward.
      ========================================================== */
   {
-    id: "q153",
+    id: "v071",
     type: "single-choice",
-    question: "Lean means doing the job with LESS time, material, effort and space — and with quality that is:",
+    question: "How does the lecture define Lean Manufacturing?",
     options: [
-      { id: "a", text: "The same or better" },
-      { id: "b", text: "Slightly lower" },
-      { id: "c", text: "Not measured" },
-      { id: "d", text: "Decided by the customer" },
+      { id: "a", text: "A systematic approach to eliminating waste and increasing value in manufacturing" },
+      { id: "b", text: "A way of making operators work faster" },
+      { id: "c", text: "A method for sorting causes into six families" },
+      { id: "d", text: "A chart for monitoring a process over time" },
     ],
     correctAnswer: "a",
-    sourceSlide: 34,
+    sourceSlide: 36,
   },
   {
-    id: "q154",
+    id: "v072",
     type: "single-choice",
     question: "In Lean, what is VALUE?",
     options: [
       { id: "a", text: "What the customer pays for" },
       { id: "b", text: "What the customer would not pay for" },
-      { id: "c", text: "Work moving without stopping" },
-      { id: "d", text: "Making only what is needed" },
+      { id: "c", text: "The number of parts made per shift" },
+      { id: "d", text: "The cost of the raw material" },
     ],
     correctAnswer: "a",
-    sourceSlide: 34,
+    sourceSlide: 36,
   },
   {
-    id: "q155",
+    id: "v073",
     type: "single-choice",
     question: "In Lean, what is WASTE?",
     options: [
       { id: "a", text: "What the customer would not pay for" },
       { id: "b", text: "What the customer pays for" },
-      { id: "c", text: "Work moving without stopping" },
-      { id: "d", text: "Making only what is needed" },
+      { id: "c", text: "Any part that has been scrapped" },
+      { id: "d", text: "The time taken to cure a part" },
     ],
     correctAnswer: "a",
-    sourceSlide: 34,
+    sourceSlide: 36,
   },
   {
-    id: "q158",
+    id: "v074",
     type: "true-false",
     question: "According to the lecture, Lean means working faster.",
     options: [
@@ -718,54 +1079,21 @@ const QUIZ_QUESTIONS = [
       { id: "f", text: "False" },
     ],
     correctAnswer: "f",
-    sourceSlide: 34,
-  },
-  {
-    id: "q177",
-    type: "multiple-select",
-    question: "Which of these are wastes in the DOWNTIME model?",
-    options: [
-      { id: "a", text: "Waiting" },
-      { id: "b", text: "Inventory" },
-      { id: "c", text: "Motion" },
-      { id: "d", text: "Measurement" },
-    ],
-    correctAnswer: ["a","b","c"],
     sourceSlide: 36,
   },
   {
-    id: "q178",
+    id: "v075",
     type: "single-choice",
-    question: "Kaizen is Japanese for:",
+    question: "What is the goal of Lean Manufacturing?",
     options: [
-      { id: "a", text: "Change for the better" },
-      { id: "b", text: "A place for everything" },
-      { id: "c", text: "Zero defects" },
-      { id: "d", text: "Make only what is needed" },
+      { id: "a", text: "Deliver more value to customers using fewer resources, time and inventory" },
+      { id: "b", text: "Produce as many parts as possible every shift" },
+      { id: "c", text: "Remove all inspection from the process" },
+      { id: "d", text: "Replace operators with machines" },
     ],
     correctAnswer: "a",
-    sourceSlide: 37,
-  },
-  {
-    id: "q190",
-    type: "sequence-choice",
-    question: "Which sequence is the correct order of 5S?",
-    options: [
-      { id: "a", text: "SORT → SET IN ORDER → SHINE → STANDARDISE → SUSTAIN" },
-      { id: "b", text: "SHINE → SORT → SET IN ORDER → SUSTAIN → STANDARDISE" },
-      { id: "c", text: "SORT → SHINE → SET IN ORDER → SUSTAIN → STANDARDISE" },
-      { id: "d", text: "SET IN ORDER → SORT → STANDARDISE → SHINE → SUSTAIN" },
-    ],
-    correctAnswer: "a",
-    sourceSlide: 38,
+    sourceSlide: 36,
   },
 ];
 
-/* ------------------------------------------------------------
-   Make the bank available to the other scripts.
-   ------------------------------------------------------------
-   These files are loaded with plain <script> tags (no bundler),
-   so everything shares one global scope. Attaching to window
-   makes the intent explicit rather than relying on that.
-   ------------------------------------------------------------ */
 window.QUIZ_QUESTIONS = QUIZ_QUESTIONS;

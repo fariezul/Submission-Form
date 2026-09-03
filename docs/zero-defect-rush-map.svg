@@ -57,7 +57,7 @@
     <rect x="1090" y="70" width="124" height="26" rx="3" fill="#f0f4f8" stroke="#ccd6e0"/>
     <text class="muted" x="1104" y="88">IQA 10063</text>
     <rect x="1226" y="70" width="314" height="26" rx="3" fill="#f0f4f8" stroke="#ccd6e0"/>
-    <text class="muted" x="1240" y="88">50 questions · 30 per attempt · 10:00</text>
+    <text class="muted" x="1240" y="88">75 questions · 30 per attempt · 10:00</text>
   </g>
 
   <!-- ============ ZONE A : PHONE ============ -->
@@ -71,7 +71,7 @@
   <text class="t-node ink" x="260" y="304" text-anchor="middle">8 quiz scripts</text>
 
   <rect x="88" y="338" width="344" height="52" rx="5" fill="#f0f4f8" stroke="#ccd6e0"/>
-  <text class="t-node ink" x="260" y="370" text-anchor="middle">50 questions + 4 diagrams</text>
+  <text class="t-node ink" x="260" y="370" text-anchor="middle">75 questions + 5 diagrams</text>
 
   <line x1="88" y1="416" x2="432" y2="416" stroke="#e2e9f0"/>
   <text class="t-bodyb gold" x="260" y="444" text-anchor="middle">The score is worked out here.</text>
@@ -179,6 +179,6 @@
 
   <!-- ============ FOOTER ============ -->
   <line x1="60" y1="858" x2="1540" y2="858" stroke="#ccd6e0"/>
-  <text class="t-foot muted" x="60" y="880">Chapter 3 · Corrective Action and Process Improvement. Every question written from the lecture deck alone — 42 slides, 224 drafted, 50 kept.</text>
+  <text class="t-foot muted" x="60" y="880">Chapter 3 · Corrective Action and Process Improvement. Every question written from the lecture deck alone — 56 slides, scope limited to slides 1-36.</text>
   <text class="t-foot muted" x="1540" y="880" text-anchor="end">No build step · No login · No runtime AI</text>
 </svg>

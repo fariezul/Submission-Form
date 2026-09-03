@@ -10,7 +10,7 @@ Improvement**, living at:
 30 questions · 30 marks · 10 minutes · **30/30 required to pass** ·
 unlimited attempts.
 
-Every question comes from `Chapter3_Corrective_Action_Process_C.pptx`
+Every question comes from `Chapter3_Corrective_Action_Process_ .pptx` (slides 1-36)
 and nothing else.
 
 ---
@@ -162,7 +162,7 @@ supabase-form-app/
 ├── production-coordination/
 │   ├── activity-3.html              the page — six screens in one file
 │   ├── quiz/
-│   │   ├── quiz-questions.js        THE QUESTION BANK (50 questions)
+│   │   ├── quiz-questions.js        THE QUESTION BANK (75 questions)
 │   │   ├── quiz-engine.js           shuffling, marking, the clock
 │   │   ├── quiz-app.js              screens and game flow
 │   │   ├── quiz-audio.js            arcade sound, generated in-browser
@@ -171,7 +171,7 @@ supabase-form-app/
 │   │   ├── quiz-config.js           Supabase URL + anon key
 │   │   ├── quiz.css                 the arcade theme
 │   │   └── quiz-tests.js            the checks (section 9)
-│   └── quiz-images/                 4 diagrams taken from the slides
+│   └── quiz-images/                 5 diagrams taken from the slides
 └── supabase/migrations/
     └── 20260815_quiz_attempts.sql   the database setup
 ```
@@ -179,23 +179,21 @@ supabase-form-app/
 **Question bank:** `production-coordination/quiz/quiz-questions.js`
 **Quiz images:** `production-coordination/quiz-images/`
 
-### Why the bank is 50 and not larger
+### Why the bank is 75, and where it stops
 
-It started at 224. In August 2026 it was cut to the 50 questions
-that test a **concept** — what a tool is for, what a step means,
-how a sequence runs. Everything that only tested recall of a
-worked example from a slide was removed: the 145 °C die
-temperature, the Pareto activity's defect counts, the Check Sheet
-tallies, the 14 July night shift, the resin trolley. Those
-illustrate the ideas well in a lecture, but knowing the number is
-not knowing the topic.
+Built from the revised 56-slide deck, but **only slides 1-36** —
+the lecturer set that cut-off. So there is nothing on the 8
+Wastes / DOWNTIME, Kaizen, 5S or the closing summary, even though
+those slides exist.
 
-The trade-off is variety. 30 questions are drawn from 50, so
-roughly 60% of a paper repeats on the next attempt and a student
-who retries three or four times will have seen all of them. If
-that becomes a problem, add more **concept** questions rather than
-restoring the example ones. The removed questions are all in git
-history if any is ever wanted back.
+That cut-off is why 3.5 Lean has only five questions: the scope
+ends just after the Lean definition. Widening the scope is where
+the next questions would come from.
+
+Every question tests a **concept** rather than recall of a worked
+example. 30 are drawn from 75 per attempt, so roughly 43% of a
+paper repeats on the next try - better than the ~60% the earlier
+50-question bank gave.
 
 ### Checking a question against your slides
 
@@ -205,10 +203,10 @@ against your teaching material:
 
 ```js
 {
-  id: "q105",
-  question: "In the PDCA in Action example, the die temperature was fixed at what value for one shift?",
+  id: "v043",
+  question: "In a Flow Chart, which symbol indicates the flow between steps?",
   correctAnswer: "a",
-  sourceSlide: 25,          // <- open slide 25 to check this
+  sourceSlide: 24,          // <- open slide 24 to check this
 }
 ```
 
@@ -225,7 +223,7 @@ the correct answer is tracked by a stable `id`, never by position.
 node production-coordination/quiz/quiz-tests.js
 ```
 
-58 checks, no framework needed. They cover the things that would
+75 checks, no framework needed. They cover the things that would
 fail silently and do real damage:
 
 - exactly 30 questions per attempt, never a repeat
