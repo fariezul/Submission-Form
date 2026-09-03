@@ -57,7 +57,7 @@
     <rect x="1090" y="70" width="124" height="26" rx="3" fill="#f0f4f8" stroke="#ccd6e0"/>
     <text class="muted" x="1104" y="88">IQA 10063</text>
     <rect x="1226" y="70" width="314" height="26" rx="3" fill="#f0f4f8" stroke="#ccd6e0"/>
-    <text class="muted" x="1240" y="88">75 questions · 30 per attempt · 10:00</text>
+    <text class="muted" x="1240" y="88">75 questions · 30 per attempt · 25:00</text>
   </g>
 
   <!-- ============ ZONE A : PHONE ============ -->

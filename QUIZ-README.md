@@ -7,7 +7,7 @@ Improvement**, living at:
 /production-coordination/activity-3.html
 ```
 
-30 questions · 30 marks · 10 minutes · **30/30 required to pass** ·
+30 questions · 30 marks · 25 minutes · **30/30 required to pass** ·
 unlimited attempts.
 
 Every question comes from `Chapter3_Corrective_Action_Process_ .pptx` (slides 1-36)
@@ -229,7 +229,7 @@ fail silently and do real damage:
 - exactly 30 questions per attempt, never a repeat
 - shuffling never changes which answer is correct
 - a score can never exceed 30, and only 30/30 counts as completed
-- the clock reads a full 10:00 until START, and expires at exactly 600 s
+- the clock reads a full 25:00 until START, and expires at exactly 1500 s
 - the limit in `quiz-engine.js`, the wording on the page and the SQL
   duration constraint all still agree with each other
 - unanswered questions do not score
@@ -298,14 +298,14 @@ enough of them, which `quiz-tests.js` checks.
 
 ### Changing the time limit
 
-It went from 5 to 10 minutes in August 2026 because students were
+It went 5 -> 10 -> 25 minutes. Students were
 running out of time before question 30. The limit lives in **four**
 places, and they must agree:
 
 | Where | What to change |
 |---|---|
 | `quiz/quiz-engine.js` | `TIME_LIMIT_MS` — the value actually enforced |
-| `activity-3.html` | the `10:00` rule tile, the briefing warning, and the starting value of `#timerValue` |
+| `activity-3.html` | the `25:00` rule tile, the briefing warning, and the starting value of `#timerValue` |
 | `supabase/migrations/…sql` | the `duration_seconds` cap — must sit **above** the limit, or a full timeout gets rejected |
 | `quiz/quiz-tests.js` | the clock expectations |
 

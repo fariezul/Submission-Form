@@ -17,17 +17,20 @@
      ---------------------------------------------------------- */
   const QUESTIONS_PER_ATTEMPT = 30;
 
-  /* The whole attempt must fit inside this. Raised from 5 to 10
-     minutes in August 2026 — students were running out of time
-     before reaching question 30.
+  /* The whole attempt must fit inside this. 5 minutes at first;
+     10 in August 2026, because students were not reaching
+     question 30; 25 in September 2026.
 
-     If you change it again, three other things must move with it:
+     If you change it again, FOUR things must move with it, and
+     quiz-tests.js fails if any is missed:
        - the wording on activity-3.html (the rule tile, the
          briefing warning, the starting value of the timer)
        - the duration_seconds constraint in the SQL migration,
          which needs headroom above the new limit
+       - THE SAME CONSTRAINT ON THE LIVE DATABASE — editing the
+         migration file alone changes nothing already running
        - the clock tests in quiz-tests.js */
-  const TIME_LIMIT_MS = 10 * 60 * 1000;   // 600 000 ms = 10:00
+  const TIME_LIMIT_MS = 25 * 60 * 1000;   // 1 500 000 ms = 25:00
 
   /* How many of each type we try to include in every attempt.
      ----------------------------------------------------------

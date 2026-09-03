@@ -82,7 +82,7 @@ function section(title) {
    ========================================================== */
 section("Question bank");
 
-/* The bank was cut to 50 core-concept questions in August 2026.
+/* The bank is 75 concept questions from slides 1-36.
    30 are drawn per attempt, so a good share of a paper repeats on
    the next try — that is the accepted price of keeping only the
    questions worth asking. These two guard the floor rather than
@@ -420,16 +420,16 @@ check("percentage always fits the numeric(5,2) column", function () {
 /* ==========================================================
    THE CLOCK
    ========================================================== */
-section("The 10-minute clock");
+section("The 25-minute clock");
 
-check("the limit is 10 minutes", function () {
-  assertEqual(Engine.TIME_LIMIT_MS, 600000);
+check("the limit is 25 minutes", function () {
+  assertEqual(Engine.TIME_LIMIT_MS, 1500000);
 });
 
 check("before START, no time has passed", function () {
   const t = Engine.createTimer();
   assertEqual(t.elapsedMs(), 0);
-  assertEqual(t.remainingMs(), 600000, "the clock must read a full 10:00 until START");
+  assertEqual(t.remainingMs(), 1500000, "the clock must read a full 25:00 until START");
   assertEqual(t.isRunning(), false);
   assertEqual(t.hasExpired(), false);
 });
@@ -450,18 +450,18 @@ check("elapsed time is measured from the real clock", function () {
   Date.now = () => realNow() + 90000;
   try {
     assert(Math.abs(t.elapsedMs() - 90000) < 50, "elapsed was " + t.elapsedMs());
-    assert(Math.abs(t.remainingMs() - 510000) < 50, "remaining was " + t.remainingMs());
+    assert(Math.abs(t.remainingMs() - 1410000) < 50, "remaining was " + t.remainingMs());
     assertEqual(t.hasExpired(), false);
   } finally {
     Date.now = realNow;
   }
 });
 
-check("the clock expires at exactly 600 seconds", function () {
+check("the clock expires at exactly 1500 seconds", function () {
   const realNow = Date.now;
   const t = Engine.createTimer();
   t.start();
-  Date.now = () => realNow() + 600001;
+  Date.now = () => realNow() + 1500001;
   try {
     assertEqual(t.hasExpired(), true);
     assertEqual(t.remainingMs(), 0, "remaining must never go negative");
@@ -494,7 +494,7 @@ check("times are shown as mm:ss", function () {
   assertEqual(Engine.formatTime(299), "04:59");
   assertEqual(Engine.formatTime(300), "05:00");
   assertEqual(Engine.formatTime(599), "09:59");
-  assertEqual(Engine.formatTime(600), "10:00");
+  assertEqual(Engine.formatTime(1500), "25:00");
 });
 
 check("a negative time never appears on screen", function () {
@@ -502,8 +502,8 @@ check("a negative time never appears on screen", function () {
 });
 
 /* The time limit lives in three places that must agree. When it
-   moved from 5 to 10 minutes, the database constraint was left
-   behind at 600 s — which a full 10-minute attempt hits exactly,
+   last moved, the database constraint was left
+   behind at its old value, which a full attempt hits exactly,
    so the very slowest legitimate attempt would have been rejected
    on submit. These two checks make that drift fail loudly here
    instead of silently in front of a class. */
@@ -528,7 +528,7 @@ check("the SQL duration cap leaves headroom above the time limit", function () {
 
 check("the page shows the same limit the engine enforces", function () {
   const html = fs.readFileSync(path.join(HERE, "..", "activity-3.html"), "utf8");
-  const expected = Engine.formatTime(Engine.TIME_LIMIT_MS / 1000);   // e.g. "10:00"
+  const expected = Engine.formatTime(Engine.TIME_LIMIT_MS / 1000);   // e.g. "25:00"
 
   assert(html.includes('id="timerValue">' + expected + "<"),
     "the timer on the page does not start at " + expected);
@@ -850,7 +850,7 @@ check("the row satisfies every database constraint", function () {
     assert(row.score >= 0 && row.score <= row.total_questions, "score range");
     assertEqual(row.total_questions, 30, "total_questions must be 30");
     assert(row.percentage >= 0 && row.percentage <= 100, "percentage range");
-    assert(row.duration_seconds >= 0 && row.duration_seconds <= 900, "duration range");
+    assert(row.duration_seconds >= 0 && row.duration_seconds <= 1800, "duration range");
     assertEqual(row.completed, row.score === row.total_questions,
       "completed must agree with the score — this is what keeps the leaderboard honest");
     assert(row.student_name.trim().length >= 1 && row.student_name.trim().length <= 80, "name length");
@@ -865,7 +865,7 @@ check("a timed-out attempt is recorded as incomplete", function () {
   // Answered only 12 before the clock ran out; all 12 right.
   const rs = qs.slice(0, 12).map((q) => ({ questionId: q.id, selected: "a", correct: true }));
   const marks = Engine.scoreAttempt(rs, 30);
-  const row = buildRow(qs, rs, marks, { timed_out: true, duration_seconds: 600 });
+  const row = buildRow(qs, rs, marks, { timed_out: true, duration_seconds: 1500 });
 
   assertEqual(row.score, 12);
   assertEqual(row.completed, false, "a timed-out attempt can never be a pass");
