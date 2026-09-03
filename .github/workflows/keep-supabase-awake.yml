@@ -1,0 +1,84 @@
+# ============================================================
+# Keep the Supabase project awake
+# ============================================================
+# Supabase pauses a free project after about a week without
+# traffic. That is fine for a hobby project and awful for a
+# classroom one: the first class back finds that every result
+# silently fails to save.
+#
+# This sends one harmless read request a few times a week, which
+# counts as traffic and stops the clock running down.
+#
+# IT CAN ALSO BE RUN BY HAND. Actions -> Keep Supabase awake ->
+# Run workflow. Worth doing a few minutes before a class if the
+# quiz has not been used in a while.
+# ============================================================
+
+name: Keep Supabase awake
+
+on:
+  schedule:
+    # 03:00 UTC = 11:00 Malaysia, on Monday, Wednesday and Friday.
+    # Never more than three days between pings, well inside the
+    # roughly seven-day pause window.
+    - cron: "0 3 * * 1,3,5"
+
+  # The manual button.
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out the site
+        uses: actions/checkout@v4
+
+      # The URL and key are read straight out of the file the quiz
+      # itself uses, so there is one source of truth. Change the
+      # project in quiz-config.js and this follows automatically.
+      #
+      # The anon key is public by design and already committed in
+      # that file, so nothing secret is being exposed here.
+      - name: Read the Supabase settings from quiz-config.js
+        id: cfg
+        run: |
+          CONFIG="production-coordination/quiz/quiz-config.js"
+
+          URL=$(grep -oP 'SUPABASE_URL:\s*"\K[^"]+' "$CONFIG")
+          KEY=$(grep -oPz 'SUPABASE_ANON_KEY:\s*\n?\s*"\K[^"]+' "$CONFIG" | tr -d '\0')
+
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "::error::Could not read SUPABASE_URL or SUPABASE_ANON_KEY from $CONFIG"
+            exit 1
+          fi
+
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "::add-mask::$KEY"
+          echo "key=$KEY" >> "$GITHUB_OUTPUT"
+          echo "Pinging $URL"
+
+      - name: Ping the database
+        run: |
+          URL="${{ steps.cfg.outputs.url }}"
+          KEY="${{ steps.cfg.outputs.key }}"
+
+          # A read-only call that touches Postgres, so it counts as
+          # real traffic rather than just hitting a gateway.
+          STATUS=$(curl -s -o /tmp/body -w "%{http_code}" \
+            -X POST "$URL/rest/v1/rpc/quiz_leaderboard" \
+            -H "Content-Type: application/json" \
+            -H "apikey: $KEY" \
+            -H "Authorization: Bearer $KEY" \
+            -d '{"row_limit":1}')
+
+          echo "HTTP $STATUS"
+          head -c 300 /tmp/body; echo
+
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::Supabase did not answer (HTTP $STATUS). The project may be paused — restore it in the dashboard."
+            exit 1
+          fi
+
+          echo "Supabase is awake."

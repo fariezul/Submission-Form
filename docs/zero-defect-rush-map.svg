@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900"
+     role="img" aria-label="System map for the Zero Defect Rush quiz: Vercel serves static files to the student's phone, the phone inserts attempts and visits into Supabase and reads back only two functions, and a perfect score triggers an email to the lecturer.">
+
+  <style>
+    .t-title  { font: 800 46px "Segoe UI", Arial, sans-serif; letter-spacing: -1px; }
+    .t-sub    { font: 400 19px "Segoe UI", Arial, sans-serif; }
+    .t-chip   { font: 600 13px Consolas, "Courier New", monospace; letter-spacing: .5px; }
+    .t-zone   { font: 700 13px Consolas, "Courier New", monospace; letter-spacing: 2px; }
+    .t-node   { font: 400 15px Consolas, "Courier New", monospace; }
+    .t-edge   { font: 600 14px "Segoe UI", Arial, sans-serif; }
+    .t-note   { font: italic 400 13px "Segoe UI", Arial, sans-serif; }
+    .t-panel  { font: 700 13px Consolas, "Courier New", monospace; letter-spacing: 1.6px; }
+    .t-body   { font: 400 14px "Segoe UI", Arial, sans-serif; }
+    .t-bodyb  { font: 700 14px "Segoe UI", Arial, sans-serif; }
+    .t-mono   { font: 400 13.5px Consolas, "Courier New", monospace; }
+    .t-foot   { font: 400 13px "Segoe UI", Arial, sans-serif; }
+
+    .ink   { fill: #12212e; }
+    .muted { fill: #5d6b7a; }
+    .data  { fill: #1f6f80; }
+    .gold  { fill: #b8791a; }
+    .ok    { fill: #2f6b4f; }
+    .rust  { fill: #9c4a3f; }
+    .white { fill: #ffffff; }
+  </style>
+
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#5d6b7a"/>
+    </marker>
+    <marker id="a-gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#b8791a"/>
+    </marker>
+    <marker id="a-data" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1f6f80"/>
+    </marker>
+    <marker id="a-sm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#5d6b7a"/>
+    </marker>
+  </defs>
+
+  <!-- ground -->
+  <rect width="1600" height="900" fill="#f7f9fb"/>
+  <rect width="1600" height="128" fill="#ffffff"/>
+  <line x1="0" y1="128" x2="1600" y2="128" stroke="#ccd6e0" stroke-width="1"/>
+  <rect x="0" y="0" width="6" height="128" fill="#b8791a"/>
+
+  <!-- ============ HEADER ============ -->
+  <text class="t-title ink" x="60" y="62">ZERO DEFECT RUSH</text>
+  <text class="t-sub muted" x="60" y="95">How the quiz is wired together — browser, Vercel, Supabase</text>
+
+  <g class="t-chip">
+    <rect x="1090" y="34" width="196" height="26" rx="3" fill="#f0f4f8" stroke="#ccd6e0"/>
+    <text class="muted" x="1104" y="52">TVETMARA Masjid Tanah</text>
+    <rect x="1298" y="34" width="242" height="26" rx="3" fill="#f0f4f8" stroke="#ccd6e0"/>
+    <text class="muted" x="1312" y="52">Ts. Mohd Farizul Jaafar</text>
+    <rect x="1090" y="70" width="124" height="26" rx="3" fill="#f0f4f8" stroke="#ccd6e0"/>
+    <text class="muted" x="1104" y="88">IQA 10063</text>
+    <rect x="1226" y="70" width="314" height="26" rx="3" fill="#f0f4f8" stroke="#ccd6e0"/>
+    <text class="muted" x="1240" y="88">50 questions · 30 per attempt · 10:00</text>
+  </g>
+
+  <!-- ============ ZONE A : PHONE ============ -->
+  <text class="t-zone gold" x="60" y="163">STUDENT'S PHONE</text>
+  <rect x="60" y="176" width="400" height="384" rx="8" fill="#ffffff" stroke="#b8791a" stroke-width="1.5" stroke-dasharray="6 5"/>
+
+  <rect x="88" y="206" width="344" height="52" rx="5" fill="#f0f4f8" stroke="#ccd6e0"/>
+  <text class="t-node ink" x="260" y="238" text-anchor="middle">activity-3.html</text>
+
+  <rect x="88" y="272" width="344" height="52" rx="5" fill="#f0f4f8" stroke="#ccd6e0"/>
+  <text class="t-node ink" x="260" y="304" text-anchor="middle">8 quiz scripts</text>
+
+  <rect x="88" y="338" width="344" height="52" rx="5" fill="#f0f4f8" stroke="#ccd6e0"/>
+  <text class="t-node ink" x="260" y="370" text-anchor="middle">50 questions + 4 diagrams</text>
+
+  <line x1="88" y1="416" x2="432" y2="416" stroke="#e2e9f0"/>
+  <text class="t-bodyb gold" x="260" y="444" text-anchor="middle">The score is worked out here.</text>
+  <text class="t-note muted" x="260" y="466" text-anchor="middle">No account, no password —</text>
+  <text class="t-note muted" x="260" y="486" text-anchor="middle">a name and a class, typed each time.</text>
+  <text class="t-note muted" x="260" y="516" text-anchor="middle">Refreshing abandons the attempt,</text>
+  <text class="t-note muted" x="260" y="536" text-anchor="middle">on purpose. Nothing is resumed.</text>
+
+  <!-- ============ ZONE B : VERCEL ============ -->
+  <text class="t-zone muted" x="640" y="163">VERCEL</text>
+  <rect x="640" y="176" width="300" height="184" rx="8" fill="#ffffff" stroke="#ccd6e0" stroke-width="1.5" stroke-dasharray="6 5"/>
+
+  <rect x="668" y="206" width="244" height="52" rx="5" fill="#f0f4f8" stroke="#ccd6e0"/>
+  <text class="t-node ink" x="790" y="238" text-anchor="middle">static files</text>
+
+  <text class="t-note muted" x="790" y="292" text-anchor="middle">No build step. No server code.</text>
+  <text class="t-note muted" x="790" y="314" text-anchor="middle">Redeploys on push to main.</text>
+  <text class="t-mono muted" x="790" y="340" text-anchor="middle">github.com/fariezul</text>
+
+  <!-- ============ ZONE C : SUPABASE ============ -->
+  <text class="t-zone data" x="1120" y="163">SUPABASE · POSTGRES</text>
+  <rect x="1120" y="176" width="420" height="384" rx="8" fill="#ffffff" stroke="#1f6f80" stroke-width="1.5" stroke-dasharray="6 5"/>
+
+  <text class="t-panel muted" x="1148" y="204">TABLES — INSERT ONLY</text>
+  <rect x="1148" y="216" width="364" height="46" rx="5" fill="#f0f4f8" stroke="#1f6f80" stroke-opacity=".45"/>
+  <text class="t-node ink" x="1166" y="245">quiz_attempts</text>
+  <text class="t-note muted" x="1490" y="245" text-anchor="end">every attempt</text>
+
+  <rect x="1148" y="272" width="364" height="46" rx="5" fill="#f0f4f8" stroke="#1f6f80" stroke-opacity=".45"/>
+  <text class="t-node ink" x="1166" y="301">page_visits</text>
+  <text class="t-note muted" x="1490" y="301" text-anchor="end">one per opening</text>
+
+  <text class="t-panel muted" x="1148" y="352">THE ONLY TWO READS</text>
+  <rect x="1148" y="364" width="364" height="46" rx="5" fill="#f0f4f8" stroke="#1f6f80" stroke-opacity=".45"/>
+  <text class="t-node ink" x="1166" y="393">quiz_leaderboard()</text>
+
+  <rect x="1148" y="420" width="364" height="46" rx="5" fill="#f0f4f8" stroke="#1f6f80" stroke-opacity=".45"/>
+  <text class="t-node ink" x="1166" y="449">quiz_recent_attempts()</text>
+
+  <line x1="1148" y1="490" x2="1512" y2="490" stroke="#e2e9f0"/>
+  <text class="t-bodyb rust" x="1330" y="518" text-anchor="middle">The public key can never SELECT.</text>
+  <text class="t-note muted" x="1330" y="540" text-anchor="middle">Scores, session ids and answers stay inside.</text>
+
+  <!-- ============ ARROWS ============ -->
+  <line x1="640" y1="232" x2="470" y2="232" stroke="#5d6b7a" stroke-width="2" marker-end="url(#a-ink)"/>
+  <text class="t-edge muted" x="555" y="222" text-anchor="middle">serves</text>
+
+  <line x1="460" y1="430" x2="1112" y2="430" stroke="#b8791a" stroke-width="2.5" marker-end="url(#a-gold)"/>
+  <text class="t-edge gold" x="786" y="419" text-anchor="middle">writes one row per attempt · per visit</text>
+
+  <line x1="1120" y1="498" x2="468" y2="498" stroke="#1f6f80" stroke-width="2.5" marker-end="url(#a-data)"/>
+  <text class="t-edge data" x="794" y="487" text-anchor="middle">reads leaderboard + class scoreboard</text>
+
+  <!-- ============ BOTTOM PANELS ============ -->
+
+  <!-- panel 1 : perfect score -->
+  <rect x="60" y="606" width="460" height="228" rx="6" fill="#ffffff" stroke="#ccd6e0"/>
+  <rect x="60" y="606" width="460" height="4" rx="2" fill="#b8791a"/>
+  <text class="t-panel ink" x="86" y="642">ON A PERFECT SCORE</text>
+
+  <rect x="86" y="662" width="180" height="38" rx="4" fill="#f0f4f8" stroke="#ccd6e0"/>
+  <text class="t-mono ink" x="176" y="686" text-anchor="middle">row inserted</text>
+  <line x1="266" y1="681" x2="300" y2="681" stroke="#5d6b7a" stroke-width="1.6" marker-end="url(#a-sm)"/>
+  <rect x="306" y="662" width="188" height="38" rx="4" fill="#f0f4f8" stroke="#b8791a"/>
+  <text class="t-mono ink" x="400" y="686" text-anchor="middle">score = 30 / 30 ?</text>
+
+  <line x1="400" y1="700" x2="400" y2="722" stroke="#5d6b7a" stroke-width="1.6" marker-end="url(#a-sm)"/>
+
+  <rect x="306" y="728" width="188" height="38" rx="4" fill="#f0f4f8" stroke="#ccd6e0"/>
+  <text class="t-mono ink" x="400" y="752" text-anchor="middle">Resend</text>
+  <line x1="306" y1="747" x2="272" y2="747" stroke="#5d6b7a" stroke-width="1.6" marker-end="url(#a-sm)"/>
+  <rect x="86" y="728" width="180" height="38" rx="4" fill="#f0f4f8" stroke="#ccd6e0"/>
+  <text class="t-mono ink" x="176" y="752" text-anchor="middle">lecturer inbox</text>
+
+  <text class="t-note muted" x="290" y="798" text-anchor="middle">Full marks only — a class of 40 with retries</text>
+  <text class="t-note muted" x="290" y="818" text-anchor="middle">would otherwise bury the inbox.</text>
+
+  <!-- panel 2 : what is stored -->
+  <rect x="570" y="606" width="460" height="228" rx="6" fill="#ffffff" stroke="#ccd6e0"/>
+  <rect x="570" y="606" width="460" height="4" rx="2" fill="#1f6f80"/>
+  <text class="t-panel ink" x="596" y="642">WHAT IS STORED</text>
+
+  <text class="t-bodyb ok" x="596" y="674">Kept</text>
+  <text class="t-body ink" x="596" y="698">Name · class · score · time taken</text>
+  <text class="t-body ink" x="596" y="720">Which 30 questions were served</text>
+  <text class="t-body ink" x="596" y="742">Each answer, right or wrong</text>
+
+  <text class="t-bodyb rust" x="596" y="778">Never collected</text>
+  <text class="t-body muted" x="596" y="800">Email · password · IP · location</text>
+  <text class="t-body muted" x="596" y="822">Cookies · device fingerprint</text>
+
+  <!-- panel 3 : where the lecturer looks -->
+  <rect x="1080" y="606" width="460" height="228" rx="6" fill="#ffffff" stroke="#ccd6e0"/>
+  <rect x="1080" y="606" width="460" height="4" rx="2" fill="#5d6b7a"/>
+  <text class="t-panel ink" x="1106" y="642">WHERE THE LECTURER LOOKS</text>
+
+  <text class="t-bodyb ink" x="1106" y="676">The inbox</text>
+  <text class="t-body muted" x="1106" y="698">An email on every 30 / 30.</text>
+
+  <text class="t-bodyb ink" x="1106" y="734">Supabase SQL Editor</text>
+  <text class="t-body muted" x="1106" y="756">Runs as owner, so it reads everything.</text>
+  <text class="t-mono muted" x="1106" y="780">how many opened it</text>
+  <text class="t-mono muted" x="1106" y="800">who passed, and how fast</text>
+  <text class="t-mono muted" x="1106" y="820">which questions get missed most</text>
+
+  <!-- ============ FOOTER ============ -->
+  <line x1="60" y1="858" x2="1540" y2="858" stroke="#ccd6e0"/>
+  <text class="t-foot muted" x="60" y="880">Chapter 3 · Corrective Action and Process Improvement. Every question written from the lecture deck alone — 42 slides, 224 drafted, 50 kept.</text>
+  <text class="t-foot muted" x="1540" y="880" text-anchor="end">No build step · No login · No runtime AI</text>
+</svg>
