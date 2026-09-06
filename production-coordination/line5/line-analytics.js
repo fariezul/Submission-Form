@@ -873,17 +873,32 @@
 
     /* 4. Working time versus waiting time. The heart of it. */
     if (isNum(L.pce)) {
+      /* The word "only" belongs to a bad number.
+         ----------------------------------------------------
+         This read "A plane spent only 94% of its time being
+         worked on", which is a compliment delivered as a
+         complaint — and it undercuts the one finding a class
+         should be pleased to see. A well-balanced second round
+         is exactly when it appeared, so it was the reward for
+         doing the activity properly. */
+      const busy = L.pce >= 0.7;
+
       out.push({
         tone: L.pce < 0.4 ? "bad" : (L.pce < 0.7 ? "warn" : "good"),
-        title: "A plane spent only " + pct(L.pce) + " of its time being worked on",
+        title: busy
+          ? "A plane spent " + pct(L.pce) + " of its time being worked on"
+          : "A plane spent only " + pct(L.pce) + " of its time being worked on",
         body: "Follow one plane through. It was in the line for " +
-              secs(L.avgLeadMs) + ". But somebody was actually touching it for " +
-              "only " + secs(L.avgVaMs) + " of that. " +
-              "The other " + secs(L.avgWaitMs) + " it just sat in a pile, waiting " +
-              "its turn. " +
-              "Think about what that means: getting rid of the waiting costs nobody " +
-              "any extra effort. Nobody has to work harder or faster. That is why " +
-              "you fix the waiting first.",
+              secs(L.avgLeadMs) + ". Somebody was actually touching it for " +
+              secs(L.avgVaMs) + " of that, and for the other " +
+              secs(L.avgWaitMs) + " it just sat in a pile, waiting its turn. " +
+              (busy
+                ? "That is a good result — the aeroplanes are nearly always " +
+                  "being worked on rather than queuing. There is little left to " +
+                  "win here, so look at the slowest station instead."
+                : "Think about what that means: getting rid of the waiting costs " +
+                  "nobody any extra effort. Nobody has to work harder or faster. " +
+                  "That is why you fix the waiting first."),
       });
     }
 

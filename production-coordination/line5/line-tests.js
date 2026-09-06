@@ -815,6 +815,51 @@ ok(/work in progress/.test(doneFindings),
 ok(/being worked on/.test(doneFindings),
    "the working-versus-waiting split is still reported");
 
+/* "only" belongs to a bad number.
+   ------------------------------------------------------------
+   Found on the live site: a well-run round produced "A plane
+   spent only 94% of its time being worked on", which is a
+   compliment phrased as a complaint — and it turned up precisely
+   when a class had done the activity well. */
+const efficient = A.analyse({
+  stations: STATIONS,
+  itemCount: 3,
+  // Almost no queuing: each station is free the moment the next
+  // aeroplane reaches it.
+  exits: [[10 * S, 40 * S, 70 * S],
+          [20 * S, 50 * S, 80 * S],
+          [25 * S, 55 * S, 85 * S],
+          [30 * S, 60 * S, 90 * S]],
+  verdicts: {},
+  taktMs: null,
+});
+const efficientText = findingText(efficient);
+
+ok(efficient.line.pce >= 0.7,
+   "the tidy round really is mostly work (" +
+   A.fmt.pct(efficient.line.pce) + ")");
+ok(!/spent only/.test(efficientText),
+   "a good efficiency is not described with the word 'only'");
+
+/* A round with a heavy bottleneck, where the queue really does
+   dominate. The worked example is 71% and reads as the good case,
+   so it cannot be used to prove the other branch. */
+const queueHeavy = A.analyse({
+  stations: STATIONS,
+  itemCount: 4,
+  exits: [[5 * S, 10 * S, 15 * S, 20 * S],        // fast
+          [45 * S, 85 * S, 125 * S, 165 * S],     // 40s each: the jam
+          [50 * S, 90 * S, 130 * S, 170 * S],
+          [55 * S, 95 * S, 135 * S, 175 * S]],
+  verdicts: {},
+  taktMs: null,
+});
+ok(queueHeavy.line.pce < 0.7,
+   "the jammed round really is mostly waiting (" +
+   A.fmt.pct(queueHeavy.line.pce) + ")");
+ok(/spent only/.test(findingText(queueHeavy)),
+   "and a poor efficiency still gets the word 'only'");
+
 /* 5. SOLO TAPS WERE UPLOADED under a round number the server had
       not issued and would later hand to a real team round. */
 ok(/if \(state\.header\.solo\) return/.test(stripComments(SRC.store)),
