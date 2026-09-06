@@ -554,7 +554,7 @@ function getRounds(params, cb) {
    ------------------------------------------------------------
    1. Set the dropdown at the top of the editor to "cleanupTests".
    2. Press Run.
-   3. Read the result in the Execution log.
+   3. Read the result in the Execution log — it names the counts.
 
    It removes the ZZTEST rows left behind by a connection check.
    To clear a different line, edit the code in cleanupTests, or
@@ -567,16 +567,20 @@ function cleanupTests() {
 }
 
 /* Removes every Round and Event row carrying one line code.
-   Returns a summary rather than logging, so the Execution log
-   shows what it did. */
+   ------------------------------------------------------------
+   Says what it did through console.log, NOT just by returning it.
+   A returned value does not appear in the Execution log — the log
+   shows "Execution completed" and nothing else, which tells you
+   the function ran but not whether it found anything. That is the
+   one thing you actually want to know after running a delete. */
 function deleteLineCode(code) {
   var wanted = String(code || '').toUpperCase();
-  if (!wanted) return 'No code given — nothing done.';
+  if (!wanted) return say('No code given — nothing done.');
 
   /* Guard against the obvious accident. Clearing every row in the
      sheet should not be one typo away. */
   if (wanted === '*' || wanted === 'ALL') {
-    return 'Refused: pass a single line code, not a wildcard.';
+    return say('Refused: pass a single line code, not a wildcard.');
   }
 
   var lock = LockService.getScriptLock();
@@ -586,12 +590,25 @@ function deleteLineCode(code) {
     var rounds = purge(ROUNDS_SHEET, ROUND_HEADERS, 1, wanted);
     var events = purge(EVENTS_SHEET, EVENT_HEADERS, 1, wanted);
 
-    return 'Deleted ' + rounds + ' row(s) from ' + ROUNDS_SHEET +
-           ' and ' + events + ' row(s) from ' + EVENTS_SHEET +
-           ' for line "' + wanted + '".';
+    if (rounds === 0 && events === 0) {
+      return say('Nothing to delete — no rows carry the line code "' +
+                 wanted + '".');
+    }
+
+    return say('Deleted ' + rounds + ' row(s) from ' + ROUNDS_SHEET +
+               ' and ' + events + ' row(s) from ' + EVENTS_SHEET +
+               ' for line "' + wanted + '".');
   } finally {
     lock.releaseLock();
   }
+}
+
+/* Puts a line in the Execution log AND hands it back, so the
+   message is visible whether you ran this from the editor or
+   called it from another function. */
+function say(message) {
+  console.log(message);
+  return message;
 }
 
 /* Deletes rows whose column `col` (1-based) matches `wanted`.
