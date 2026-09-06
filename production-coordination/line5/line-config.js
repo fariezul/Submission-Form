@@ -40,7 +40,7 @@ window.LINE_CONFIG = {
      Deploy -> Manage deployments -> pencil -> Version: New version.
      This catches everybody once.
      ---------------------------------------------------------- */
-  SCRIPT_URL: "PASTE_YOUR_WEB_APP_URL_HERE",
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbyT-ej-TmlUEyU6UJNcrpJu_kTNRs78PfpzXLZo3ut0jJ_fsGAgunbszKGLfRJ3J2mVkg/exec",
 
   /* Must match SHARED_TOKEN in activity-5-Code.gs. It sits in a
      file the browser downloads, so it is a speed bump against
