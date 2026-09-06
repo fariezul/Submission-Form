@@ -436,16 +436,49 @@
   margin-left: 5px;
 }
 
+/* ------------------------------------------------------------
+   THE THREE FIGURES UNDER THE COUNT
+   ------------------------------------------------------------
+   avg · waited · busy. These are the numbers the class actually
+   argues about, and at 13px in a run-on line they were the
+   smallest thing on a screen being read from four metres away.
+
+   Now each one is a stacked pair: a small quiet label with a big
+   bold number beneath it. The label is the word you read once to
+   learn what the column is; the number is the thing you read
+   every time you glance up. Sizing them the same made you read
+   the whole phrase to find the figure.
+
+   The stacking works without touching the markup — the label is
+   a bare text node inside the span, so a column flex direction
+   makes it an anonymous flex item sitting above the <b>.
+   ------------------------------------------------------------ */
 .fl-station-meta {
-  margin-top: 10px;
+  margin-top: 14px;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 16px;
-  font-size: 13px;
-  color: var(--fl-ink-soft);
+  gap: 10px 22px;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fl-ink-faint);
 }
 
-.fl-station-meta b { color: var(--fl-ink); font-weight: 750; }
+.fl-station-meta span {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fl-station-meta b {
+  font-size: 25px;
+  font-weight: 850;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: var(--fl-ink);
+}
 
 /* A thin progress rail along the bottom of each card. */
 .fl-station-rail {
@@ -883,7 +916,8 @@ body.fl-display .fl-stat-label    { font-size: 13px; }
 body.fl-display .fl-station-key   { font-size: 38px; }
 body.fl-display .fl-station-name  { font-size: 21px; }
 body.fl-display .fl-station-big   { font-size: 62px; }
-body.fl-display .fl-station-meta  { font-size: 17px; }
+body.fl-display .fl-station-meta   { font-size: 15px; }
+body.fl-display .fl-station-meta b { font-size: 34px; }
 body.fl-display .fl-tag           { font-size: 12px; }
 body.fl-display .fl-metric-value  { font-size: 44px; }
 body.fl-display .fl-metric-label  { font-size: 13px; }

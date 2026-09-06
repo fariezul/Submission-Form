@@ -1400,6 +1400,36 @@ ok(CONFIG.MONITOR_POLL_MS >= 3000 && CONFIG.STATION_POLL_MS >= 3000,
    "neither poll is fast enough to burn the daily Apps Script quota");
 
 
+describe("The figures on a station card are big enough to read across a room");
+
+/* avg · waited · busy are the numbers the class argues about, and
+   they were the smallest text on a screen being read from four
+   metres away. The label stays small; the FIGURE has to be large.
+   Pinned because a tidy-up of this rule would silently undo it. */
+function cssSize(selector, prop) {
+  const rule = SRC.css.match(
+    new RegExp(selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+               "\\s*\\{[^}]*?" + prop + ":\\s*([\\d.]+)px"));
+  return rule ? Number(rule[1]) : null;
+}
+
+const metaLabel = cssSize(".fl-station-meta", "font-size");
+const metaValue = cssSize(".fl-station-meta b", "font-size");
+
+ok(metaValue !== null && metaValue >= 20,
+   "the figure on a station card is at least 20px (" + metaValue + "px)");
+ok(metaLabel !== null && metaValue > metaLabel * 1.6,
+   "and clearly bigger than its label (" + metaLabel + "px label, " +
+   metaValue + "px figure)");
+
+/* And bigger again on the television. */
+const displayValue = SRC.css.match(
+  /body\.fl-display \.fl-station-meta b\s*\{\s*font-size:\s*([\d.]+)px/);
+ok(!!displayValue && Number(displayValue[1]) > metaValue,
+   "display mode enlarges it further (" +
+   (displayValue ? displayValue[1] : "?") + "px)");
+
+
 describe("Chart styles exist");
 
 /* A chart class with no rule in line.css renders as invisible
