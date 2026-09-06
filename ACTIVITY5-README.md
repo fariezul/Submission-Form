@@ -189,16 +189,27 @@ aeroplane's.
 | **Average cycle time** | How long a station takes per aeroplane. The bottleneck is simply the largest. |
 | **Line cycle time** | The gap between finished aeroplanes leaving. On real data this comes out almost exactly equal to the bottleneck's cycle time — which is the punchline of the whole activity. |
 | **Lead time** | From Marking picking a sheet up to Quality Check finishing it. |
-| **Process Cycle Efficiency** | Of that lead time, how much was somebody actually working. Classes are routinely shocked; 20–30% is normal for a first round. |
+| **Process Cycle Efficiency** † | Of that lead time, how much was somebody actually working. Classes are routinely shocked; 20–30% is normal for a first round. |
 | **Waiting for work** | Per station and for the whole team, in minutes. |
 | **Line balance** | 100% would mean every station takes the same time and nobody waits. |
-| **Work in progress** | How many aeroplanes were stuck in the line, moment by moment. Cross-checked against Little's Law (WIP = throughput × lead time), which agrees to two decimal places on real data. |
+| **Work in progress** | How many aeroplanes were stuck in the line, moment by moment. Cross-checked against Little's Law † (WIP = throughput × lead time), which agrees to two decimal places on real data. |
 | **Takt time** | How often the customer needs one. Any station above it cannot keep up however hard it tries. |
 | **First Pass Yield** | Share passing inspection first time, plus a Pareto of which station caused the faults and how much effort the rejects consumed. |
 | **Theoretical minimum** | What the same people at the same speeds would have achieved with no variation and no gaps. The gap to actual is the size of the prize. |
 
 The **Analysis** tab also writes all of this out in plain sentences, so
-a student who cannot yet read a chart still gets the point.
+a student who cannot yet read a chart still gets the point. Those
+sentences say the plain thing first and give the proper term second —
+"the slowest station has a name in this subject: the bottleneck" — so
+the vocabulary is still taught without standing in the way of it.
+
+**† Two names the students never see.** *Process cycle efficiency* and
+*Little's Law* are computed, exported and tested, and you can read them
+off the analysis — but they are deliberately not printed on screen,
+because they are not on a first-semester syllabus and a formula at the
+end of a paragraph turns a plain explanation back into homework. The
+ideas behind both are still explained in full, just unnamed. Tests fail
+if either name reappears in front of a class.
 
 ### What it cannot see
 

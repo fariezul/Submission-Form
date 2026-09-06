@@ -331,12 +331,17 @@ const wordingRejects = A.analyse(Object.assign({}, EXAMPLE, {
 
 const spoken = findingText(wordingRejects) + " " + findingText(ex) + " " + boardSrc;
 
+/* process cycle efficiency and Little's Law are absent from this
+   list on purpose — see the block above. The IDEA behind the
+   first is still checked, just without its name. */
+ok(/being worked on|real work/i.test(spoken),
+   "the working-versus-waiting idea is explained, without naming it");
+
 [["takt time",        /every 40s|customer/i],
  ["first pass yield", /rejected|passed the check/i],
  ["line balance",     /shared out/i],
  ["bottleneck",       /slowest station/i],
- ["work in progress", /stuck in the line/i],
- ["process cycle efficiency", /real work|being worked on/i]].forEach(function (pair) {
+ ["work in progress", /stuck in the line/i]].forEach(function (pair) {
   ok(pair[1].test(spoken),
      'the idea behind "' + pair[0] + '" is explained in plain words');
   ok(spoken.indexOf(pair[0]) !== -1,
@@ -724,16 +729,45 @@ function findingText(analysis) {
 const midFindings = findingText(partial);
 const doneFindings = findingText(ex);
 
-ok(midFindings.indexOf("the same number") === -1,
-   "the 'same number' claim is not made while planes are still in the line");
+/* TWO TERMS ARE DELIBERATELY NOT SAID TO STUDENTS.
+   ------------------------------------------------------------
+   Little's Law and process cycle efficiency were cut from the
+   findings on the lecturer's instruction — they are not on a
+   first-semester syllabus, and a formula at the end of a
+   paragraph turns a plain explanation back into homework.
 
-/* The guard has to prove the claim IS made on a drained line, not
-   merely that it is absent from a round where the WIP finding
-   never appeared at all. */
+   Both are still COMPUTED, still exported on the analysis, and
+   still tested below, because the maths is right and the
+   lecturer can read them off. This only governs what appears on
+   screen in front of a class.
+
+   Checked across a finished round, a half-finished one and a
+   round with rejects, so a term cannot creep back in through a
+   branch the other cases never reach. */
+[midFindings, doneFindings, findingText(wordingRejects)].forEach(function (text, i) {
+  const where = ["a half-finished round", "a finished round", "a round with rejects"][i];
+  ok(text.indexOf("Little's Law") === -1,
+     "Little's Law is not named to students in " + where);
+
+  /* Looks for the FORMULA, not for the words "the same number".
+     That phrase is used innocently by the bottleneck finding —
+     "a plane comes out every 31s, almost the same number" — and
+     an over-broad guard here failed on it, which would have
+     pushed someone to reword a sentence that was doing its job. */
+  ok(!/multiplied by|throughput .* lead time|WIP *=/.test(text),
+     "and neither is the formula behind it, in " + where);
+  ok(text.toLowerCase().indexOf("process cycle efficiency") === -1,
+     "process cycle efficiency is not named to students in " + where);
+});
+
+/* The findings they replaced must still be there — dropping the
+   term must not have dropped the point. */
 ok(/planes were stuck/.test(doneFindings),
-   "a drained round does report the planes stuck in the line");
-ok(doneFindings.indexOf("the same number") !== -1,
-   "and on a drained line it does make the Little's Law comparison");
+   "the pile of half-finished planes is still reported");
+ok(/work in progress/.test(doneFindings),
+   "and still called work in progress, which does stay");
+ok(/being worked on/.test(doneFindings),
+   "the working-versus-waiting split is still reported");
 
 /* 5. SOLO TAPS WERE UPLOADED under a round number the server had
       not issued and would later hand to a real team round. */

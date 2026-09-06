@@ -883,8 +883,7 @@
               "its turn. " +
               "Think about what that means: getting rid of the waiting costs nobody " +
               "any extra effort. Nobody has to work harder or faster. That is why " +
-              "you fix the waiting first. " +
-              "The proper name for this percentage is process cycle efficiency.",
+              "you fix the waiting first.",
       });
     }
 
@@ -934,16 +933,22 @@
       out.push({
         tone: "warn",
         title: "About " + L.avgWip.toFixed(1) + " planes were stuck in the line at any moment",
+        /* No formula here on purpose.
+           --------------------------------------------------
+           This used to finish with the Little's Law identity —
+           throughput times lead time gives the same figure —
+           which is true, and which line.drained exists to keep
+           honest. It is still computed and still tested; the
+           lecturer can read it off the analysis. But a first
+           semester class does not need a second formula at the
+           end of a paragraph about a pile of paper, and the
+           sentence was the one that made this finding feel like
+           homework. */
         body: "At the busiest point there were " + L.maxWip + ". " +
               "Every one of those is a plane you have already paid people to work " +
               "on, sitting there earning nothing until it comes out the other end. " +
               "In a real factory that is money on the table doing nothing. " +
-              "Half-finished work like this is called work in progress, or WIP." +
-              (L.drained && isNum(L.littleLawWip)
-                ? " There is a neat check: planes per minute multiplied by how long " +
-                  "each plane takes should give you the same number, and here it " +
-                  "gives " + L.littleLawWip.toFixed(1) + ". That is Little's Law."
-                : ""),
+              "Half-finished work like this is called work in progress, or WIP.",
       });
     }
 
