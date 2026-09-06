@@ -532,7 +532,21 @@
          in progress — it is raw material, and nobody has spent
          anything on it yet. Counting it would put "20 waiting" on
          the card before the round has even begun. */
-      const mine = p.done;
+      /* THE RAW NUMBER OF TAPS, not the number the analysis could
+         work a time out for.
+         ----------------------------------------------------------
+         p.done counts planes with a computable process time, and
+         that needs the station UPSTREAM to have reported too. So a
+         station whose own phone is working perfectly showed 0 of 6
+         whenever Marking's phone was offline — the student has
+         tapped six times, the card says nothing happened, and they
+         reasonably conclude their taps are being lost.
+
+         The card answers "what have I recorded?", which is a
+         question about this station alone. The averages below it
+         still say "—" until the upstream times arrive, which is
+         honest: the count is known, the duration genuinely is not. */
+      const mine = countDone(a, p.index);
       const pile = p.index > 0 ? countDone(a, p.index - 1) - mine : 0;
       let tag = "";
 
@@ -555,7 +569,7 @@
           '<span class="fl-station-name">' + esc(p.name) + "</span>" +
           (isBottleneck ? '<span class="fl-tag fl-tag-bottleneck">bottleneck</span>' : "") +
         "</div>" +
-        '<div class="fl-station-big num">' + esc(String(p.done)) +
+        '<div class="fl-station-big num">' + esc(String(mine)) +
           "<small>of " + head.itemCount + "</small></div>" +
         '<div class="fl-station-meta">' +
           "<span>avg <b>" + esc(fmt.secs(p.avgCycle)) + "</b></span>" +
@@ -564,7 +578,7 @@
         "</div>" +
         '<div style="margin-top:9px">' + tag + "</div>" +
         '<div class="fl-station-rail"><span style="width:' +
-          (head.itemCount ? (p.done / head.itemCount) * 100 : 0) + '%"></span></div>';
+          (head.itemCount ? (mine / head.itemCount) * 100 : 0) + '%"></span></div>';
 
       el.stations.appendChild(card);
     });

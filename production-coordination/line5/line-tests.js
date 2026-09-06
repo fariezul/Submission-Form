@@ -601,6 +601,52 @@ Store.clearActive();
 ok(Store.header() === null, "clearing the round empties the store");
 
 
+describe("A station's own count does not depend on the one before it");
+
+/* Found by running the live site: Folding had tapped twice, its
+   card read "0 of 6", and the two taps were sitting safely in the
+   sheet the whole time.
+   ------------------------------------------------------------
+   perStation.done counts planes with a COMPUTABLE PROCESS TIME,
+   and that needs the upstream station to have reported too. It is
+   the right number for an average and the wrong number for a
+   card, because a student whose own phone is working perfectly
+   would see zero whenever Marking's phone dropped off the wifi —
+   and would reasonably decide their taps were being lost.
+
+   Both numbers are legitimate. This pins the difference so the
+   two are not quietly swapped for each other again. */
+const upstreamMissing = A.analyse({
+  stations: STATIONS,
+  itemCount: 6,
+  exits: [[],                       // Marking has uploaded nothing
+          [40 * S, 70 * S],         // Folding has tapped twice
+          [], []],
+  verdicts: {},
+  taktMs: null,
+});
+
+ok(upstreamMissing.perStation[1].done === 0,
+   "with no upstream times, Folding has no measurable cycles");
+ok(upstreamMissing.perStation[1].avgCycle === null,
+   "and honestly reports no average rather than inventing one");
+
+/* The raw taps are still there, which is what the card must show. */
+const rawTaps = upstreamMissing.exits[1].filter(function (v) {
+  return typeof v === "number";
+}).length;
+ok(rawTaps === 2, "but both of Folding's taps are still in the data");
+
+ok(upstreamMissing.line.problems.length >= 1,
+   "and the missing upstream readings are reported as a problem");
+
+/* The dashboard must read the card's number off the raw taps. */
+ok(/const mine = countDone\(a, p\.index\)/.test(SRC.board),
+   "the station card counts the station's own taps");
+ok(!/esc\(String\(p\.done\)\)/.test(SRC.board),
+   "and not the count of planes it could work a time out for");
+
+
 describe("Every chart survives every shape of data");
 
 /* A NaN reaching an SVG attribute renders nothing at all, with no
