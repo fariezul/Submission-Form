@@ -12,27 +12,34 @@
     {
       "source": "/farizul/:match*",
       "destination": "https://plate-guard-indol.vercel.app/farizul/:match*"
-    },
+    }
+  ],
 
+  "redirects": [
     {
       "source": "/line",
-      "destination": "/production-coordination/activity-5.html"
+      "destination": "/production-coordination/activity-5.html",
+      "permanent": false
     },
     {
       "source": "/line/a",
-      "destination": "/production-coordination/line5/station-a.html"
+      "destination": "/production-coordination/line5/station-a.html",
+      "permanent": false
     },
     {
       "source": "/line/b",
-      "destination": "/production-coordination/line5/station-b.html"
+      "destination": "/production-coordination/line5/station-b.html",
+      "permanent": false
     },
     {
       "source": "/line/c",
-      "destination": "/production-coordination/line5/station-c.html"
+      "destination": "/production-coordination/line5/station-c.html",
+      "permanent": false
     },
     {
       "source": "/line/d",
-      "destination": "/production-coordination/line5/station-d.html"
+      "destination": "/production-coordination/line5/station-d.html",
+      "permanent": false
     }
   ]
 }

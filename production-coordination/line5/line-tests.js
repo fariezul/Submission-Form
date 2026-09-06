@@ -1138,6 +1138,57 @@ ok(!/<script[^>]+src="line-charts\.js"/.test(SRC.station_html),
    "a phone does not download the chart code it will never run");
 
 
+/* ============================================================
+   THE SHORT URLS MUST NOT BE REWRITES
+   ============================================================
+   The station pages load their scripts by RELATIVE path —
+   src="line-config.js" — which resolves against whatever URL the
+   browser thinks it is on.
+
+   A Vercel *rewrite* serves the file's content at the short URL
+   without changing that: at /line/b the browser asks for
+   /line/line-config.js, gets a 404, and every script on the page
+   is missing. The HTML still arrives, so the tab title reads
+   "Station B · Folding" and the page looks like it loaded. It is
+   completely dead.
+
+   That shipped, and it passed a check of "HTTP 200 plus the right
+   <title>" — which is exactly the wrong thing to have checked.
+
+   A *redirect* sends the browser to the real path first, so the
+   relative URLs resolve normally. This asserts the distinction,
+   because the two words are one letter apart in a config file
+   nobody reads twice.
+   ============================================================ */
+describe("The short station URLs send the browser to the real path");
+
+const vercel = JSON.parse(read(path.join(APP, "vercel.json")));
+const shortPaths = ["/line", "/line/a", "/line/b", "/line/c", "/line/d"];
+
+/* The station pages rely on this being true. If they ever move to
+   root-absolute paths, a rewrite becomes safe and this whole
+   section can go — so the assertion is anchored to the reason. */
+ok(/<script src="line-config\.js">/.test(SRC.station_html),
+   "the station pages load their scripts by relative path");
+
+shortPaths.forEach(function (p) {
+  const asRedirect = (vercel.redirects || []).some(function (r) { return r.source === p; });
+  const asRewrite = (vercel.rewrites || []).some(function (r) { return r.source === p; });
+
+  ok(asRedirect, p + " is a redirect");
+  ok(!asRewrite,
+     p + " is NOT a rewrite — a rewrite leaves relative script paths 404ing");
+});
+
+/* And each one has to point at a file that exists. */
+(vercel.redirects || []).forEach(function (r) {
+  if (!/^\/line/.test(r.source)) return;
+  const target = path.join(APP, r.destination.replace(/^\//, ""));
+  ok(fs.existsSync(target),
+     r.source + " points at a file that exists (" + r.destination + ")");
+});
+
+
 describe("The four station pages differ only where they should");
 
 const A_HTML = SRC.station_html;
