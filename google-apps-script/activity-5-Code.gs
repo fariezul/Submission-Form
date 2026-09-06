@@ -521,3 +521,101 @@ function getRounds(params, cb) {
 
   return json({ ok: true, rounds: out }, cb);
 }
+
+
+/* ============================================================
+   HOUSEKEEPING — EDITOR ONLY, NEVER THE WEB
+   ============================================================
+   Everything above this line is reachable from the internet.
+   Everything below it is not, and that distinction is the whole
+   point of this section.
+
+   doGet and doPost between them will append a row, read a round
+   back, and mark one ended. They will not delete anything, ever.
+   That is deliberate: the Web App URL and the shared token both
+   sit in a file the browser downloads, so anyone who views source
+   has them. An endpoint that could delete rows would hand a
+   bored student the ability to wipe a term of class data.
+
+   The functions below CAN delete. They are safe only because
+   nothing routes to them — no action name in doGet, no kind in
+   doPost. The sole way to run one is to open this editor, pick it
+   from the dropdown, and press Run, which requires being signed
+   in as you.
+
+   IF YOU EVER ADD A CASE FOR ONE OF THESE TO doGet OR doPost,
+   you have made your class data deletable by anyone with the URL.
+   Do not.
+
+   Because they are not part of the web-facing surface, adding
+   them needs NO redeployment. Paste, save, run.
+   ------------------------------------------------------------
+   HOW TO USE
+   ------------------------------------------------------------
+   1. Set the dropdown at the top of the editor to "cleanupTests".
+   2. Press Run.
+   3. Read the result in the Execution log.
+
+   It removes the ZZTEST rows left behind by a connection check.
+   To clear a different line, edit the code in cleanupTests, or
+   run deleteLineCode('DTP3A') from the editor the same way.
+   ============================================================ */
+
+/* The one you will actually run. */
+function cleanupTests() {
+  return deleteLineCode('ZZTEST');
+}
+
+/* Removes every Round and Event row carrying one line code.
+   Returns a summary rather than logging, so the Execution log
+   shows what it did. */
+function deleteLineCode(code) {
+  var wanted = String(code || '').toUpperCase();
+  if (!wanted) return 'No code given — nothing done.';
+
+  /* Guard against the obvious accident. Clearing every row in the
+     sheet should not be one typo away. */
+  if (wanted === '*' || wanted === 'ALL') {
+    return 'Refused: pass a single line code, not a wildcard.';
+  }
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+
+  try {
+    var rounds = purge(ROUNDS_SHEET, ROUND_HEADERS, 1, wanted);
+    var events = purge(EVENTS_SHEET, EVENT_HEADERS, 1, wanted);
+
+    return 'Deleted ' + rounds + ' row(s) from ' + ROUNDS_SHEET +
+           ' and ' + events + ' row(s) from ' + EVENTS_SHEET +
+           ' for line "' + wanted + '".';
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* Deletes rows whose column `col` (1-based) matches `wanted`.
+   ------------------------------------------------------------
+   Walks BOTTOM UP. Deleting row 5 shifts row 6 up into its place,
+   so a top-down loop skips every row that follows a deleted one —
+   which on a run of consecutive matches quietly leaves half of
+   them behind. Going upwards, the rows still to be examined are
+   all above the one being removed and their positions do not
+   move. */
+function purge(sheetName, headers, col, wanted) {
+  var sh = sheet(sheetName, headers);
+  var last = sh.getLastRow();
+  if (last < 2) return 0;
+
+  var values = sh.getRange(2, col, last - 1, 1).getValues();
+  var removed = 0;
+
+  for (var i = values.length - 1; i >= 0; i--) {
+    if (String(values[i][0]).toUpperCase() === wanted) {
+      sh.deleteRow(i + 2);   // +2: skip the header, and 0-based to 1-based
+      removed++;
+    }
+  }
+
+  return removed;
+}

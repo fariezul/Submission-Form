@@ -854,6 +854,50 @@ ok(!/"Content-Type":\s*"application\/json/.test(SRC.sheets),
 ok(SRC.gs.indexOf("LockService") !== -1,
    "the Apps Script locks before appending, so four phones cannot collide");
 
+/* ----------------------------------------------------------
+   THE PUBLIC ENDPOINT MUST NOT BE ABLE TO DELETE
+   ----------------------------------------------------------
+   The Web App URL and the shared token both sit in a file the
+   browser downloads, so anyone who views source has them. The
+   script therefore appends, reads and marks a round ended — and
+   nothing else. An undo is a new row pointing at an old one,
+   never a deletion.
+
+   There ARE delete helpers in the file, for housekeeping from
+   the Apps Script editor, where running one requires being
+   signed in as the owner. This asserts they have not been wired
+   into the web-facing surface, which is the one edit that would
+   turn a tidy-up convenience into "anybody with the URL can wipe
+   a term of class data".
+   ---------------------------------------------------------- */
+const gsCode = stripComments(SRC.gs);
+
+ok(/function deleteLineCode/.test(gsCode),
+   "the Apps Script has editor-only delete helpers");
+ok(!/(action === '|action==='|body\.kind === '|body\.kind===')(cleanup|delete|purge)/i.test(gsCode),
+   "no delete helper is routed from doGet or doPost");
+
+/* And the routed actions are exactly the ones expected — a new
+   case appearing here should be a deliberate decision, not a
+   surprise found later. */
+const routedActions = (gsCode.match(/action === '([a-z_]+)'/g) || [])
+  .map(function (m) { return m.replace(/action === '|'/g, ""); }).sort();
+ok(routedActions.join(",") === "ping,round,rounds",
+   "doGet routes only ping, round and rounds (found: " +
+   (routedActions.join(",") || "none") + ")");
+
+const routedKinds = (gsCode.match(/body\.kind === '([a-z_]+)'/g) || [])
+  .map(function (m) { return m.replace(/body\.kind === '|'/g, ""); }).sort();
+ok(routedKinds.join(",") === "events,notes,round_end,round_start,visit",
+   "doPost routes only the five write kinds (found: " +
+   (routedKinds.join(",") || "none") + ")");
+
+/* deleteRow appears only below the housekeeping divider. */
+const dividerAt = SRC.gs.indexOf("HOUSEKEEPING — EDITOR ONLY");
+ok(dividerAt > 0, "the Apps Script marks off its editor-only section");
+ok(SRC.gs.indexOf("deleteRow") > dividerAt,
+   "no row deletion appears above that divider, where the web-facing code lives");
+
 /* The event abbreviations the store writes must be the ones the
    Apps Script reads back out again. */
 ["id", "seq", "k", "st", "item", "ms", "v", "c", "t", "at"].forEach(function (f) {
