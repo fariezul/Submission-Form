@@ -1,35 +1,72 @@
 <!DOCTYPE html>
 <!--
   Production Coordination — Activity 5
+  FLIGHT LINE — a paper aeroplane production line, timed and
+  analysed live.
 
-  A placeholder. When the real activity content is written, replace
-  the "under construction" section below.
+  WHAT THIS PAGE IS
+  This is the DASHBOARD. It goes on the projector or the LCD.
+  It starts and ends rounds, shows the line filling up while the
+  class works, and turns the taps into the lean analysis they
+  discuss afterwards.
+
+  The four students do NOT use this page. Each of them opens
+  their own station page — line5/station-a.html through
+  station-d.html — which is one enormous button and nothing else.
+
+  WHY THE STATIONS HAVE SEPARATE PAGES
+  A student at Folding must not be able to tap Marking's button by
+  accident, must not see the analysis while they are working, and
+  must be able to keep their phone in one hand. Four separate
+  pages give all three for free. The four files are nearly
+  identical and all four load the same line-station.js — the only
+  difference between them is one number.
+
+  THE ORDER THE SCRIPTS LOAD IN MATTERS
+  Each one hangs a single global off window, and each depends on
+  the ones above it:
+
+      line-config.js     settings, nothing else
+      line-clock.js      needs config
+      line-analytics.js  needs nothing (pure maths, and testable)
+      line-sheets.js     needs config + clock
+      line-store.js      needs config + clock + sheets
+      line-charts.js     needs analytics
+      line-board.js      needs all of them
+
+  Move one above its dependency and the page throws on load
+  rather than degrading, which is why they are listed here in
+  dependency order and commented as such.
 
   NOTE ON THE ROBOTS TAG
-  While this page has no real content, noindex asks search engines
-  not to list it. Twenty near-empty pages in Google would dilute the
-  site. Delete that meta line once the activity is written.
+  The placeholder activity pages carry noindex because empty
+  pages in Google would dilute the site. This page has real
+  content, so the tag is gone.
 
   NOTE ON THE ".." IN THE PATHS
-  This file sits inside the production-coordination/ folder, so ".." means
-  "go up one level to the main folder" where style.css and logo-mark.png
-  live.
+  This file sits inside the production-coordination/ folder, so
+  ".." means "go up one level to the main folder" where
+  style.css, nav.js and logo-mark.png live. This activity's own
+  files are in line5/, which is beside this file.
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <!-- Browser tab icon and home-screen icon -->
   <link rel="icon" type="image/png" href="../logo-mark.png" />
   <link rel="apple-touch-icon" href="../logo-mark.png" />
 
-  <meta name="robots" content="noindex, follow" />
+  <title>Flight Line — Activity 5 | Production Coordination</title>
+  <meta name="description" content="Flight Line: a live paper aeroplane production line for Production Coordination students at TVETMARA Masjid Tanah. Four stations, twenty aircraft, and a lean analysis of the bottleneck, waiting time, work in progress and first pass yield." />
 
-  <title>Activity 5 | Production Coordination — Ts. Farizul Jaafar</title>
-  <meta name="description" content="Activity 5 of the Production Coordination TVET competency area at TVETMARA Masjid Tanah. Content in preparation." />
+  <!-- A pale blue-grey, matching the page. Activity 3 is indigo and
+       Activity 4 teal, so the phone's browser bar tells a student
+       which activity they are in before the page even paints. -->
+  <meta name="theme-color" content="#f4f6fa" />
 
   <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="line5/line.css" />
 </head>
 
 <body>
@@ -64,7 +101,6 @@
     </div>
   </nav>
 
-  <!-- The activity sub-tabs -->
   <nav class="subtab-bar" aria-label="Production Coordination activities">
     <div class="subtab-bar-inner">
         <a href="activity-1.html" class="subtab">Activity 1</a>
@@ -80,24 +116,381 @@
     </div>
   </nav>
 
-  <main>
+  <main class="fl">
+    <div class="fl-page">
+      <div class="fl-wrap">
 
-    <section class="hero hero-compact">
-      <div class="hero-inner">
-        <!-- A breadcrumb: where this page sits in the site -->
-        <p class="hero-eyebrow">
-          <a href="../production-coordination.html" class="crumb-link">Production Coordination</a>
-        </p>
-        <h1>Activity 5</h1>
+        <!-- A polite live region. Screen readers hear what changed
+             without the page grabbing focus away from a button. -->
+        <p class="fl-sr" id="srLive" role="status" aria-live="polite"></p>
+
+        <!-- ==================================================
+             SETUP — shown only before a round exists
+             ================================================== -->
+        <section class="fl-panel" id="setupPanel">
+          <h1 class="fl-title">Flight&nbsp;Line</h1>
+          <p class="fl-tagline">
+            Paper aeroplane production · four stations · twenty aircraft ·
+            one clock that never stops
+          </p>
+
+          <div class="fl-notice fl-notice-info" style="margin-top:16px">
+            <b>How it runs.</b> An A4 sheet enters Marking at 0:00. Each
+            station taps its button the moment it finishes an aeroplane —
+            that same instant is when the next station starts on it, and
+            when this station starts the next one. Twenty aircraft, then
+            the class looks at the numbers and decides what to change
+            before round two.
+          </div>
+
+          <div class="fl-row-2" style="margin-top:18px">
+            <div class="fl-field">
+              <label for="cfgCode">Line code</label>
+              <input type="text" id="cfgCode" maxlength="12" autocomplete="off"
+                     placeholder="e.g. DTP3A" spellcheck="false" />
+              <p class="fl-field-hint">
+                Read this out to the four students — it is how their phones
+                find your line. Any short word will do. Use a different one
+                for each group running at the same time.
+              </p>
+            </div>
+
+            <div class="fl-field">
+              <label for="cfgItems">How many aeroplanes</label>
+              <input type="number" id="cfgItems" min="1" max="200" step="1" />
+              <p class="fl-field-hint">Twenty is the standard run.</p>
+            </div>
+          </div>
+
+          <div class="fl-field">
+            <label for="cfgDemand">The customer wants them all within (minutes)</label>
+            <input type="number" id="cfgDemand" min="1" max="600" step="1" />
+            <p class="fl-field-hint">
+              This sets <b>takt time</b> — the drumbeat the line must keep to.
+              Twenty aeroplanes in thirty minutes is one every 90 seconds.
+              Leave it empty and the charts simply show no target.
+            </p>
+          </div>
+
+          <fieldset style="border:0;padding:0;margin:0 0 14px">
+            <legend class="fl-stat-label" style="margin-bottom:8px">Who presses the buttons</legend>
+
+            <label style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;cursor:pointer">
+              <input type="radio" name="mode" id="modeTeam" value="team" checked
+                     style="width:auto;min-height:0;margin-top:4px" />
+              <span>
+                <b>Team mode</b> — each student opens their own station page on
+                their own phone and taps their own button.
+                <span style="color:var(--fl-ink-faint)">Needs the Google Sheet connected.</span>
+              </span>
+            </label>
+
+            <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer">
+              <input type="radio" name="mode" id="modeSolo" value="solo"
+                     style="width:auto;min-height:0;margin-top:4px" />
+              <span>
+                <b>Solo mode</b> — one time-taker presses all four buttons on
+                this screen.
+                <span style="color:var(--fl-ink-faint)">No sheet, no phones, nothing to go wrong. Keys 1–4 work too.</span>
+              </span>
+            </label>
+
+            <p class="fl-field-hint" id="modeNote"></p>
+          </fieldset>
+
+          <p class="fl-field-hint" id="setupError"
+             style="color:var(--fl-reject);min-height:18px"></p>
+
+          <div class="fl-btn-row">
+            <button type="button" class="fl-btn fl-btn-primary" id="startRoundBtn">
+              Start round
+            </button>
+          </div>
+
+          <div style="margin-top:26px">
+            <div class="fl-panel-title">The four station pages</div>
+            <p class="fl-field-hint" style="margin:-6px 0 12px">
+              Write these on the board, or open one on each phone yourself
+              before you hand them out. Each page remembers its line code, so
+              a student only types it once.
+            </p>
+            <div class="fl-join" id="joinLinks"></div>
+          </div>
+        </section>
+
+
+        <!-- ==================================================
+             THE STATUS BAR
+             ================================================== -->
+        <section class="fl-statusbar" id="statusBar" hidden>
+          <div class="fl-clock num" id="boardClock">0:00</div>
+
+          <div class="fl-stat">
+            <span class="fl-stat-label">Line</span>
+            <span class="fl-stat-value" id="codeLabel">—</span>
+          </div>
+
+          <div class="fl-stat">
+            <span class="fl-stat-label">Round</span>
+            <span class="fl-stat-value" id="roundLabel">—</span>
+          </div>
+
+          <div class="fl-stat">
+            <span class="fl-stat-label">Finished</span>
+            <span class="fl-stat-value num" id="doneLabel">—</span>
+          </div>
+
+          <div class="fl-statusbar-spacer"></div>
+
+          <span class="fl-pill fl-pill-idle" id="statePill">Ready</span>
+          <span class="fl-pill fl-pill-idle" id="connPill" hidden></span>
+
+          <div class="fl-btn-row fl-no-print">
+            <button type="button" class="fl-btn" id="displayBtn">Display mode</button>
+            <button type="button" class="fl-btn" id="exportBtn">Export CSV</button>
+            <button type="button" class="fl-btn" id="printBtn">Print</button>
+            <button type="button" class="fl-btn fl-btn-danger" id="endRoundBtn" hidden>End round</button>
+            <button type="button" class="fl-btn fl-btn-primary" id="newRoundBtn" hidden>New round</button>
+          </div>
+        </section>
+
+
+        <!-- The four live cards. Always on screen while a round
+             exists, above the tabs, because they are what the
+             class watches. -->
+        <div class="fl-stations" id="stationCards"></div>
+
+
+        <!-- Solo mode's four buttons. -->
+        <section class="fl-solo fl-no-print" id="soloPanel" hidden>
+          <div id="soloButtons"></div>
+          <p class="fl-solo-hint">
+            Press when a station <b>finishes</b> an aeroplane — that same moment
+            is the next station's start. Keyboard: <kbd>1</kbd> <kbd>2</kbd>
+            <kbd>3</kbd> <kbd>4</kbd>
+          </p>
+        </section>
+
+
+        <!-- ==================================================
+             TABS
+             ================================================== -->
+        <div class="fl-tabs fl-no-print" id="boardTabs" role="tablist" hidden>
+          <button type="button" class="fl-tab" role="tab" data-tab="live"     aria-selected="true">Live</button>
+          <button type="button" class="fl-tab" role="tab" data-tab="analysis" aria-selected="false">Analysis</button>
+          <button type="button" class="fl-tab" role="tab" data-tab="compare"  aria-selected="false">Compare rounds</button>
+          <button type="button" class="fl-tab" role="tab" data-tab="improve"  aria-selected="false">Improve</button>
+          <button type="button" class="fl-tab" role="tab" data-tab="data"     aria-selected="false">Data</button>
+          <button type="button" class="fl-tab" role="tab" data-tab="help"     aria-selected="false">How to run it</button>
+        </div>
+
+
+        <!-- ---------- LIVE ---------- -->
+        <section id="panelLive" role="tabpanel" hidden>
+          <div class="fl-chart" id="liveFlow"></div>
+        </section>
+
+
+        <!-- ---------- ANALYSIS ---------- -->
+        <section id="panelAnalysis" role="tabpanel" hidden>
+          <div class="fl-notice fl-notice-warn" id="problemBox" hidden></div>
+
+          <div class="fl-metrics" id="metricGrid"></div>
+
+          <div class="fl-panel" style="margin-top:16px">
+            <div class="fl-panel-title">What the numbers say</div>
+            <div class="fl-findings" id="findingsList"></div>
+          </div>
+
+          <div class="fl-panel">
+            <div class="fl-panel-title">Station by station</div>
+            <div class="fl-table-wrap">
+              <table class="fl-table" id="stationTable"></table>
+            </div>
+            <p class="fl-field-hint" style="margin-top:10px">
+              <b>Working</b> is time spent folding. <b>Waiting</b> is time spent
+              with nothing to do because the aeroplane had not arrived yet —
+              the waste this activity exists to make visible.
+            </p>
+          </div>
+
+          <div id="chartsWrap"></div>
+        </section>
+
+
+        <!-- ---------- COMPARE ---------- -->
+        <section id="panelCompare" role="tabpanel" hidden>
+          <div id="compareWrap"></div>
+        </section>
+
+
+        <!-- ---------- IMPROVE ---------- -->
+        <section id="panelImprove" role="tabpanel" hidden>
+          <div class="fl-panel">
+            <div class="fl-panel-title">What will we change before the next round?</div>
+            <p class="fl-field-hint" style="margin:-6px 0 14px">
+              Write it down before you run round two, and be specific. "Work
+              harder" is not an improvement and will not show up in the
+              numbers. "Move the labelling step onto Station&nbsp;C" is, and
+              will.
+            </p>
+
+            <div class="fl-field">
+              <label for="kaizenNotes">The team's plan</label>
+              <textarea id="kaizenNotes" rows="8" placeholder="1. Which station was the bottleneck, and how do we know?&#10;2. What exactly will we change?&#10;3. What do we expect to happen to the numbers?&#10;4. What might get worse?"></textarea>
+              <p class="fl-field-hint" id="notesState"></p>
+            </div>
+          </div>
+
+          <div class="fl-panel">
+            <div class="fl-panel-title">Questions worth arguing about</div>
+            <div class="fl-findings">
+              <div class="fl-finding fl-finding-info">
+                <h3>Why did speeding up the fast station change nothing?</h3>
+                <p>The line delivers one aeroplane every time the bottleneck
+                   finishes one. Every other station is capable of more than
+                   that, so their spare speed has nowhere to go. This is the
+                   Theory of Constraints in one sentence: an hour saved at the
+                   bottleneck is an hour gained for the whole line, and an hour
+                   saved anywhere else is an illusion.</p>
+              </div>
+              <div class="fl-finding fl-finding-info">
+                <h3>Who looked busiest, and who actually was?</h3>
+                <p>The station with the biggest pile in front of it looks
+                   overwhelmed and usually is. The station with an empty desk
+                   looks idle and is being starved. Neither is a comment on
+                   the student sitting there.</p>
+              </div>
+              <div class="fl-finding fl-finding-info">
+                <h3>Would a bigger batch have helped?</h3>
+                <p>Try passing five aeroplanes at a time instead of one.
+                   Throughput barely moves, work in progress jumps, and the
+                   average aeroplane takes far longer to get through. That is
+                   the argument for one-piece flow, and it is much more
+                   convincing when a class has just measured it themselves.</p>
+              </div>
+              <div class="fl-finding fl-finding-info">
+                <h3>What would happen if Quality Check moved to the front?</h3>
+                <p>It cannot — you cannot inspect an aeroplane that has not
+                   been made. But each station could check its own work before
+                   passing it on. Compare the effort thrown away on rejects
+                   with the few seconds that self-checking would have cost.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ---------- DATA ---------- -->
+        <section id="panelData" role="tabpanel" hidden>
+          <div class="fl-panel">
+            <div class="fl-panel-title">Every reading</div>
+            <p class="fl-field-hint" style="margin:-6px 0 12px">
+              Finish times from the start of the round, with the time that
+              station actually spent on the aeroplane in brackets.
+              <b>Click any time to correct it</b> — a single mis-tap otherwise
+              spoils two averages. Corrections are recorded as corrections;
+              nothing is ever silently overwritten.
+            </p>
+            <div class="fl-table-wrap">
+              <table class="fl-table" id="itemTable"></table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ---------- HELP ---------- -->
+        <section id="panelHelp" role="tabpanel" hidden>
+          <div class="fl-panel">
+            <div class="fl-panel-title">Running the activity</div>
+            <div class="fl-findings">
+              <div class="fl-finding fl-finding-info">
+                <h3>1 · Set the room up</h3>
+                <p>Four students in a row, in this order: Marking, Folding,
+                   Labelling, Quality Check. A stack of A4 beside Marking. Each
+                   student needs their own phone with their own station page
+                   open. Put this screen where all four can see it.</p>
+              </div>
+              <div class="fl-finding fl-finding-info">
+                <h3>2 · One rule, and it is the whole activity</h3>
+                <p>Tap your button the <b>instant</b> you finish an aeroplane —
+                   not when you pass it on, not when you pick the next one up.
+                   That single moment is three things at once: you finished this
+                   one, you start your next one, and the station after you
+                   starts on this one.</p>
+              </div>
+              <div class="fl-finding fl-finding-info">
+                <h3>3 · Let it go wrong</h3>
+                <p>Do not tell them to balance the line. The pile in front of
+                   the slow station and the boredom at the end of it are the
+                   lesson. Let the first round be as bad as it wants to be.</p>
+              </div>
+              <div class="fl-finding fl-finding-info">
+                <h3>4 · End the round and read it together</h3>
+                <p>Press <b>End round</b> and go to Analysis. Ask them to guess
+                   the bottleneck before you show it. Ask the student who waited
+                   most how it felt, then show them their waiting time in
+                   minutes.</p>
+              </div>
+              <div class="fl-finding fl-finding-info">
+                <h3>5 · Change one thing, then run it again</h3>
+                <p>Write the plan on the Improve tab, press <b>New round</b>,
+                   and run twenty more. One change only — two changes and
+                   nobody can say which one worked. The Compare tab does the
+                   before-and-after.</p>
+              </div>
+              <div class="fl-finding fl-finding-warn">
+                <h3>If the wifi is bad</h3>
+                <p>Use solo mode. One person taps all four buttons on this
+                   screen, keys 1–4. Every chart and every number is
+                   identical — the only thing you lose is the students holding
+                   their own phones.</p>
+              </div>
+              <div class="fl-finding fl-finding-warn">
+                <h3>If a tap gets missed</h3>
+                <p>Carry on. Go to the Data tab afterwards and click the empty
+                   cell's neighbours to correct them, or click a wrong time to
+                   fix it. Readings that cannot be true are left out of the
+                   averages rather than allowed to distort them, and the
+                   Analysis tab says which ones.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
-    </section>
+    </div>
 
-    <div class="content-wrap">
-      <section class="section section-construction">
-        <p class="construction-note">This activity still under construction</p>
-        <p class="construction-sub">Content for this activity is being prepared.</p>
-        <a href="../production-coordination.html" class="btn-plain">Back to Production Coordination</a>
-      </section>
+    <!-- ==================================================
+         PASS / REJECT — solo mode's verdict panel
+         ==================================================
+         The same two-tap flow as the phone, deliberately, so a
+         class that starts in solo mode and later moves to team
+         mode does not have to learn it twice.
+         ================================================== -->
+    <div class="fl-verdict" id="boardVerdict" hidden role="dialog" aria-modal="true"
+         aria-labelledby="boardVerdictTitle">
+      <h2 id="boardVerdictTitle">Plane</h2>
+
+      <div id="boardVerdictStep1">
+        <p class="fl-verdict-note">The time is already recorded. Take as long as you like.</p>
+        <div class="fl-verdict-btns">
+          <button type="button" class="fl-vbtn fl-vbtn-pass" id="boardPassBtn">
+            ✓ Pass
+          </button>
+          <button type="button" class="fl-vbtn fl-vbtn-reject" id="boardRejectBtn">
+            ✕ Reject
+          </button>
+        </div>
+      </div>
+
+      <div id="boardVerdictStep2" hidden>
+        <p class="fl-verdict-note">Which station caused the fault?</p>
+        <div class="fl-cause-btns" id="boardCauseButtons"></div>
+      </div>
+
+      <button type="button" class="fl-btn" id="boardVerdictLater"
+              style="margin-top:8px">Decide later</button>
     </div>
   </main>
 
@@ -113,5 +506,14 @@
   </footer>
 
   <script src="../nav.js"></script>
+
+  <!-- In dependency order. See the note at the top of this file. -->
+  <script src="line5/line-config.js"></script>
+  <script src="line5/line-clock.js"></script>
+  <script src="line5/line-analytics.js"></script>
+  <script src="line5/line-sheets.js"></script>
+  <script src="line5/line-store.js"></script>
+  <script src="line5/line-charts.js"></script>
+  <script src="line5/line-board.js"></script>
 </body>
 </html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<!--
+  Flight Line — STATION D
+  Production Coordination, Activity 5.
+
+  ============================================================
+  THIS FILE IS ONE OF FOUR NEARLY IDENTICAL PAGES
+  ============================================================
+  station-a.html, station-b.html, station-c.html and
+  station-d.html differ in exactly two places:
+
+      1. window.FLIGHT_STATION at the bottom (0, 1, 2, 3)
+      2. the <title>
+
+  Everything else — the markup, the styles, the code — is shared.
+  The station's name, colour and button wording all come from
+  LINE_CONFIG.STATIONS[FLIGHT_STATION], so renaming Folding to
+  something else is a change to line-config.js and nothing here.
+
+  WHY FOUR FILES RATHER THAN ONE PAGE WITH ?station=B
+  A query string is one stray character away from putting two
+  students on the same station, and it survives being copied,
+  pasted, shortened and retyped rather poorly. Four plain URLs
+  written on a whiteboard cannot go wrong in that way. The cost is
+  three near-duplicate files, which is cheap, and they are so thin
+  that there is nothing in them to drift out of step.
+
+  ============================================================
+  THIS PAGE DELIBERATELY SHOWS NO ANALYSIS
+  ============================================================
+  Not an oversight. A student who can see their own average
+  starts competing with it, and a station that races is a station
+  that folds badly. The numbers belong on the big screen, after
+  the round, where the whole team looks at them together.
+
+  NOTE ON THE PATHS
+  This file sits in production-coordination/line5/, two levels
+  below the site root, so "../../" reaches style.css and the logo.
+  This activity's own files are beside it.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- user-scalable=no is normally a bad idea and is deliberate
+       here: the whole page is one huge button, and a stray
+       two-finger drag mid-round that zooms the button off screen
+       loses data. Nothing on this page is small enough to need
+       pinching. The dashboard, which has real text, allows zoom
+       normally. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+  <link rel="icon" type="image/png" href="../../logo-mark.png" />
+  <link rel="apple-touch-icon" href="../../logo-mark.png" />
+  <meta name="robots" content="noindex, follow" />
+
+  <title>Station D · Quality Check | Flight Line</title>
+  <meta name="description" content="Station D of the Flight Line paper aeroplane production line, Activity 5 of Production Coordination at TVETMARA Masjid Tanah." />
+
+  <meta name="theme-color" content="#f4f6fa" />
+
+  <!-- Lets the page fill the screen when a student adds it to
+       their home screen, which is worth doing if the same class
+       runs it more than once. -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <link rel="stylesheet" href="line.css" />
+
+  <style>
+    /* The station page does not load the site's style.css — it is
+       not a page of the website, it is a tool held in one hand,
+       and the site's header would only be something to tap by
+       mistake. So the few base rules it needs are here. */
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #f4f6fa;
+      color: #16202e;
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      /* Stops the whole page rubber-banding under a thumb that is
+         pressing the button rather than scrolling. */
+      overscroll-behavior: none;
+    }
+    * { box-sizing: border-box; }
+  </style>
+</head>
+
+<body class="fl">
+
+  <div class="fl-station-page" id="stationRoot">
+
+    <p class="fl-sr" id="srLive" role="status" aria-live="polite"></p>
+
+    <!-- ==================================================
+         SCREEN 1 — JOIN
+         ==================================================
+         Shown once. After that the code is remembered and the
+         page goes straight to waiting.
+         ================================================== -->
+    <section class="fl-sp-setup" id="setupScreen" hidden>
+      <h1 class="fl-sp-title" style="font-size:27px;margin-bottom:6px">Flight Line</h1>
+      <p class="fl-sp-sub" style="margin-bottom:22px">
+        Type the line code your teacher read out.
+      </p>
+
+      <form id="joinForm" novalidate>
+        <div class="fl-field">
+          <label for="lineCode">Line code</label>
+          <input type="text" id="lineCode" maxlength="12" autocomplete="off"
+                 autocapitalize="characters" spellcheck="false"
+                 enterkeyhint="go" placeholder="e.g. DTP3A"
+                 style="font-size:22px;text-align:center;letter-spacing:0.14em" />
+          <p class="fl-field-hint" id="joinError"
+             style="color:var(--fl-reject);min-height:18px"></p>
+        </div>
+
+        <button type="submit" class="fl-btn fl-btn-primary" style="width:100%">
+          Join this station
+        </button>
+      </form>
+
+      <p class="fl-field-hint" style="margin-top:20px;text-align:center">
+        Keep this page open for the whole activity. If your phone loses wifi,
+        keep tapping — nothing is lost, and it will catch up on its own.
+      </p>
+    </section>
+
+
+    <!-- ==================================================
+         SCREEN 2 — WAITING
+         ================================================== -->
+    <section class="fl-sp-waiting" id="waitingScreen" hidden>
+      <div class="fl-sp-waiting-icon" aria-hidden="true">✈️</div>
+      <h2 id="waitTitle">Waiting for the teacher</h2>
+      <p id="waitBody">The round has not started yet.</p>
+      <p class="fl-field-hint">Line <b id="waitCode">—</b></p>
+      <button type="button" class="fl-btn" id="changeLineBtn">Change line code</button>
+    </section>
+
+
+    <!-- ==================================================
+         SCREEN 3 — THE BUTTON
+         ================================================== -->
+    <section class="fl-sp-main" id="runScreen" hidden>
+
+      <div class="fl-sp-head">
+        <div class="fl-sp-badge" id="stBadge">D</div>
+        <div class="fl-sp-titles">
+          <div class="fl-sp-title" id="stTitle">Quality Check</div>
+          <div class="fl-sp-sub" id="stSub">—</div>
+        </div>
+        <div class="fl-sp-clock num" id="stClock">0:00</div>
+      </div>
+
+      <div class="fl-sp-counts">
+        <div class="fl-sp-count">
+          <b class="num" id="cDone">0</b><span>done</span>
+        </div>
+        <div class="fl-sp-count">
+          <b class="num" id="cLeft">0</b><span>to go</span>
+        </div>
+        <div class="fl-sp-count">
+          <b class="num" id="cLast">—</b><span>last one</span>
+        </div>
+      </div>
+
+      <!-- THE BUTTON.
+           type="button" matters: inside no form, a bare <button>
+           would still be type="submit" in some browsers. -->
+      <button type="button" class="fl-tapbtn" id="tapBtn">
+        <span id="tapLabel">Done</span>
+        <small id="tapSub">plane 1</small>
+      </button>
+
+      <p class="fl-sp-last" id="lastLine">Tap the moment your first plane is finished.</p>
+
+      <div class="fl-sp-foot">
+        <button type="button" class="fl-btn" id="undoBtn">Undo last</button>
+        <button type="button" class="fl-btn" id="leaveBtn">Leave</button>
+      </div>
+
+      <div class="fl-station-rail" style="position:relative;margin-top:10px;border-radius:2px">
+        <span id="stRail" style="width:0%"></span>
+      </div>
+
+      <p class="fl-conn" id="connLine"></p>
+    </section>
+
+  </div>
+
+
+  <!-- ==================================================
+       PASS / REJECT — Quality Check only
+       ==================================================
+       Present in all four files and only ever opened on the QC
+       station, so the four pages stay byte-identical apart from
+       one number.
+
+       It appears AFTER the time is recorded. Deciding pass or
+       reject must never be on the clock's critical path.
+       ================================================== -->
+  <div class="fl-verdict" id="verdictPanel" hidden role="dialog" aria-modal="true"
+       aria-labelledby="verdictTitle">
+    <h2 id="verdictTitle">Plane</h2>
+
+    <div id="verdictStep1">
+      <p class="fl-verdict-note">The time is already saved. Take your time.</p>
+      <div class="fl-verdict-btns">
+        <button type="button" class="fl-vbtn fl-vbtn-pass" id="passBtn">
+          ✓ Pass<small>good to fly</small>
+        </button>
+        <button type="button" class="fl-vbtn fl-vbtn-reject" id="rejectBtn">
+          ✕ Reject<small>send it back</small>
+        </button>
+      </div>
+    </div>
+
+    <div id="verdictStep2" hidden>
+      <p class="fl-verdict-note">Which station caused the fault?</p>
+      <div class="fl-cause-btns" id="causeButtons"></div>
+    </div>
+
+    <button type="button" class="fl-btn" id="verdictLater" style="margin-top:6px">
+      Decide later
+    </button>
+  </div>
+
+
+  <noscript>
+    <p style="padding:24px;font-size:16px">
+      This station page needs JavaScript to time the line. Please turn it on,
+      or ask your teacher to run the activity in solo mode from the dashboard.
+    </p>
+  </noscript>
+
+  <!-- ==================================================
+       WHICH STATION THIS PAGE IS
+       ==================================================
+       The one line that differs between the four files.
+       3 = the fourth station in LINE_CONFIG.STATIONS.
+       ================================================== -->
+  <script>window.FLIGHT_STATION = 3;</script>
+
+  <!-- In dependency order — see the note at the top of
+       activity-5.html. line-charts.js is not loaded here: this
+       page draws no charts, and a phone should not download code
+       it will never run. -->
+  <script src="line-config.js"></script>
+  <script src="line-clock.js"></script>
+  <script src="line-analytics.js"></script>
+  <script src="line-sheets.js"></script>
+  <script src="line-store.js"></script>
+  <script src="line-station.js"></script>
+</body>
+</html>

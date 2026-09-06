@@ -1,0 +1,1291 @@
+/* ============================================================
+   line.css — FLIGHT LINE
+   ============================================================
+   Loaded after the site's style.css, so the header, tab bars and
+   footer keep looking like the rest of the site and only the
+   activity itself gets the control-room treatment.
+
+   ------------------------------------------------------------
+   A BRIGHT ROOM, NOT A DARK ONE
+   ------------------------------------------------------------
+   This is a daytime workshop with the lights on and the blinds
+   up. A dark dashboard on a projector in that room washes out to
+   grey mush, and a dark page printed for a student's report
+   either wastes a cartridge or comes out unreadable.
+
+   So the page is white and the COLOUR does the work: four strong
+   station colours carrying the whole way through from the button
+   on a student's phone to the bar on the chart to the row in the
+   table. It reads as an instrument panel rather than a document,
+   without ever needing the lights off.
+
+   ------------------------------------------------------------
+   TWO VERY DIFFERENT SCREENS SHARE THIS FILE
+   ------------------------------------------------------------
+   1. THE DASHBOARD, on a television across a workshop. Read from
+      four metres away by someone who is also talking. Everything
+      that matters is enormous; everything else gets out of the
+      way.
+
+   2. A STATION PAGE, on a student's phone, held in one hand while
+      the other hand is folding paper. One button, the size of a
+      playing card, that cannot be missed and cannot be
+      double-tapped by accident.
+
+   ------------------------------------------------------------
+   THE PALETTE HAS A JOB TO DO
+   ------------------------------------------------------------
+   Activity 3 is indigo and magenta, Activity 4 teal and orange.
+   This one is white and blue, so a student with all three open
+   knows which is which without reading.
+
+   Red, amber and green are not decoration here and are never used
+   as a station colour. Red means rejected. Amber means waiting.
+   Green means good. The station colours run blue → indigo →
+   purple → pink so nothing on a chart can be mistaken for a
+   verdict. Every one of them is dark enough to read as text on
+   white, because they are used as headings as well as fills.
+   ============================================================ */
+
+.fl {
+  --fl-bg:        #f4f6fa;   /* the site's own page background */
+  --fl-bg-2:      #ffffff;
+  --fl-panel:     #ffffff;
+  --fl-panel-2:   #eef2f8;
+  --fl-line:      #d8e0ec;
+  --fl-line-soft: #e9eef6;
+
+  --fl-ink:       #16202e;
+  --fl-ink-soft:  #4b5768;
+  --fl-ink-faint: #78849a;
+
+  --fl-sky:       #0284c7;
+  --fl-sky-deep:  #0369a1;
+  --fl-sky-wash:  #e8f4fc;
+
+  /* Reserved meanings. Never a station. Each is dark enough to
+     read as text on white, which the brighter versions of these
+     hues are not. */
+  --fl-good:      #15803d;
+  --fl-wait:      #c2680a;
+  --fl-reject:    #dc2626;
+
+  --fl-good-wash:   #eaf7ee;
+  --fl-wait-wash:   #fdf3e3;
+  --fl-reject-wash: #fdecec;
+
+  --fl-radius:    14px;
+  --fl-radius-lg: 20px;
+
+  --fl-shadow:    0 1px 2px rgba(22, 32, 46, 0.05),
+                  0 4px 14px -6px rgba(22, 32, 46, 0.10);
+
+  /* 52px keeps every tappable thing above the size a thumb can
+     hit reliably while looking somewhere else. */
+  --fl-tap:       52px;
+
+  background: var(--fl-bg);
+  color: var(--fl-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Numbers that change every second must not make the layout
+   twitch, so every figure is monospaced-by-width. */
+.fl .num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.fl *,
+.fl *::before,
+.fl *::after { box-sizing: border-box; }
+
+
+/* ------------------------------------------------------------
+   PAGE FRAME
+   ------------------------------------------------------------ */
+.fl-page {
+  background:
+    radial-gradient(1100px 520px at 50% -8%, #e4edf9 0%, transparent 62%),
+    var(--fl-bg);
+  min-height: 60vh;
+  padding: 20px 16px 56px;
+}
+
+.fl-wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.fl h1, .fl h2, .fl h3 { line-height: 1.15; margin: 0; }
+
+.fl-title {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--fl-sky-deep);
+}
+
+.fl-tagline {
+  color: var(--fl-ink-soft);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.fl-panel {
+  background: var(--fl-panel);
+  border: 1px solid var(--fl-line);
+  border-radius: var(--fl-radius-lg);
+  padding: 18px;
+  box-shadow: var(--fl-shadow);
+}
+
+.fl-panel + .fl-panel { margin-top: 16px; }
+
+.fl-panel-title {
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fl-ink-faint);
+  margin-bottom: 12px;
+}
+
+
+/* ------------------------------------------------------------
+   BUTTONS AND FIELDS
+   ------------------------------------------------------------ */
+.fl-btn {
+  appearance: none;
+  border: 1px solid var(--fl-line);
+  background: var(--fl-panel);
+  color: var(--fl-ink);
+  font: inherit;
+  font-weight: 650;
+  min-height: var(--fl-tap);
+  padding: 0 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(22, 32, 46, 0.05);
+  transition: background 0.15s, border-color 0.15s, transform 0.06s;
+}
+
+.fl-btn:hover { background: var(--fl-panel-2); border-color: #c3cfe0; }
+.fl-btn:active { transform: translateY(1px); }
+
+.fl-btn:focus-visible {
+  outline: 3px solid var(--fl-sky);
+  outline-offset: 2px;
+}
+
+.fl-btn-primary {
+  background: var(--fl-sky);
+  border-color: var(--fl-sky);
+  color: #ffffff;
+  font-weight: 800;
+}
+.fl-btn-primary:hover { background: var(--fl-sky-deep); border-color: var(--fl-sky-deep); }
+
+.fl-btn-danger {
+  border-color: #f0b4b4;
+  color: var(--fl-reject);
+  background: var(--fl-reject-wash);
+}
+.fl-btn-danger:hover { background: #fbdcdc; border-color: #e79a9a; }
+
+.fl-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.fl-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.fl-field { margin-bottom: 14px; }
+
+.fl-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--fl-ink-soft);
+  margin-bottom: 6px;
+}
+
+.fl-field input,
+.fl-field select,
+.fl-field textarea {
+  width: 100%;
+  font: inherit;
+  color: var(--fl-ink);
+  background: #ffffff;
+  border: 1px solid #c9d4e3;
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-height: var(--fl-tap);
+}
+
+.fl-field textarea { min-height: 96px; resize: vertical; }
+
+.fl-field input:focus,
+.fl-field select:focus,
+.fl-field textarea:focus {
+  outline: none;
+  border-color: var(--fl-sky);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
+}
+
+.fl-field-hint {
+  font-size: 12px;
+  color: var(--fl-ink-faint);
+  margin-top: 6px;
+}
+
+.fl-row-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 16px;
+}
+@media (min-width: 620px) {
+  .fl-row-2 { grid-template-columns: 1fr 1fr; }
+}
+
+
+/* ============================================================
+   THE STATUS BAR — code, clock, controls
+   ============================================================ */
+.fl-statusbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 22px;
+  background: var(--fl-panel);
+  border: 1px solid var(--fl-line);
+  border-top: 4px solid var(--fl-sky);
+  border-radius: var(--fl-radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--fl-shadow);
+}
+
+.fl-clock {
+  font-size: 54px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--fl-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.fl-clock-idle { color: var(--fl-ink-faint); }
+
+.fl-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fl-stat-label {
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fl-ink-faint);
+  font-weight: 700;
+}
+
+.fl-stat-value {
+  font-size: 22px;
+  font-weight: 750;
+  line-height: 1.1;
+}
+
+.fl-statusbar-spacer { flex: 1 1 auto; }
+
+.fl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+.fl-pill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.fl-pill-live   { color: var(--fl-good);      background: var(--fl-good-wash); }
+.fl-pill-idle   { color: var(--fl-ink-faint); background: var(--fl-panel-2); border-color: var(--fl-line); }
+.fl-pill-ended  { color: var(--fl-sky-deep);  background: var(--fl-sky-wash); }
+.fl-pill-warn   { color: var(--fl-wait);      background: var(--fl-wait-wash); }
+.fl-pill-bad    { color: var(--fl-reject);    background: var(--fl-reject-wash); }
+
+/* The dot pulses only while a round is actually running, so a
+   glance at the screen from across the room answers "is it
+   going?" without reading a word. */
+.fl-pill-live::before { animation: fl-pulse 1.6s ease-in-out infinite; }
+
+@keyframes fl-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.3; transform: scale(0.72); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-pill-live::before { animation: none; }
+}
+
+
+/* ============================================================
+   LIVE STATION CARDS
+   ============================================================
+   Four cards, one per student, big enough to read from the back
+   of the room. The coloured spine down the left is the station's
+   colour and matches every chart.
+   ============================================================ */
+.fl-stations {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.fl-station-card {
+  position: relative;
+  background: var(--fl-panel);
+  border: 1px solid var(--fl-line);
+  border-left: 6px solid var(--st-colour, var(--fl-sky));
+  border-radius: var(--fl-radius);
+  padding: 14px 16px 18px;
+  overflow: hidden;
+  box-shadow: var(--fl-shadow);
+}
+
+.fl-station-head {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.fl-station-key {
+  font-size: 26px;
+  font-weight: 850;
+  color: var(--st-colour, var(--fl-sky));
+  line-height: 1;
+}
+
+.fl-station-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.fl-station-big {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--fl-ink);
+}
+
+.fl-station-big small {
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--fl-ink-faint);
+  margin-left: 5px;
+}
+
+.fl-station-meta {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 13px;
+  color: var(--fl-ink-soft);
+}
+
+.fl-station-meta b { color: var(--fl-ink); font-weight: 750; }
+
+/* A thin progress rail along the bottom of each card. */
+.fl-station-rail {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 5px;
+  background: var(--fl-line-soft);
+}
+.fl-station-rail span {
+  display: block;
+  height: 100%;
+  background: var(--st-colour, var(--fl-sky));
+  transition: width 0.4s ease;
+}
+
+.fl-station-card.is-bottleneck {
+  border-color: #f0b4b4;
+  box-shadow: var(--fl-shadow), inset 0 0 0 1px #f6cccc;
+}
+
+.fl-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+.fl-tag-bottleneck { background: var(--fl-reject-wash); color: var(--fl-reject); }
+.fl-tag-waiting    { background: var(--fl-wait-wash);   color: var(--fl-wait); }
+.fl-tag-working    { background: var(--fl-good-wash);   color: var(--fl-good); }
+.fl-tag-done       { background: var(--fl-sky-wash);    color: var(--fl-sky-deep); }
+
+
+/* ============================================================
+   TABS
+   ============================================================ */
+.fl-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 14px;
+  scrollbar-width: none;
+}
+.fl-tabs::-webkit-scrollbar { display: none; }
+
+.fl-tab {
+  appearance: none;
+  border: 1px solid var(--fl-line);
+  background: var(--fl-panel);
+  color: var(--fl-ink-soft);
+  font: inherit;
+  font-weight: 650;
+  padding: 10px 18px;
+  min-height: 44px;
+  border-radius: 999px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.fl-tab:hover { background: var(--fl-panel-2); color: var(--fl-ink); }
+
+.fl-tab[aria-selected="true"] {
+  background: var(--fl-sky);
+  border-color: var(--fl-sky);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.fl-tab:focus-visible { outline: 3px solid var(--fl-sky); outline-offset: 2px; }
+
+
+/* ============================================================
+   METRIC TILES
+   ============================================================ */
+.fl-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+  gap: 12px;
+}
+
+.fl-metric {
+  background: var(--fl-panel);
+  border: 1px solid var(--fl-line);
+  border-radius: var(--fl-radius);
+  padding: 14px 16px;
+  box-shadow: var(--fl-shadow);
+}
+
+.fl-metric-label {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fl-ink-faint);
+  margin-bottom: 7px;
+}
+
+.fl-metric-value {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--fl-ink);
+}
+
+.fl-metric-value small {
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--fl-ink-faint);
+  margin-left: 4px;
+}
+
+.fl-metric-note {
+  font-size: 12px;
+  color: var(--fl-ink-soft);
+  margin-top: 8px;
+  line-height: 1.45;
+}
+
+/* A tinted top edge as well as coloured type, so the judgement
+   survives being photographed, printed, or looked at by somebody
+   who cannot separate red from green. */
+.fl-metric-good { border-top: 3px solid var(--fl-good); }
+.fl-metric-warn { border-top: 3px solid var(--fl-wait); }
+.fl-metric-bad  { border-top: 3px solid var(--fl-reject); }
+
+.fl-metric-good .fl-metric-value { color: var(--fl-good); }
+.fl-metric-warn .fl-metric-value { color: var(--fl-wait); }
+.fl-metric-bad  .fl-metric-value { color: var(--fl-reject); }
+
+
+/* ============================================================
+   FINDINGS — the plain-English read-out
+   ============================================================ */
+.fl-findings { display: grid; gap: 10px; }
+
+.fl-finding {
+  border: 1px solid var(--fl-line);
+  border-left-width: 5px;
+  border-radius: 12px;
+  padding: 13px 16px;
+  background: var(--fl-panel);
+}
+
+.fl-finding h3 { font-size: 16px; font-weight: 750; margin-bottom: 5px; }
+.fl-finding p  { font-size: 14px; color: var(--fl-ink-soft); line-height: 1.55; margin: 0; }
+
+.fl-finding-good { border-left-color: var(--fl-good);   background: var(--fl-good-wash); }
+.fl-finding-warn { border-left-color: var(--fl-wait);   background: var(--fl-wait-wash); }
+.fl-finding-bad  { border-left-color: var(--fl-reject); background: var(--fl-reject-wash); }
+.fl-finding-info { border-left-color: var(--fl-sky);    background: var(--fl-sky-wash); }
+
+.fl-finding-good h3 { color: #10632f; }
+.fl-finding-warn h3 { color: #9a5308; }
+.fl-finding-bad  h3 { color: #b01c1c; }
+.fl-finding-info h3 { color: var(--fl-sky-deep); }
+
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+.fl-chart {
+  background: var(--fl-panel);
+  border: 1px solid var(--fl-line);
+  border-radius: var(--fl-radius);
+  padding: 14px 16px 10px;
+  margin-top: 14px;
+  box-shadow: var(--fl-shadow);
+  /* A long round makes a wide flow chart. Let it scroll inside
+     its own box rather than pushing the page sideways. */
+  overflow-x: auto;
+}
+
+.fl-chart h3 {
+  font-size: 16px;
+  font-weight: 750;
+  margin-bottom: 2px;
+}
+
+.fl-chart-sub {
+  font-size: 13px;
+  color: var(--fl-ink-faint);
+  margin: 0 0 8px;
+  line-height: 1.45;
+}
+
+.fl-chart svg { display: block; width: 100%; height: auto; min-width: 460px; }
+
+.fl-chart-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .fl-chart-grid { grid-template-columns: 1fr 1fr; }
+  .fl-chart-grid > .fl-chart { margin-top: 0; }
+}
+
+/* --- the SVG internals ------------------------------------- */
+.lc { font-family: inherit; }
+
+.lc-empty      { fill: var(--fl-ink-faint); font-size: 15px; }
+.lc-caption    { fill: var(--fl-ink-faint); font-size: 13px; }
+.lc-axis       { fill: var(--fl-ink-faint); font-size: 12px; }
+.lc-axis-title { fill: var(--fl-ink-faint); font-size: 12px; }
+.lc-grid       { stroke: var(--fl-line-soft); stroke-width: 1; }
+.lc-tick       { stroke: #c3cfe0; stroke-width: 1; }
+
+.lc-rowlabel   { fill: var(--fl-ink); font-size: 14px; font-weight: 700; }
+.lc-rowsub     { fill: var(--fl-ink-faint); font-size: 12px; }
+
+.lc-track      { fill: #f0f4f9; }
+.lc-block      { stroke: none; }
+/* White on every one of the four station colours, all of which
+   are dark enough to carry it. */
+.lc-blocklabel { fill: #ffffff; font-size: 11px; font-weight: 800; }
+
+/* Waiting is amber everywhere it appears, so the students learn
+   one visual word for it. */
+.lc-wait, .lc-wait-bar { fill: rgba(217, 119, 6, 0.26); }
+.lc-work-bar { fill: var(--fl-sky); }
+.lc-starve   { fill: rgba(217, 119, 6, 0.62); }
+.lc-tail     { fill: #e7ecf3; }
+.lc-swatch   { opacity: 0.9; }
+.lc-legend   { fill: var(--fl-ink-faint); font-size: 12px; }
+
+.lc-bar         { stroke: none; }
+.lc-bar-before  { opacity: 0.35; }
+.lc-barvalue    { fill: var(--fl-ink); font-size: 14px; font-weight: 750; }
+.lc-barvalue-sm { fill: var(--fl-ink-soft); font-size: 11px; font-weight: 700; }
+.lc-barlabel    { fill: var(--fl-ink); font-size: 15px; font-weight: 800; }
+.lc-barsub      { fill: var(--fl-ink-faint); font-size: 12px; }
+.lc-whisker     { stroke: rgba(22, 32, 46, 0.42); stroke-width: 1.5; }
+
+.lc-takt       { stroke: var(--fl-reject); stroke-width: 2; stroke-dasharray: 7 5; }
+.lc-takt-label { fill: var(--fl-reject); font-size: 12px; font-weight: 800; }
+
+.lc-mean       { stroke: var(--fl-ink-faint); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.lc-mean-label { fill: var(--fl-ink-faint); font-size: 12px; }
+
+.lc-line { fill: none; stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.lc-step { fill: none; stroke: var(--fl-sky); stroke-width: 2.2; }
+.lc-area { fill: rgba(2, 132, 199, 0.14); stroke: none; }
+
+.lc-cum       { fill: none; stroke: var(--fl-wait); stroke-width: 2; }
+.lc-cum-dot   { fill: var(--fl-wait); }
+.lc-cum-label { fill: var(--fl-wait); font-size: 11px; font-weight: 700; }
+
+.lc-bottleneck-tag { fill: var(--fl-reject); font-size: 11px; font-weight: 800; letter-spacing: 0.05em; }
+.lc-reject-mark    { fill: var(--fl-reject); font-size: 14px; font-weight: 800; }
+.lc-delta-good     { fill: var(--fl-good); font-size: 12px; font-weight: 800; }
+.lc-delta-bad      { fill: var(--fl-reject); font-size: 12px; font-weight: 800; }
+
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.fl-table-wrap {
+  overflow-x: auto;
+  margin-top: 12px;
+  border: 1px solid var(--fl-line);
+  border-radius: var(--fl-radius);
+  background: var(--fl-panel);
+}
+
+.fl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 560px;
+}
+
+.fl-table th,
+.fl-table td {
+  padding: 9px 12px;
+  text-align: right;
+  border-bottom: 1px solid var(--fl-line-soft);
+  white-space: nowrap;
+}
+
+.fl-table th {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fl-ink-faint);
+  font-weight: 750;
+  position: sticky;
+  top: 0;
+  background: var(--fl-panel-2);
+  border-bottom: 1px solid var(--fl-line);
+}
+
+.fl-table th:first-child,
+.fl-table td:first-child { text-align: left; }
+
+.fl-table tbody tr:nth-child(even) { background: #fafbfd; }
+.fl-table tbody tr:hover { background: var(--fl-sky-wash); }
+.fl-table tbody tr:last-child td { border-bottom: 0; }
+
+.fl-table .is-reject { color: var(--fl-reject); }
+.fl-table .is-muted  { color: var(--fl-ink-faint); }
+
+.fl-swatch {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  margin-right: 8px;
+  vertical-align: baseline;
+}
+
+
+/* ============================================================
+   PROBLEM NOTICES
+   ============================================================ */
+.fl-notice {
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  border: 1px solid var(--fl-line);
+  background: var(--fl-panel);
+  margin-bottom: 12px;
+}
+.fl-notice-warn { border-color: #ecc490; background: var(--fl-wait-wash);   color: #7d4406; }
+.fl-notice-bad  { border-color: #f0b4b4; background: var(--fl-reject-wash); color: #96201f; }
+.fl-notice-info { border-color: #b6dcf3; background: var(--fl-sky-wash);    color: #0b4a6e; }
+.fl-notice ul { margin: 8px 0 0 18px; }
+.fl-notice li { margin-bottom: 4px; }
+
+
+/* ============================================================
+   JOIN LINKS — what the students type into their phones
+   ============================================================ */
+.fl-join {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+.fl-join-card {
+  border: 1px solid var(--fl-line);
+  border-left: 6px solid var(--st-colour, var(--fl-sky));
+  border-radius: var(--fl-radius);
+  padding: 13px 15px;
+  background: var(--fl-panel);
+  box-shadow: var(--fl-shadow);
+}
+
+.fl-join-card b { display: block; font-size: 17px; margin-bottom: 3px; }
+
+.fl-join-url {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 15px;
+  color: var(--fl-sky-deep);
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+
+/* ============================================================
+   DISPLAY MODE — the television
+   ============================================================
+   Strips the site chrome away and grows everything. Meant to be
+   used with the browser in full screen on the projector or LCD,
+   while you drive the round from the same machine.
+
+   Stays white: a bright classroom washes a dark screen out to
+   grey, and the projector's own light is doing the work anyway.
+   ============================================================ */
+body.fl-display .site-header,
+body.fl-display .tab-bar,
+body.fl-display .subtab-bar,
+body.fl-display .site-footer,
+body.fl-display .fl-hide-on-display { display: none !important; }
+
+body.fl-display .fl-page { padding: 14px 18px 24px; }
+body.fl-display .fl-wrap { max-width: 100%; }
+
+body.fl-display .fl-clock         { font-size: 92px; }
+body.fl-display .fl-stat-value    { font-size: 32px; }
+body.fl-display .fl-stat-label    { font-size: 13px; }
+body.fl-display .fl-station-key   { font-size: 38px; }
+body.fl-display .fl-station-name  { font-size: 21px; }
+body.fl-display .fl-station-big   { font-size: 62px; }
+body.fl-display .fl-station-meta  { font-size: 17px; }
+body.fl-display .fl-tag           { font-size: 12px; }
+body.fl-display .fl-metric-value  { font-size: 44px; }
+body.fl-display .fl-metric-label  { font-size: 13px; }
+body.fl-display .fl-metric-note   { font-size: 15px; }
+body.fl-display .fl-finding h3    { font-size: 21px; }
+body.fl-display .fl-finding p     { font-size: 17px; }
+body.fl-display .fl-pill          { font-size: 15px; padding: 8px 16px; }
+body.fl-display .fl-table         { font-size: 17px; }
+
+body.fl-display .fl-stations {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+
+/* ============================================================
+   SOLO MODE BUTTONS
+   ============================================================
+   The four station buttons, on the dashboard, for when one
+   person is timing the whole line. Smaller than the phone's
+   single button because there are four of them, but still far
+   larger than an ordinary control — the person pressing these is
+   watching the line, not the screen.
+   ============================================================ */
+.fl-solo { margin-bottom: 16px; }
+
+#soloButtons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.fl-solo-btn {
+  min-height: 118px;
+  border-radius: 18px;
+  font-size: 19px;
+  padding: 14px 10px;
+  gap: 5px;
+  text-align: center;
+}
+
+.fl-solo-hint {
+  font-size: 12.5px;
+  color: var(--fl-ink-faint);
+  margin-top: 10px;
+  text-align: center;
+}
+
+.fl-solo-hint kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  background: var(--fl-panel);
+  border: 1px solid var(--fl-line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 6px;
+  color: var(--fl-ink);
+}
+
+
+/* ============================================================
+   EDITABLE CELLS IN THE DATA TABLE
+   ============================================================
+   Every recorded time is a button. Clicking one opens a box to
+   correct it — which matters more than it sounds, because a
+   single mis-tap in a twenty-plane round otherwise ruins two
+   averages and there is no way to put it right.
+   ============================================================ */
+.fl-cell {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 7px;
+  cursor: pointer;
+  text-align: right;
+  min-height: 32px;
+}
+
+.fl-cell:hover {
+  background: #ffffff;
+  border-color: var(--fl-sky);
+}
+
+.fl-cell:focus-visible { outline: 2px solid var(--fl-sky); outline-offset: 1px; }
+
+
+/* ============================================================
+   ============================================================
+   THE STATION PAGE
+   ============================================================
+   A different animal entirely: one enormous button, and as
+   little else on screen as the job allows.
+   ============================================================ */
+
+.fl-station-page {
+  min-height: 100vh;
+  min-height: 100dvh;   /* dvh keeps the button off the iOS toolbar */
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(760px 420px at 50% 0%, var(--st-wash, #e8f4fc) 0%, transparent 64%),
+    var(--fl-bg);
+  padding: max(12px, env(safe-area-inset-top)) 14px
+           max(14px, env(safe-area-inset-bottom));
+}
+
+.fl-sp-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 2px 12px;
+}
+
+.fl-sp-badge {
+  width: 54px; height: 54px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  font-size: 27px;
+  font-weight: 850;
+  color: #ffffff;
+  background: var(--st-colour, var(--fl-sky));
+  flex: none;
+}
+
+.fl-sp-titles { flex: 1 1 auto; min-width: 0; }
+.fl-sp-title  { font-size: 21px; font-weight: 800; line-height: 1.15; }
+.fl-sp-sub    { font-size: 13px; color: var(--fl-ink-faint); margin-top: 2px; }
+
+.fl-sp-clock {
+  font-size: 30px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  text-align: right;
+  flex: none;
+}
+
+/* --- the counter strip ------------------------------------- */
+.fl-sp-counts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-bottom: 12px;
+}
+
+.fl-sp-count {
+  background: var(--fl-panel);
+  border: 1px solid var(--fl-line);
+  border-radius: 13px;
+  padding: 10px 8px;
+  text-align: center;
+  box-shadow: var(--fl-shadow);
+}
+
+.fl-sp-count b {
+  display: block;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.fl-sp-count span {
+  font-size: 10.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fl-ink-faint);
+  font-weight: 700;
+}
+
+/* --- THE BUTTON -------------------------------------------- */
+.fl-sp-main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.fl-tapbtn {
+  flex: 1 1 auto;
+
+  /* THE FLOOR, NOT THE SIZE.
+     ----------------------------------------------------------
+     flex:1 1 auto already makes this button eat every pixel the
+     other rows do not want, so on a big phone it is enormous
+     regardless of what is written here. This value only matters
+     when space is tight — and at 38vh it was too greedy to fit.
+
+     The rest of the run screen comes to roughly 450-495px once
+     the status line wraps to three lines, so on a 667pt iPhone
+     38vh (253px) pushed the page to ~710px. The whole thing then
+     scrolled, and a thumb landing on a button that pans instead
+     of pressing loses the tap — silently, at the exact moment
+     the student is looking at the paper and not the screen.
+
+     26dvh leaves room on the smallest phone still in a classroom
+     and costs nothing on a large one. dvh measures the viewport
+     as it actually is with the browser toolbars showing; the vh
+     line above it is the fallback for browsers that predate it.
+     ---------------------------------------------------------- */
+  min-height: 26vh;
+  min-height: 26dvh;
+
+  width: 100%;
+  border: none;
+  border-radius: 26px;
+  background: var(--st-colour, var(--fl-sky));
+  color: #ffffff;
+  font: inherit;
+  font-size: 34px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  box-shadow: 0 12px 30px -10px var(--st-colour, var(--fl-sky));
+
+  /* Stops iOS turning a fast double tap into a page zoom, and
+     stops the text being selected when a thumb drags a little. */
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s ease, filter 0.12s ease;
+}
+
+.fl-tapbtn:active { transform: scale(0.982); filter: brightness(1.1); }
+.fl-tapbtn:focus-visible { outline: 4px solid var(--fl-ink); outline-offset: 4px; }
+
+.fl-tapbtn small {
+  font-size: 16px;
+  font-weight: 700;
+  opacity: 0.86;
+  letter-spacing: 0.01em;
+}
+
+.fl-tapbtn[disabled] {
+  background: var(--fl-panel-2);
+  color: var(--fl-ink-faint);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* The flash that confirms a tap landed, for a student who is
+   looking at the paper and not the screen. */
+.fl-tapbtn.is-hit { animation: fl-hit 0.42s ease-out; }
+
+@keyframes fl-hit {
+  0%   { box-shadow: 0 0 0 0 rgba(22, 32, 46, 0.42); }
+  100% { box-shadow: 0 0 0 34px rgba(22, 32, 46, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-tapbtn.is-hit { animation: none; }
+  .fl-tapbtn:active { transform: none; }
+}
+
+.fl-sp-last {
+  text-align: center;
+  font-size: 15px;
+  color: var(--fl-ink-soft);
+  min-height: 22px;
+}
+.fl-sp-last b { color: var(--fl-ink); font-weight: 750; }
+
+.fl-sp-foot {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding-top: 10px;
+}
+.fl-sp-foot .fl-btn { flex: 1 1 auto; font-size: 15px; }
+
+/* --- the verdict panel (Quality Check only) ---------------- */
+.fl-verdict {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(244, 246, 250, 0.97);
+  backdrop-filter: blur(3px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  padding: 22px max(16px, env(safe-area-inset-left)) max(22px, env(safe-area-inset-bottom));
+}
+
+.fl-verdict h2 { font-size: 25px; font-weight: 800; text-align: center; }
+
+.fl-verdict-note {
+  text-align: center;
+  color: var(--fl-ink-faint);
+  font-size: 14px;
+  margin-top: -6px;
+}
+
+.fl-verdict-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.fl-vbtn {
+  border: none;
+  border-radius: 20px;
+  font: inherit;
+  font-size: 25px;
+  font-weight: 850;
+  min-height: 128px;
+  cursor: pointer;
+  color: #ffffff;
+  touch-action: manipulation;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.fl-vbtn small { font-size: 13px; font-weight: 700; opacity: 0.82; }
+.fl-vbtn-pass   { background: var(--fl-good);   box-shadow: 0 10px 26px -12px var(--fl-good); }
+.fl-vbtn-reject { background: var(--fl-reject); box-shadow: 0 10px 26px -12px var(--fl-reject); }
+.fl-vbtn:focus-visible { outline: 4px solid var(--fl-ink); outline-offset: 3px; }
+
+.fl-cause-btns { display: grid; gap: 10px; }
+@media (min-width: 420px) { .fl-cause-btns { grid-template-columns: 1fr 1fr; } }
+
+.fl-cause {
+  border: 2px solid var(--st-colour, var(--fl-line));
+  background: var(--fl-panel);
+  color: var(--st-colour, var(--fl-ink));
+  border-radius: 15px;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 750;
+  min-height: 66px;
+  cursor: pointer;
+  padding: 10px 14px;
+  touch-action: manipulation;
+}
+.fl-cause:active { background: var(--fl-panel-2); }
+.fl-cause:focus-visible { outline: 3px solid var(--fl-ink); outline-offset: 2px; }
+
+
+/* --- the setup screen on a station phone -------------------- */
+.fl-sp-setup {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 460px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.fl-sp-waiting {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+  padding: 30px 16px;
+}
+
+.fl-sp-waiting .fl-sp-waiting-icon { font-size: 52px; line-height: 1; }
+.fl-sp-waiting h2 { font-size: 23px; font-weight: 800; }
+.fl-sp-waiting p  { color: var(--fl-ink-soft); font-size: 15px; max-width: 34ch; line-height: 1.55; }
+
+
+/* --- the little status line at the very bottom -------------- */
+.fl-conn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--fl-ink-faint);
+  padding-top: 10px;
+}
+.fl-conn b { color: var(--fl-ink-soft); font-weight: 700; }
+
+
+/* ============================================================
+   ACCESSIBILITY ODDS AND ENDS
+   ============================================================ */
+.fl-sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.fl [hidden] { display: none !important; }
+
+
+/* ============================================================
+   PRINT — the students' report
+   ============================================================
+   The screen is already light, so printing mostly means taking
+   the furniture away: the controls, the live cards and the site
+   chrome all go, and what is left is the analysis — which is the
+   part worth handing in.
+   ============================================================ */
+@media print {
+  .site-header, .tab-bar, .subtab-bar, .site-footer,
+  .fl-tabs, .fl-statusbar, .fl-no-print, .fl-btn { display: none !important; }
+
+  .fl, .fl-page {
+    background: #fff !important;
+    padding: 0 !important;
+  }
+
+  .fl-panel, .fl-chart, .fl-metric, .fl-finding,
+  .fl-station-card, .fl-table-wrap {
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Backgrounds are dropped by default when printing; the border
+     accents survive, which is why every judgement carries one. */
+  .fl-chart svg { min-width: 0; }
+  .fl-cell { border-color: transparent !important; }
+
+  /* ----------------------------------------------------------
+     TABLES MUST NOT BE CLIPPED ON PAPER
+     ----------------------------------------------------------
+     On screen the wide tables scroll sideways inside their own
+     box, which is right. On paper there is nothing to scroll:
+     overflow-x simply cuts the table off at the edge of the
+     printable area and prints no scrollbar to say so.
+
+     The station table is 851px of content in a ~676px box, so
+     the three rightmost columns fell off — Waiting, Waits and
+     Busy. That is, the printout silently dropped the waiting
+     time, which is the number this whole activity exists to
+     produce, and looked complete while doing it.
+
+     So for print: let it overflow visibly, drop the minimum
+     width, shrink the type and allow headings to wrap.
+     ---------------------------------------------------------- */
+  .fl-table-wrap {
+    overflow: visible !important;
+    border: 0 !important;
+  }
+
+  .fl-table {
+    min-width: 0 !important;
+    width: 100% !important;
+    font-size: 10px;
+    table-layout: fixed;
+  }
+
+  .fl-table th,
+  .fl-table td {
+    white-space: normal !important;
+    word-break: break-word;
+    padding: 4px 5px;
+  }
+}
+
+/* Time the log cannot account for — a dropped tap, or a reading
+   thrown out as impossible. Deliberately NOT the same grey as
+   "round finished": one of them means a station had genuinely run
+   out of work, and the other means we do not know what it was
+   doing. Folding the second into the first made a missing tap
+   look like an early finish and quietly shrank the amber
+   waiting block. */
+.lc-unrecorded {
+  fill: #cfd8e4;
+  stroke: #ffffff;
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
