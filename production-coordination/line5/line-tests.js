@@ -255,6 +255,102 @@ for (let i = 0; i < 3; i++) {
 }
 
 
+describe("The two averages the lecturer asks for by name");
+
+/* Students mix these up constantly, so both are pinned against
+   the hand-worked example.
+
+   ONE STATION on ONE plane: the four stations take 10s, 30s, 5s
+   and 5s, so the average station spends 12.5s on a plane.
+
+   ONE PLANE start to finish: 70s, because on top of the 50s of
+   actual work it spends time sitting in a pile.
+
+   The second being nearly six times the first is the entire
+   point of the activity, so if these two ever converge on the
+   worked example something has broken. */
+near(ex.line.avgStationCycleMs, 12.5 * S,
+     "the average station spends 12.5s on one plane");
+near(ex.line.avgLeadMs, 70 * S,
+     "the average plane takes 70s from start to finish");
+ok(ex.line.avgLeadMs > ex.line.avgStationCycleMs * 3,
+   "a plane takes far longer than any one station spends on it");
+
+/* And it is the mean of the stations, not of every reading — with
+   equal counts those coincide, so the example is built to tell
+   them apart only if a station is missing readings. */
+const lopsided = A.analyse({
+  stations: STATIONS,
+  itemCount: 3,
+  exits: [[10 * S, 20 * S, 30 * S],
+          [40 * S, 70 * S, 100 * S],
+          [45 * S, 75 * S, 105 * S],
+          [50 * S, null, null]],
+  verdicts: {},
+  taktMs: null,
+});
+ok(isNum(lopsided.line.avgStationCycleMs),
+   "the station average still reports when one station has fewer readings");
+
+
+describe("The wording is aimed at a first-semester student");
+
+/* The technical terms are still taught — they are in the
+   sentences and the students are examined on them — but a tile
+   heading has room for about four words, and those four words
+   should not be the ones the student is here to learn. */
+const boardSrc = SRC.board;
+
+/* The pair the lecturer asked for, headed in the same shape so
+   the two numbers can be compared at a glance. */
+ok(boardSrc.indexOf("ONE STATION on ONE plane") !== -1,
+   "the dashboard shows the per-station average, headed in plain words");
+ok(boardSrc.indexOf("ONE PLANE start to finish") !== -1,
+   "and the per-plane average, headed the same way");
+
+/* The tile grid is deliberately short. Fourteen figures read as
+   decoration; a student cannot tell which one the lesson is
+   about. Everything cut from it still lives in the findings, the
+   charts and the station table — so this counts the tiles AND
+   checks nothing was actually lost. */
+const tileCount = (boardSrc.match(/^\s*tile\(/gm) || []).length;
+ok(tileCount <= 7,
+   "the tile grid stays short (" + tileCount + " tiles)");
+
+/* Each idea has to reach the student in plain words somewhere,
+   AND keep its proper name so the vocabulary is still taught.
+   Checked against the findings, which is where the explanations
+   moved to — not against the tile labels, which is where they
+   used to be. */
+/* Built here rather than reusing the one from the quality
+   section further down — that is declared later in the file, and
+   reaching forward for it threw at load. */
+const wordingRejects = A.analyse(Object.assign({}, EXAMPLE, {
+  verdicts: { 0: { verdict: "reject", cause: 1 } },
+}));
+
+const spoken = findingText(wordingRejects) + " " + findingText(ex) + " " + boardSrc;
+
+[["takt time",        /every 40s|customer/i],
+ ["first pass yield", /rejected|passed the check/i],
+ ["line balance",     /shared out/i],
+ ["bottleneck",       /slowest station/i],
+ ["work in progress", /stuck in the line/i],
+ ["process cycle efficiency", /real work|being worked on/i]].forEach(function (pair) {
+  ok(pair[1].test(spoken),
+     'the idea behind "' + pair[0] + '" is explained in plain words');
+  ok(spoken.indexOf(pair[0]) !== -1,
+     'and "' + pair[0] + '" itself still appears, so the term is not lost');
+});
+
+/* No jargon left as a bare column heading. */
+["<th>Lead</th>", "<th>Efficiency</th>", "<th>Median</th>",
+ "<th>Spread</th>", "<th>Verdict</th>"].forEach(function (h) {
+  ok(boardSrc.indexOf(h) === -1,
+     "no column is headed " + h.replace(/<\/?th>/g, ""));
+});
+
+
 describe("The derived figures");
 
 /* 150s of work inside 210s of lead time. */
@@ -616,14 +712,28 @@ ok(ex.line.roundComplete === true && partial.line.roundComplete === false,
 ok(ex.line.drained === true, "a round with every plane out is drained");
 ok(partial.line.drained === false, "a round with planes still in it is not");
 
-const midFindings = A.findings(partial).map(function (f) { return f.body; }).join(" ");
+/* Title AND body. The wording has moved between the two once
+   already, and a test that reads only the body silently stopped
+   checking anything the moment it did. */
+function findingText(analysis) {
+  return A.findings(analysis)
+    .map(function (f) { return f.title + " " + f.body; })
+    .join(" ");
+}
+
+const midFindings = findingText(partial);
+const doneFindings = findingText(ex);
+
 ok(midFindings.indexOf("the same number") === -1,
    "the 'same number' claim is not made while planes are still in the line");
 
-const doneFindings = A.findings(ex).map(function (f) { return f.body; }).join(" ");
-ok(!/planes were stuck/.test(doneFindings) ||
-   doneFindings.indexOf("the same number") !== -1,
-   "it is still made once the line has drained");
+/* The guard has to prove the claim IS made on a drained line, not
+   merely that it is absent from a round where the WIP finding
+   never appeared at all. */
+ok(/planes were stuck/.test(doneFindings),
+   "a drained round does report the planes stuck in the line");
+ok(doneFindings.indexOf("the same number") !== -1,
+   "and on a drained line it does make the Little's Law comparison");
 
 /* 5. SOLO TAPS WERE UPLOADED under a round number the server had
       not issued and would later hand to a real team round. */

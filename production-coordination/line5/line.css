@@ -59,20 +59,31 @@
   --fl-ink-soft:  #4b5768;
   --fl-ink-faint: #78849a;
 
-  --fl-sky:       #0284c7;
-  --fl-sky-deep:  #0369a1;
-  --fl-sky-wash:  #e8f4fc;
+  --fl-sky:       #0080ff;
+  --fl-sky-deep:  #0063c6;
+  --fl-sky-wash:  #e3f1ff;
 
-  /* Reserved meanings. Never a station. Each is dark enough to
-     read as text on white, which the brighter versions of these
-     hues are not. */
-  --fl-good:      #15803d;
-  --fl-wait:      #c2680a;
-  --fl-reject:    #dc2626;
+  /* ----------------------------------------------------------
+     RESERVED MEANINGS. NEVER A STATION.
+     ----------------------------------------------------------
+     Vivid, because the class is seventeen and a chart the colour
+     of a tax form does not get looked at twice. But every one of
+     these is also used as TEXT on white — the big number on a
+     tile, a heading, an axis label — so each has been checked to
+     stay dark enough to read.
 
-  --fl-good-wash:   #eaf7ee;
-  --fl-wait-wash:   #fdf3e3;
-  --fl-reject-wash: #fdecec;
+     That rules out the obvious bright choices. A true amber
+     (#f59e0b) is lovely as a bar and illegible as a word, so
+     waiting is a vivid ORANGE instead: same warmth, same "look
+     at me", and it can carry type.
+     ---------------------------------------------------------- */
+  --fl-good:      #00a63e;
+  --fl-wait:      #e8590c;
+  --fl-reject:    #f5023d;
+
+  --fl-good-wash:   #e2fbec;
+  --fl-wait-wash:   #fff0e6;
+  --fl-reject-wash: #ffe8ee;
 
   --fl-radius:    14px;
   --fl-radius-lg: 20px;
@@ -105,8 +116,12 @@
    PAGE FRAME
    ------------------------------------------------------------ */
 .fl-page {
+  /* Two coloured pools rather than one grey one — enough to
+     stop the page reading as a spreadsheet, faint enough that
+     nothing sitting on it loses contrast. */
   background:
-    radial-gradient(1100px 520px at 50% -8%, #e4edf9 0%, transparent 62%),
+    radial-gradient(900px 460px at 12% -10%, #dceaff 0%, transparent 60%),
+    radial-gradient(820px 420px at 88% -6%, #f6e4ff 0%, transparent 58%),
     var(--fl-bg);
   min-height: 60vh;
   padding: 20px 16px 56px;
@@ -120,9 +135,9 @@
 .fl h1, .fl h2, .fl h3 { line-height: 1.15; margin: 0; }
 
 .fl-title {
-  font-size: 30px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: 34px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
   color: var(--fl-sky-deep);
 }
 
@@ -362,9 +377,23 @@
 
 .fl-station-card {
   position: relative;
+  /* A wash of the station's own colour across the card, so the
+     four of them read as four different things at a glance
+     rather than four identical boxes with different words in.
+
+     Plain white first, then the tinted version. A browser that
+     does not know color-mix() throws away the whole second
+     declaration — and with no fallback underneath it would be
+     left with a transparent card, showing the page gradient
+     through the text. The two-line form costs nothing and cannot
+     do that. */
   background: var(--fl-panel);
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--st-colour, var(--fl-sky)) 13%, #fff),
+      var(--fl-panel) 62%);
   border: 1px solid var(--fl-line);
-  border-left: 6px solid var(--st-colour, var(--fl-sky));
+  border-left: 7px solid var(--st-colour, var(--fl-sky));
   border-radius: var(--fl-radius);
   padding: 14px 16px 18px;
   overflow: hidden;
@@ -393,11 +422,11 @@
 }
 
 .fl-station-big {
-  font-size: 40px;
-  font-weight: 800;
+  font-size: 44px;
+  font-weight: 850;
   line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--fl-ink);
+  letter-spacing: -0.03em;
+  color: var(--st-colour, var(--fl-ink));
 }
 
 .fl-station-big small {
@@ -432,9 +461,22 @@
   transition: width 0.4s ease;
 }
 
+/* The slowest station gets a red surround — but NOT on the left
+   edge, which is its own colour and the thing that ties the card
+   to its bars in every chart.
+
+   The `border-color` shorthand used here previously overwrote all
+   four edges, so the bottleneck card silently lost its station
+   colour: Folding turned pink and stopped matching its own violet
+   blocks on the flow chart. The three sides are set individually
+   for that reason, and the left is then restored explicitly so
+   the intent survives anyone reordering these rules. */
 .fl-station-card.is-bottleneck {
-  border-color: #f0b4b4;
-  box-shadow: var(--fl-shadow), inset 0 0 0 1px #f6cccc;
+  border-top-color: var(--fl-reject);
+  border-right-color: var(--fl-reject);
+  border-bottom-color: var(--fl-reject);
+  border-left-color: var(--st-colour, var(--fl-sky));
+  box-shadow: var(--fl-shadow), 0 0 0 3px rgba(245, 2, 61, 0.15);
 }
 
 .fl-tag {
@@ -501,29 +543,63 @@
   gap: 12px;
 }
 
+/* ------------------------------------------------------------
+   THE TILES CARRY THE COLOUR
+   ------------------------------------------------------------
+   Six identical white boxes is a form to fill in. Six boxes each
+   with its own vivid stripe and its own coloured number is a
+   dashboard, and a seventeen-year-old will actually look at it.
+
+   The stripe is a real band across the top rather than a tint
+   behind the text, so the colour survives printing (browsers
+   drop background fills by default and keep borders) and never
+   sits underneath type where it would cost contrast.
+
+   --tile-accent is set per tile from JavaScript. The fallback is
+   the house blue, so a tile that forgets to set one still looks
+   deliberate.
+   ------------------------------------------------------------ */
 .fl-metric {
+  position: relative;
   background: var(--fl-panel);
   border: 1px solid var(--fl-line);
+  border-top: 5px solid var(--tile-accent, var(--fl-sky));
   border-radius: var(--fl-radius);
   padding: 14px 16px;
   box-shadow: var(--fl-shadow);
+  overflow: hidden;
 }
+
+/* A wash of the tile's own colour, fading out downwards. Faint
+   enough that the text on top keeps its contrast. */
+.fl-metric::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 62px;
+  background: linear-gradient(180deg,
+              color-mix(in srgb, var(--tile-accent, var(--fl-sky)) 11%, transparent),
+              transparent);
+  pointer-events: none;
+}
+
+.fl-metric > * { position: relative; }
 
 .fl-metric-label {
   font-size: 11px;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--fl-ink-faint);
+  color: var(--fl-ink-soft);
   margin-bottom: 7px;
 }
 
 .fl-metric-value {
-  font-size: 32px;
-  font-weight: 800;
+  font-size: 38px;
+  font-weight: 850;
   line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--fl-ink);
+  letter-spacing: -0.03em;
+  color: var(--tile-accent, var(--fl-ink));
 }
 
 .fl-metric-value small {
@@ -540,16 +616,18 @@
   line-height: 1.45;
 }
 
-/* A tinted top edge as well as coloured type, so the judgement
-   survives being photographed, printed, or looked at by somebody
-   who cannot separate red from green. */
-.fl-metric-good { border-top: 3px solid var(--fl-good); }
-.fl-metric-warn { border-top: 3px solid var(--fl-wait); }
-.fl-metric-bad  { border-top: 3px solid var(--fl-reject); }
+/* A verdict overrides the tile's decorative colour and takes the
+   whole tile with it — stripe, wash and number all turn at once,
+   so "this one is bad" is visible from the back of the room
+   rather than needing to be read.
 
-.fl-metric-good .fl-metric-value { color: var(--fl-good); }
-.fl-metric-warn .fl-metric-value { color: var(--fl-wait); }
-.fl-metric-bad  .fl-metric-value { color: var(--fl-reject); }
+   The stripe carries the message as well as the colour does,
+   which is what keeps it legible in a photograph, on a
+   black-and-white printout, and to the roughly one boy in twelve
+   who cannot separate the red from the green. */
+.fl-metric-good { --tile-accent: var(--fl-good); }
+.fl-metric-warn { --tile-accent: var(--fl-wait); }
+.fl-metric-bad  { --tile-accent: var(--fl-reject); }
 
 
 /* ============================================================

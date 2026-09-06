@@ -62,8 +62,8 @@
      Keep these in step with line.css by hand. There are four.
      ========================================================== */
   const PAINT = {
-    reject: "#dc2626",   /* --fl-reject */
-    wait:   "#c2680a",   /* --fl-wait   */
+    reject: "#f5023d",   /* --fl-reject */
+    wait:   "#e8590c",   /* --fl-wait   */
     soft:   "#4b5768",   /* --fl-ink-soft  */
     faint:  "#78849a",   /* --fl-ink-faint */
   };

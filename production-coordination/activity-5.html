@@ -308,9 +308,13 @@
               <table class="fl-table" id="stationTable"></table>
             </div>
             <p class="fl-field-hint" style="margin-top:10px">
-              <b>Working</b> is time spent folding. <b>Waiting</b> is time spent
-              with nothing to do because the aeroplane had not arrived yet —
-              the waste this activity exists to make visible.
+              <b>Average per plane</b> is how long that one person takes to do
+              their own job on a single aeroplane. <b>Time working</b> is all of
+              that added up. <b>Time waiting</b> is time they sat there with
+              nothing to do, because the aeroplane had not reached them yet —
+              that is not their fault, and it is the waste this whole activity
+              is about. <b>How much it varied</b> tells you whether they were
+              steady or all over the place.
             </p>
           </div>
 
@@ -386,11 +390,23 @@
           <div class="fl-panel">
             <div class="fl-panel-title">Every reading</div>
             <p class="fl-field-hint" style="margin:-6px 0 12px">
-              Finish times from the start of the round, with the time that
-              station actually spent on the aeroplane in brackets.
-              <b>Click any time to correct it</b> — a single mis-tap otherwise
-              spoils two averages. Corrections are recorded as corrections;
-              nothing is ever silently overwritten.
+              One row per aeroplane. Under each station letter is the time on
+              the clock when that station finished it, and in brackets how long
+              they actually spent on it.
+            </p>
+            <p class="fl-field-hint" style="margin:0 0 12px">
+              Then, for the whole aeroplane: <b>Total time</b> is how long it
+              took from being picked up at Marking to leaving Quality Check.
+              <b>Being worked on</b> is the part where somebody was actually
+              touching it. <b>Sat waiting</b> is the rest — time it spent in a
+              pile. Those two always add up to the total, so you can check the
+              maths yourself on any row.
+            </p>
+            <p class="fl-field-hint" style="margin:0 0 12px">
+              <b>Click any time to correct it</b> if somebody tapped late or
+              missed one — a single wrong tap otherwise spoils two averages.
+              Corrections are saved as corrections; nothing is ever quietly
+              overwritten.
             </p>
             <div class="fl-table-wrap">
               <table class="fl-table" id="itemTable"></table>

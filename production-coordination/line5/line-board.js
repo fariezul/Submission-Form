@@ -666,67 +666,118 @@
   function renderMetrics(a) {
     const L = a.line;
 
-    function tile(label, value, note, tone) {
-      return '<div class="fl-metric' + (tone ? " fl-metric-" + tone : "") + '">' +
+    /* accent is decoration; tone is a judgement.
+       ------------------------------------------------------------
+       A tile with a tone (good / warn / bad) takes its colour from
+       that, and the inline accent is deliberately NOT written —
+       an inline style beats a class, so setting both would paint a
+       failing figure in a cheerful colour. Tiles with nothing to
+       judge get a decorative accent instead, which is what turns
+       the row into a band of colour rather than six white boxes. */
+    function tile(label, value, note, tone, accent) {
+      const style = (!tone && accent)
+        ? ' style="--tile-accent:' + accent + '"' : "";
+      return '<div class="fl-metric' + (tone ? " fl-metric-" + tone : "") + '"' +
+             style + ">" +
              '<div class="fl-metric-label">' + esc(label) + "</div>" +
              '<div class="fl-metric-value num">' + value + "</div>" +
              (note ? '<div class="fl-metric-note">' + note + "</div>" : "") +
              "</div>";
     }
 
-    const taktTone = (L.taktMs && L.lineCycleMs)
-      ? (L.lineCycleMs <= L.taktMs ? "good" : "bad") : null;
+    /* Borrowed from the stations so the whole page uses one set of
+       colours, rather than inventing a second palette here. */
+    const hue = config.STATIONS.map(function (s) { return s.colour; });
 
+    /* Every station's own average, written out under the tile.
+       Seeing "Marking 12s · Folding 32s · Labelling 15s" side by
+       side is what makes the slowest one obvious without anyone
+       having to explain the word bottleneck first. */
+    const perStationList = a.perStation
+      .filter(function (p) { return isNum(p.avgCycle); })
+      .map(function (p) { return esc(p.name) + " " + esc(fmt.secs(p.avgCycle)); })
+      .join(" · ");
+
+    /* ------------------------------------------------------------
+       SIX TILES, NOT FOURTEEN
+       ------------------------------------------------------------
+       This grid was a wall of numbers, and a wall of numbers is
+       read as decoration. A student looking at fourteen figures
+       does not know which one the lesson is about, so they take
+       nothing from any of them.
+
+       So: six. Every other figure is still on this page — takt,
+       line balance, work in progress, output rate and the rest are
+       all explained properly in "What the numbers say" just below,
+       drawn in the charts, and listed per station in the table.
+       They were duplicated here, not housed here.
+
+       The six that stayed are the ones the discussion needs:
+         1  did we finish?
+         2  how long does ONE STATION take on ONE plane
+         3  how long does ONE PLANE take altogether
+         4  ...and how little of that was actually work
+         5  who was the slowest
+         6  how long everyone else stood about because of it
+
+       Two and three sit together on purpose. The second is many
+       times the first, and the moment a student notices that gap
+       they have understood the activity.
+
+       The labels are deliberately plain. The proper terms are all
+       still taught — they are in the notes and the findings, and
+       the students are examined on them — but a tile has room for
+       about four words, and those four should not be the ones the
+       student came here to learn.
+       ------------------------------------------------------------ */
     el.metrics.innerHTML =
-      tile("Planes finished", L.completed + '<small>/ ' + L.itemCount + "</small>",
-           L.rejects ? L.rejects + " rejected, " + L.goodUnits + " good" : "all passed so far") +
+      /* No warning colour here even when planes were rejected.
+         This tile answers "did we finish the order?", and 20 of 20
+         is a yes — painting it orange says the opposite. The
+         rejects are named in the note, get their own finding, and
+         have a whole Pareto chart to themselves. */
+      tile("Planes finished",
+           L.completed + '<small>/ ' + L.itemCount + "</small>",
+           L.rejects
+             ? L.goodUnits + " good, " + L.rejects + " rejected · in " +
+               esc(fmt.clock(L.runWindowMs))
+             : "all passed the check · in " + esc(fmt.clock(L.runWindowMs)),
+           null, hue[0]) +
 
-      tile("Total run time", esc(fmt.clock(L.runWindowMs)),
-           isNum(L.theoreticalMinMs)
-             ? "a steady line would need " + esc(fmt.clock(L.theoreticalMinMs))
-             : "") +
+      /* These two headings are deliberately the same shape and
+         deliberately short. Side by side, "ONE STATION on ONE
+         plane · 16s" against "ONE PLANE start to finish · 4:36"
+         asks the question by itself — a student sees one number
+         is seventeen times the other before anyone says a word.
+         Spelled out at full length they wrapped to three lines
+         each and the parallel was lost. */
+      tile("ONE STATION on ONE plane",
+           esc(fmt.secs(L.avgStationCycleMs)),
+           "average · " + (perStationList || "waiting for the first plane"),
+           null, hue[1]) +
 
-      tile("Average time per plane", esc(fmt.secs(L.avgLeadMs)),
-           "from Marking picking it up to Quality Check finishing it") +
+      tile("ONE PLANE start to finish",
+           esc(fmt.secs(L.avgLeadMs)),
+           "average · picked up at Marking to finished at Quality Check",
+           null, hue[2]) +
 
-      tile("One plane leaves every", esc(fmt.secs(L.lineCycleMs)),
-           L.bottleneck
-             ? "the same as " + esc(L.bottleneck.name) + "'s average — the bottleneck sets the pace"
-             : "", taktTone) +
-
-      tile("Bottleneck", L.bottleneck ? esc(L.bottleneck.name) : "—",
-           L.bottleneck ? "averages " + esc(fmt.secs(L.bottleneckCycleMs)) + " a plane" : "",
-           L.bottleneck ? "bad" : null) +
-
-      tile("Team time spent waiting", esc(fmt.clock(L.totalStarveMs)),
-           isNum(L.teamIdleShare)
-             ? esc(fmt.pct(L.teamIdleShare)) + " of everyone's time on the line"
-             : "", L.teamIdleShare > 0.3 ? "bad" : (L.teamIdleShare > 0.15 ? "warn" : null)) +
-
-      tile("Real work vs waiting", esc(fmt.pct(L.pce)),
-           "of a plane's time was value-added",
+      tile("How much of that was real work", esc(fmt.pct(L.pce)),
+           isNum(L.avgVaMs) && isNum(L.avgWaitMs)
+             ? "only " + esc(fmt.secs(L.avgVaMs)) + " of work · the other " +
+               esc(fmt.secs(L.avgWaitMs)) + " it sat in a pile"
+             : "",
            L.pce === null ? null : (L.pce < 0.4 ? "bad" : (L.pce < 0.7 ? "warn" : "good"))) +
 
-      tile("Line balance", esc(fmt.pct(L.balanceEfficiency)),
-           "100% would mean every station takes the same time",
-           L.balanceEfficiency === null ? null
-             : (L.balanceEfficiency < 0.7 ? "bad" : (L.balanceEfficiency < 0.85 ? "warn" : "good"))) +
+      tile("Slowest station", L.bottleneck ? esc(L.bottleneck.name) : "—",
+           L.bottleneck
+             ? "takes " + esc(fmt.secs(L.bottleneckCycleMs)) + " · so a plane only " +
+               "comes out every " + esc(fmt.secs(L.lineCycleMs))
+             : "", L.bottleneck ? "bad" : null) +
 
-      tile("Planes in the line", isNum(L.avgWip) ? L.avgWip.toFixed(1) : "—",
-           "average work in progress, peaking at " + L.maxWip) +
-
-      tile("First Pass Yield", esc(fmt.pct(L.fpy)),
-           L.rejects ? esc(fmt.secs(L.wastedVaMs)) + " of effort thrown away" : "no rejects",
-           L.fpy === null ? null : (L.fpy < 0.9 ? "bad" : (L.fpy < 1 ? "warn" : "good"))) +
-
-      (isNum(L.taktMs)
-        ? tile("Takt time", esc(fmt.secs(L.taktMs)),
-               "the customer needs one plane this often")
-        : "") +
-
-      tile("Output rate", isNum(L.throughputPerMin) ? L.throughputPerMin.toFixed(2) : "—",
-           "planes per minute" +
-           (isNum(L.goodPerMin) ? " · " + L.goodPerMin.toFixed(2) + " good" : ""));
+      tile("Time the team spent waiting", esc(fmt.clock(L.totalStarveMs)),
+           isNum(L.teamIdleShare)
+             ? esc(fmt.pct(L.teamIdleShare)) + " of everyone's time, stood with nothing to do"
+             : "", L.teamIdleShare > 0.3 ? "bad" : (L.teamIdleShare > 0.15 ? "warn" : null));
   }
 
   function renderFindings(a) {
@@ -771,11 +822,23 @@
         "</tr>";
     }).join("");
 
+    /* Column headings in words rather than in the trade's
+       shorthand. "Median" and "standard deviation" are the right
+       names and the wrong thing to put at the top of a column a
+       first-semester student is reading for the first time. */
     el.stationTable.innerHTML =
       "<thead><tr>" +
-      "<th>Station</th><th>Done</th><th>Average</th><th>Median</th>" +
-      "<th>Fastest</th><th>Slowest</th><th>Spread</th>" +
-      "<th>Working</th><th>Waiting</th><th>Waits</th><th>Busy</th>" +
+      "<th>Station</th>" +
+      "<th>Planes done</th>" +
+      "<th>Average per plane</th>" +
+      "<th>Usual time</th>" +
+      "<th>Fastest</th>" +
+      "<th>Slowest</th>" +
+      "<th>How much it varied</th>" +
+      "<th>Time working</th>" +
+      "<th>Time waiting</th>" +
+      "<th>Times it waited</th>" +
+      "<th>Busy</th>" +
       "</tr></thead><tbody>" + rows + "</tbody>";
   }
 
@@ -978,7 +1041,11 @@
 
     el.itemTable.innerHTML =
       "<thead><tr><th>Plane</th>" + heads +
-      "<th>Lead</th><th>Work</th><th>Waiting</th><th>Efficiency</th><th>Verdict</th>" +
+      "<th>Total time</th>" +
+      "<th>Being worked on</th>" +
+      "<th>Sat waiting</th>" +
+      "<th>Real work</th>" +
+      "<th>Passed?</th>" +
       "</tr></thead><tbody>" + rows + "</tbody>";
 
     Array.prototype.forEach.call(el.itemTable.querySelectorAll("[data-edit]"), function (b) {

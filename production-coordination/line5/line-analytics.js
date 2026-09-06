@@ -502,8 +502,27 @@
       completed: completed,
       itemCount: N,
 
-      /* The two averages the activity was built to produce. */
+      /* ----------------------------------------------------
+         THE TWO AVERAGES THE ACTIVITY WAS BUILT TO PRODUCE
+         ----------------------------------------------------
+         Students mix these two up constantly, and the whole
+         lesson lives in the gap between them:
+
+         avgStationCycleMs  how long ONE STATION spends on ONE
+                            plane, averaged over the stations.
+                            Around 17s on a typical round.
+
+         avgLeadMs          how long ONE PLANE takes from being
+                            picked up at Marking to leaving
+                            Quality Check. Around 4 minutes.
+
+         The second is many times the first, and the difference
+         is not work — it is the plane sitting in a pile. Put
+         them side by side on screen and the question asks
+         itself.
+         ---------------------------------------------------- */
       avgLeadMs: avgLead,
+      avgStationCycleMs: mean(avgCycles),
       avgStationCycles: perStation.map(function (p) { return p.avgCycle; }),
 
       medianLeadMs: median(leadTimes),
@@ -756,7 +775,26 @@
       return out;
     }
 
-    /* 1. The bottleneck. */
+    /* ========================================================
+       A NOTE ON THE WORDING BELOW
+       ========================================================
+       These sentences are read off a projector by first-semester
+       students, most of whom have never seen a factory. So each
+       one says the plain thing FIRST — what happened, in words
+       anyone uses — and only then gives the proper name for it.
+
+       The names still appear, because the students are examined
+       on them and "bottleneck", "takt time" and "first pass
+       yield" are the vocabulary of the subject. But a student
+       who reads only the first sentence should already have
+       understood the point. The term is a label for something
+       they have just understood, not a hurdle in front of it.
+
+       Short sentences. No word used that a seventeen-year-old
+       would not say out loud.
+       ======================================================== */
+
+    /* 1. The slowest station. */
     if (L.bottleneck && isNum(L.bottleneckCycleMs)) {
       const others = a.perStation
         .filter(function (p) { return p.index !== L.bottleneck.index && isNum(p.avgCycle); })
@@ -766,101 +804,128 @@
 
       out.push({
         tone: "bad",
-        title: L.bottleneck.name + " is the bottleneck",
-        body: "It averages " + secs(L.bottleneckCycleMs) + " a plane" +
+        title: L.bottleneck.name + " is your slowest station",
+        body: "It takes " + secs(L.bottleneckCycleMs) + " to do one plane" +
               (isNum(lead) && lead > 0
-                ? ", " + secs(lead) + " longer than the next slowest station"
+                ? ", which is " + secs(lead) + " longer than anyone else"
                 : "") +
-              ". The whole line delivers one plane every " +
-              secs(L.lineCycleMs) + " — the bottleneck sets that pace, so " +
-              "speeding up any other station changes nothing.",
+              ". And look what happens: a finished plane comes out of the line " +
+              "every " + secs(L.lineCycleMs) + " — almost the same number. " +
+              "The line can only go as fast as its slowest person. " +
+              "So telling the other three to hurry up will change nothing at all. " +
+              "Only " + L.bottleneck.name + " matters. " +
+              "The slowest station has a name in this subject: the bottleneck.",
       });
     }
 
-    /* 2. Waiting for work. The thing the students feel but cannot
-          measure while they are in it. */
+    /* 2. Waiting for work. */
     if (isNum(L.totalStarveMs) && L.totalStarveMs > 5000) {
       const worst = L.worstStarver;
       out.push({
         tone: L.teamIdleShare > 0.3 ? "bad" : "warn",
-        title: "The team spent " + clock(L.totalStarveMs) + " waiting for planes to arrive",
+        title: "Your team stood doing nothing for " + clock(L.totalStarveMs),
         body: (worst && worst.totalStarveMs > 0
-                ? worst.name + " waited longest — " + clock(worst.totalStarveMs) +
-                  " across " + worst.starveCount +
-                  (worst.starveCount === 1 ? " handover" : " handovers") +
-                  ", " + pct(worst.starveShare) + " of its time on the line. "
+                ? worst.name + " waited the longest: " + clock(worst.totalStarveMs) +
+                  ", which is " + pct(worst.starveShare) + " of their time. "
                 : "") +
-              "Added up, that is " + pct(L.teamIdleShare) + " of all the person-time " +
-              "in the round spent standing still. Nobody was being slow: the work " +
-              "simply had not reached them yet.",
+              "Add up everyone's waiting and it comes to " + pct(L.teamIdleShare) +
+              " of the whole team's time. Nobody was being lazy. They had nothing " +
+              "to work on, because the plane had not reached them yet. " +
+              "This is the waste you can see with your own eyes — someone sitting " +
+              "there with an empty desk while a pile builds up further back.",
       });
     }
 
-    /* 3. Takt. The customer does not care how hard anyone tried. */
+    /* 3. Can we meet the order? */
     if (isNum(L.taktMs)) {
       if (L.overTakt.length) {
         out.push({
           tone: "bad",
           title: L.overTakt.length === 1
-            ? L.overTakt[0].name + " cannot keep up with the customer"
-            : L.overTakt.length + " stations cannot keep up with the customer",
-          body: "Takt time is " + secs(L.taktMs) + " — one plane must leave the " +
-                "line that often to fill the order. " +
+            ? L.overTakt[0].name + " is too slow for the order"
+            : L.overTakt.length + " stations are too slow for the order",
+          body: "The customer wants all " + L.itemCount + " planes in the time you " +
+                "were given. That works out at one finished plane every " +
+                secs(L.taktMs) + ". But " +
                 L.overTakt.map(function (p) {
-                  return p.name + " takes " + secs(p.avgCycle);
-                }).join(", ") + ". Work must be moved off " +
-                (L.overTakt.length === 1 ? "that station" : "those stations") +
-                ", or shared with a second pair of hands.",
+                  return p.name + " needs " + secs(p.avgCycle);
+                }).join(", and ") + ". " +
+                (L.overTakt.length === 1 ? "That station" : "Those stations") +
+                " cannot go fast enough, no matter how hard they try. " +
+                "You must give some of their job to someone else, or put a second " +
+                "person on it. " +
+                "That target time — one plane every " + secs(L.taktMs) + " — is " +
+                "called takt time.",
         });
       } else {
         out.push({
           tone: "good",
-          title: "Every station is inside takt",
-          body: "Takt is " + secs(L.taktMs) + " and the slowest station averages " +
-                secs(L.bottleneckCycleMs) + ". The line can meet the order.",
+          title: "You can meet the customer's order",
+          body: "To finish all " + L.itemCount + " planes in time, one has to come " +
+                "out every " + secs(L.taktMs) + ". Your slowest station takes " +
+                secs(L.bottleneckCycleMs) + ", which is quicker than that, so the " +
+                "line can keep up. " +
+                "That target — one plane every " + secs(L.taktMs) + " — is called " +
+                "takt time.",
         });
       }
     }
 
-    /* 4. Where the time actually went. */
+    /* 4. Working time versus waiting time. The heart of it. */
     if (isNum(L.pce)) {
       out.push({
         tone: L.pce < 0.4 ? "bad" : (L.pce < 0.7 ? "warn" : "good"),
-        title: "Only " + pct(L.pce) + " of a plane's time was real work",
-        body: "The average plane spent " + secs(L.avgLeadMs) + " in the line but " +
-              "only " + secs(L.avgVaMs) + " of that was somebody working on it. " +
-              "The other " + secs(L.avgWaitMs) + " it spent sitting in a pile. " +
-              "That waiting is free to remove — it costs nobody any effort.",
+        title: "A plane spent only " + pct(L.pce) + " of its time being worked on",
+        body: "Follow one plane through. It was in the line for " +
+              secs(L.avgLeadMs) + ". But somebody was actually touching it for " +
+              "only " + secs(L.avgVaMs) + " of that. " +
+              "The other " + secs(L.avgWaitMs) + " it just sat in a pile, waiting " +
+              "its turn. " +
+              "Think about what that means: getting rid of the waiting costs nobody " +
+              "any extra effort. Nobody has to work harder or faster. That is why " +
+              "you fix the waiting first. " +
+              "The proper name for this percentage is process cycle efficiency.",
       });
     }
 
-    /* 5. Balance. */
+    /* 5. Is the work shared out fairly? */
     if (isNum(L.balanceEfficiency)) {
       out.push({
         tone: L.balanceEfficiency < 0.7 ? "bad" : (L.balanceEfficiency < 0.85 ? "warn" : "good"),
-        title: "Line balance is " + pct(L.balanceEfficiency),
+        title: L.balanceEfficiency >= 0.85
+          ? "The work is shared out fairly evenly"
+          : "The work is shared out unevenly",
         body: L.balanceEfficiency >= 0.85
-          ? "The work is shared out evenly. There is little left to gain from moving tasks between stations."
-          : "The work is shared unevenly. If every station took as long as the " +
-            "busiest one, the team would be " + pct(1 - L.balanceEfficiency) +
-            " less idle. Move a step of the job off " +
-            (L.bottleneck ? L.bottleneck.name : "the busiest station") + " and onto a quieter one.",
+          ? "Everyone's job takes roughly the same time, so nobody is left standing " +
+            "about waiting for the person before them. There is not much left to " +
+            "gain by moving jobs around. " +
+            "The score for this is called line balance, and yours is " +
+            pct(L.balanceEfficiency) + "."
+          : "One person is doing far more than another. Your score is " +
+            pct(L.balanceEfficiency) + ", where 100% would mean everybody's job " +
+            "takes exactly the same time and nobody ever waits. " +
+            "The fix is not to work harder. It is to take one small step of the job " +
+            "away from " + (L.bottleneck ? L.bottleneck.name : "the busiest station") +
+            " and give it to somebody who is sitting idle. " +
+            "This score is called line balance.",
       });
     }
 
-    /* 6. The idle station — the one the class always misreads as
-          "doing well". */
+    /* 6. The idle station, which the class always misreads. */
     const idlest = a.perStation
       .filter(function (p) { return isNum(p.utilisation) && p.index > 0; })
       .sort(function (x, y) { return x.utilisation - y.utilisation; })[0];
     if (idlest && isNum(idlest.utilisation) && idlest.utilisation < 0.6) {
       out.push({
         tone: "warn",
-        title: idlest.name + " was busy only " + pct(idlest.utilisation) + " of the round",
-        body: "That is not laziness and it is not a fault — that station is " +
-              "starved, waiting for work that has not arrived. Idle time here is " +
-              "a symptom of the bottleneck, not a second problem to fix. Giving " +
-              idlest.name + " more to do is the improvement, not telling it to hurry.",
+        title: idlest.name + " was only working " + pct(idlest.utilisation) + " of the time",
+        body: "Do not tell them off. This is not their fault and it is not laziness. " +
+              "They were sitting there ready, with nothing to do, because the plane " +
+              "had not arrived yet. " +
+              "An idle person at the end of a line is a clue about the slowest " +
+              "station, not a second problem. " +
+              "The answer is to give " + idlest.name + " more of the job to do — " +
+              "not to tell them to speed up.",
       });
     }
 
@@ -868,21 +933,17 @@
     if (isNum(L.avgWip) && L.avgWip > 1.5) {
       out.push({
         tone: "warn",
-        title: "On average " + L.avgWip.toFixed(1) + " planes were stuck in the line",
-        body: "Peak was " + L.maxWip + ". Every one of those is work already done " +
-              "and not yet delivered. " +
-              /* The Law only balances once the line has drained.
-                 Said while planes are still in flight, it invites a
-                 class to check two numbers that are supposed to
-                 match, find they do not, and conclude the formula
-                 is decoration. */
+        title: "About " + L.avgWip.toFixed(1) + " planes were stuck in the line at any moment",
+        body: "At the busiest point there were " + L.maxWip + ". " +
+              "Every one of those is a plane you have already paid people to work " +
+              "on, sitting there earning nothing until it comes out the other end. " +
+              "In a real factory that is money on the table doing nothing. " +
+              "Half-finished work like this is called work in progress, or WIP." +
               (L.drained && isNum(L.littleLawWip)
-                ? "Little's Law ties it together: WIP = throughput × lead time, " +
-                  "which here gives " + L.littleLawWip.toFixed(1) +
-                  " — the same number, measured a different way."
-                : "Little's Law — WIP = throughput × lead time — will match this " +
-                  "figure once the last plane is out; while some are still in the " +
-                  "line the two are counting different things."),
+                ? " There is a neat check: planes per minute multiplied by how long " +
+                  "each plane takes should give you the same number, and here it " +
+                  "gives " + L.littleLawWip.toFixed(1) + ". That is Little's Law."
+                : ""),
       });
     }
 
@@ -891,8 +952,9 @@
       if (L.rejects === 0) {
         out.push({
           tone: "good",
-          title: "First Pass Yield 100%",
-          body: "Every plane passed inspection. No effort was thrown away.",
+          title: "Every single plane passed the check",
+          body: "Not one had to be thrown away, so no effort was wasted. " +
+                "When every item passes first time, that is 100% first pass yield.",
         });
       } else {
         let worst = null;
@@ -901,15 +963,18 @@
         }
         out.push({
           tone: L.fpy < 0.9 ? "bad" : "warn",
-          title: "First Pass Yield " + pct(L.fpy) + " — " + L.rejects +
-                 (L.rejects === 1 ? " plane" : " planes") + " rejected",
+          title: L.rejects + " of your " + L.completed + " planes were rejected",
           body: (worst !== null
-                  ? "Most faults came from " + a.stations[worst].name + ". "
+                  ? "Most of the faults were made at " + a.stations[worst].name + ". "
                   : "") +
-                "Those rejects consumed " + secs(L.wastedVaMs) + " of the team's " +
-                "effort and produced nothing. A defect caught at the end has " +
-                "already been paid for at every station it passed through — " +
-                "which is the argument for checking quality where it is made.",
+                "Those planes used up " + secs(L.wastedVaMs) + " of your team's work " +
+                "and gave you nothing back. " +
+                "And notice where the fault was found: at the very end. By then " +
+                "every station had already spent time on it. " +
+                "It is far cheaper to spot a mistake at the station that made it " +
+                "than to find it at the end. " +
+                "The share that passed first time — " + pct(L.fpy) + " here — is " +
+                "called first pass yield.",
         });
       }
     }
@@ -920,10 +985,12 @@
       if (saving > 5000) {
         out.push({
           tone: "info",
-          title: "A steady line would have finished " + secs(saving) + " sooner",
-          body: "Same people, same station times, no variation and no gaps: " +
-                clock(L.theoreticalMinMs) + " instead of " + clock(L.runWindowMs) +
-                ". That gap is stops, stumbles and uneven pace — not effort.",
+          title: "You could have finished " + secs(saving) + " earlier",
+          body: "Same people, working at exactly the same speed, but with no stops " +
+                "and no uneven patches: you would have finished in " +
+                clock(L.theoreticalMinMs) + " instead of " + clock(L.runWindowMs) + ". " +
+                "That difference is not about effort. Nobody needed to work harder. " +
+                "It is the stopping and starting.",
         });
       }
     }

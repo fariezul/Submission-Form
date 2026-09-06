@@ -73,10 +73,10 @@ window.LINE_CONFIG = {
      station takes a reserved colour.
      ---------------------------------------------------------- */
   STATIONS: [
-    { key: "A", name: "Marking",       verb: "Marked",   colour: "#0284c7" },
-    { key: "B", name: "Folding",       verb: "Folded",   colour: "#4f46e5" },
-    { key: "C", name: "Labelling",     verb: "Labelled", colour: "#9333ea" },
-    { key: "D", name: "Quality Check", verb: "Checked",  colour: "#db2777" },
+    { key: "A", name: "Marking",       verb: "Marked",   colour: "#0080ff" },
+    { key: "B", name: "Folding",       verb: "Folded",   colour: "#7b2ff7" },
+    { key: "C", name: "Labelling",     verb: "Labelled", colour: "#c026d3" },
+    { key: "D", name: "Quality Check", verb: "Checked",  colour: "#e0218a" },
   ],
 
   /* How many aeroplanes the line must build in one round. */
