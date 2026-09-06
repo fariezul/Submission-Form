@@ -1066,6 +1066,7 @@
      DATA — the raw grid, and the place to fix a bad tap
      ---------------------------------------------------------- */
   function renderData(a, head) {
+    const L = a.line;
     const heads = a.stations.map(function (s) {
       return '<th><span class="fl-swatch" style="background:' + s.colour + '"></span>' +
              esc(s.key) + "</th>";
@@ -1099,6 +1100,48 @@
         "</button></td></tr>";
     }
 
+    /* ----------------------------------------------------------
+       THE AVERAGES ROW
+       ----------------------------------------------------------
+       Under each station letter the body shows two numbers: the
+       time on the clock when that station finished, and in
+       brackets how long it actually spent. Only the SECOND of
+       those can be averaged.
+
+       Averaging the clock readings would produce a figure that
+       looks perfectly reasonable and means nothing at all — the
+       mean of "0:06, 0:09, 0:16" is just where the middle of the
+       round happened to fall, and it would grow every time the
+       class ran a longer round. So the footer carries the process
+       time only, and says so.
+
+       Real work is the round's overall figure (all the work
+       divided by all the time), not the mean of the per-plane
+       percentages. Those two differ whenever the planes take
+       different lengths of time, and the overall one is both
+       correct and the number already on the tile above.
+       ---------------------------------------------------------- */
+    const avgCells = a.stations.map(function (st, sIdx) {
+      const p = a.perStation[sIdx];
+      return '<td class="is-avg">' +
+             (isNum(p.avgCycle) ? esc(fmt.secs(p.avgCycle)) : "—") + "</td>";
+    }).join("");
+
+    const foot =
+      "<tfoot><tr>" +
+      '<th scope="row">Average</th>' +
+      avgCells +
+      '<td class="is-avg">' + esc(fmt.secs(L.avgLeadMs)) + "</td>" +
+      '<td class="is-avg">' + esc(fmt.secs(L.avgVaMs)) + "</td>" +
+      '<td class="is-avg">' + esc(fmt.secs(L.avgWaitMs)) + "</td>" +
+      '<td class="is-avg">' + esc(fmt.pct(L.pce)) + "</td>" +
+      '<td class="is-avg">' +
+        (L.completed
+          ? L.goodUnits + " of " + L.completed + " passed"
+          : "—") +
+      "</td>" +
+      "</tr></tfoot>";
+
     el.itemTable.innerHTML =
       "<thead><tr><th>Plane</th>" + heads +
       "<th>Total time</th>" +
@@ -1106,7 +1149,7 @@
       "<th>Sat waiting</th>" +
       "<th>Real work</th>" +
       "<th>Passed?</th>" +
-      "</tr></thead><tbody>" + rows + "</tbody>";
+      "</tr></thead><tbody>" + rows + "</tbody>" + foot;
 
     Array.prototype.forEach.call(el.itemTable.querySelectorAll("[data-edit]"), function (b) {
       b.addEventListener("click", function () {

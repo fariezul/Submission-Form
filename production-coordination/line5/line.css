@@ -890,6 +890,32 @@ body.fl-display .fl-lang { font-size: 16px; padding: 10px 20px; min-height: 46px
 .fl-table th:first-child,
 .fl-table td:first-child { text-align: left; }
 
+/* THE AVERAGES ROW.
+   Sticky to the bottom of the scroll box so it stays visible while
+   a class scrolls through twenty planes — the summary is the line
+   they keep glancing back to, and having to scroll to the end to
+   find it defeats the point of putting it there. */
+.fl-table tfoot td,
+.fl-table tfoot th {
+  position: sticky;
+  bottom: 0;
+  background: var(--fl-panel-2);
+  border-top: 2px solid var(--fl-line);
+  border-bottom: 0;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--fl-ink);
+}
+
+.fl-table tfoot th {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--fl-ink-faint);
+}
+
+.fl-table tfoot .is-avg { color: var(--fl-ink); }
+
 .fl-table tbody tr:nth-child(even) { background: #fafbfd; }
 .fl-table tbody tr:hover { background: var(--fl-sky-wash); }
 .fl-table tbody tr:last-child td { border-bottom: 0; }
