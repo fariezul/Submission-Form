@@ -761,16 +761,43 @@
 
      They are ordered so the most useful one is first.
      ========================================================== */
-  function findings(a) {
+  function findings(a, lang) {
     const out = [];
     const L = a.line;
     const S = a.stations.length;
 
+    /* ========================================================
+       ENGLISH AND BAHASA MALAYSIA, SIDE BY SIDE
+       ========================================================
+       t("...", "...") picks the language. The two versions of a
+       sentence are written as one call, touching each other, so
+       a change to the English is physically next to the Malay it
+       has just contradicted. Held in separate files or separate
+       blocks they drift apart within a term, and the class that
+       reads Malay quietly gets last month's analysis.
+
+       Numbers are never translated — fmt.secs and fmt.clock give
+       "32s" and "4:36" in both — so every figure on screen stays
+       the same whichever button is pressed. Only the words move.
+
+       The lean terms stay in English inside the Malay: bottleneck,
+       takt time, first pass yield, WIP. That is deliberate. They
+       are examined in English and used in English on a real shop
+       floor, so translating them would teach a word the student
+       cannot then use. The SENTENCE around them explains what
+       they mean, which is the part that was hard.
+       ======================================================== */
+    const t = function (en, ms) {
+      return (lang === "ms" && ms) ? ms : en;
+    };
+
     if (L.completed < 2) {
       out.push({
         tone: "info",
-        title: "Not enough planes yet",
-        body: "Finish a few more and the analysis fills in.",
+        title: t("Not enough planes yet",
+                 "Belum cukup kapal terbang"),
+        body: t("Finish a few more and the analysis fills in.",
+                "Siapkan beberapa lagi dan analisis ini akan terisi."),
       });
       return out;
     }
@@ -804,17 +831,31 @@
 
       out.push({
         tone: "bad",
-        title: L.bottleneck.name + " is your slowest station",
-        body: "It takes " + secs(L.bottleneckCycleMs) + " to do one plane" +
-              (isNum(lead) && lead > 0
-                ? ", which is " + secs(lead) + " longer than anyone else"
-                : "") +
-              ". And look what happens: a finished plane comes out of the line " +
-              "every " + secs(L.lineCycleMs) + " — almost the same number. " +
-              "The line can only go as fast as its slowest person. " +
-              "So telling the other three to hurry up will change nothing at all. " +
-              "Only " + L.bottleneck.name + " matters. " +
-              "The slowest station has a name in this subject: the bottleneck.",
+        title: t(L.bottleneck.name + " is your slowest station",
+                 L.bottleneck.name + " ialah stesen paling lambat anda"),
+        body: t(
+          "It takes " + secs(L.bottleneckCycleMs) + " to do one plane" +
+          (isNum(lead) && lead > 0
+            ? ", which is " + secs(lead) + " longer than anyone else"
+            : "") +
+          ". And look what happens: a finished plane comes out of the line " +
+          "every " + secs(L.lineCycleMs) + " — almost the same number. " +
+          "The line can only go as fast as its slowest person. " +
+          "So telling the other three to hurry up will change nothing at all. " +
+          "Only " + L.bottleneck.name + " matters. " +
+          "The slowest station has a name in this subject: the bottleneck.",
+
+          "Stesen ini mengambil " + secs(L.bottleneckCycleMs) +
+          " untuk satu kapal terbang" +
+          (isNum(lead) && lead > 0
+            ? ", iaitu " + secs(lead) + " lebih lama daripada yang lain"
+            : "") +
+          ". Lihat apa yang berlaku: sebuah kapal terbang siap keluar dari " +
+          "barisan setiap " + secs(L.lineCycleMs) + " — hampir sama. " +
+          "Barisan hanya boleh bergerak sepantas orang paling lambat di dalamnya. " +
+          "Jadi menyuruh tiga orang lagi bergerak lebih cepat tidak akan " +
+          "mengubah apa-apa. Hanya " + L.bottleneck.name + " yang penting. " +
+          "Stesen paling lambat ada namanya dalam subjek ini: bottleneck."),
       });
     }
 
@@ -823,16 +864,30 @@
       const worst = L.worstStarver;
       out.push({
         tone: L.teamIdleShare > 0.3 ? "bad" : "warn",
-        title: "Your team stood doing nothing for " + clock(L.totalStarveMs),
-        body: (worst && worst.totalStarveMs > 0
-                ? worst.name + " waited the longest: " + clock(worst.totalStarveMs) +
-                  ", which is " + pct(worst.starveShare) + " of their time. "
-                : "") +
-              "Add up everyone's waiting and it comes to " + pct(L.teamIdleShare) +
-              " of the whole team's time. Nobody was being lazy. They had nothing " +
-              "to work on, because the plane had not reached them yet. " +
-              "This is the waste you can see with your own eyes — someone sitting " +
-              "there with an empty desk while a pile builds up further back.",
+        title: t("Your team stood doing nothing for " + clock(L.totalStarveMs),
+                 "Pasukan anda berdiri tanpa kerja selama " + clock(L.totalStarveMs)),
+        body: t(
+          (worst && worst.totalStarveMs > 0
+            ? worst.name + " waited the longest: " + clock(worst.totalStarveMs) +
+              ", which is " + pct(worst.starveShare) + " of their time. "
+            : "") +
+          "Add up everyone's waiting and it comes to " + pct(L.teamIdleShare) +
+          " of the whole team's time. Nobody was being lazy. They had nothing " +
+          "to work on, because the plane had not reached them yet. " +
+          "This is the waste you can see with your own eyes — someone sitting " +
+          "there with an empty desk while a pile builds up further back.",
+
+          (worst && worst.totalStarveMs > 0
+            ? worst.name + " menunggu paling lama: " + clock(worst.totalStarveMs) +
+              ", iaitu " + pct(worst.starveShare) + " daripada masa mereka. "
+            : "") +
+          "Campurkan masa menunggu semua orang dan jumlahnya " +
+          pct(L.teamIdleShare) + " daripada masa seluruh pasukan. " +
+          "Tiada sesiapa yang malas. Mereka tiada kerja untuk dibuat, kerana " +
+          "kapal terbang belum sampai kepada mereka. " +
+          "Inilah pembaziran yang boleh anda lihat dengan mata sendiri — " +
+          "seseorang duduk dengan meja kosong sementara timbunan bertambah " +
+          "di belakang."),
       });
     }
 
@@ -841,32 +896,59 @@
       if (L.overTakt.length) {
         out.push({
           tone: "bad",
-          title: L.overTakt.length === 1
-            ? L.overTakt[0].name + " is too slow for the order"
-            : L.overTakt.length + " stations are too slow for the order",
-          body: "The customer wants all " + L.itemCount + " planes in the time you " +
-                "were given. That works out at one finished plane every " +
-                secs(L.taktMs) + ". But " +
-                L.overTakt.map(function (p) {
-                  return p.name + " needs " + secs(p.avgCycle);
-                }).join(", and ") + ". " +
-                (L.overTakt.length === 1 ? "That station" : "Those stations") +
-                " cannot go fast enough, no matter how hard they try. " +
-                "You must give some of their job to someone else, or put a second " +
-                "person on it. " +
-                "That target time — one plane every " + secs(L.taktMs) + " — is " +
-                "called takt time.",
+          title: t(
+            L.overTakt.length === 1
+              ? L.overTakt[0].name + " is too slow for the order"
+              : L.overTakt.length + " stations are too slow for the order",
+            L.overTakt.length === 1
+              ? L.overTakt[0].name + " terlalu lambat untuk pesanan ini"
+              : L.overTakt.length + " stesen terlalu lambat untuk pesanan ini"),
+          body: t(
+            "The customer wants all " + L.itemCount + " planes in the time you " +
+            "were given. That works out at one finished plane every " +
+            secs(L.taktMs) + ". But " +
+            L.overTakt.map(function (p) {
+              return p.name + " needs " + secs(p.avgCycle);
+            }).join(", and ") + ". " +
+            (L.overTakt.length === 1 ? "That station" : "Those stations") +
+            " cannot go fast enough, no matter how hard they try. " +
+            "You must give some of their job to someone else, or put a second " +
+            "person on it. " +
+            "That target time — one plane every " + secs(L.taktMs) + " — is " +
+            "called takt time.",
+
+            "Pelanggan mahu kesemua " + L.itemCount + " kapal terbang dalam masa " +
+            "yang diberikan. Ini bermakna satu kapal terbang siap setiap " +
+            secs(L.taktMs) + ". Tetapi " +
+            L.overTakt.map(function (p) {
+              return p.name + " memerlukan " + secs(p.avgCycle);
+            }).join(", dan ") + ". " +
+            (L.overTakt.length === 1 ? "Stesen itu" : "Stesen-stesen itu") +
+            " tidak boleh bergerak cukup pantas, walau sekuat mana mereka mencuba. " +
+            "Anda perlu berikan sebahagian kerja mereka kepada orang lain, atau " +
+            "letakkan orang kedua di situ. " +
+            "Masa sasaran itu — satu kapal terbang setiap " + secs(L.taktMs) +
+            " — dipanggil takt time."),
         });
       } else {
         out.push({
           tone: "good",
-          title: "You can meet the customer's order",
-          body: "To finish all " + L.itemCount + " planes in time, one has to come " +
-                "out every " + secs(L.taktMs) + ". Your slowest station takes " +
-                secs(L.bottleneckCycleMs) + ", which is quicker than that, so the " +
-                "line can keep up. " +
-                "That target — one plane every " + secs(L.taktMs) + " — is called " +
-                "takt time.",
+          title: t("You can meet the customer's order",
+                   "Anda boleh memenuhi pesanan pelanggan"),
+          body: t(
+            "To finish all " + L.itemCount + " planes in time, one has to come " +
+            "out every " + secs(L.taktMs) + ". Your slowest station takes " +
+            secs(L.bottleneckCycleMs) + ", which is quicker than that, so the " +
+            "line can keep up. " +
+            "That target — one plane every " + secs(L.taktMs) + " — is called " +
+            "takt time.",
+
+            "Untuk menyiapkan kesemua " + L.itemCount + " kapal terbang tepat " +
+            "pada masanya, satu perlu keluar setiap " + secs(L.taktMs) + ". " +
+            "Stesen paling lambat anda mengambil " + secs(L.bottleneckCycleMs) +
+            ", lebih pantas daripada itu, jadi barisan boleh mengikutinya. " +
+            "Sasaran itu — satu kapal terbang setiap " + secs(L.taktMs) +
+            " — dipanggil takt time."),
         });
       }
     }
@@ -885,20 +967,40 @@
 
       out.push({
         tone: L.pce < 0.4 ? "bad" : (L.pce < 0.7 ? "warn" : "good"),
-        title: busy
-          ? "A plane spent " + pct(L.pce) + " of its time being worked on"
-          : "A plane spent only " + pct(L.pce) + " of its time being worked on",
-        body: "Follow one plane through. It was in the line for " +
-              secs(L.avgLeadMs) + ". Somebody was actually touching it for " +
-              secs(L.avgVaMs) + " of that, and for the other " +
-              secs(L.avgWaitMs) + " it just sat in a pile, waiting its turn. " +
-              (busy
-                ? "That is a good result — the aeroplanes are nearly always " +
-                  "being worked on rather than queuing. There is little left to " +
-                  "win here, so look at the slowest station instead."
-                : "Think about what that means: getting rid of the waiting costs " +
-                  "nobody any extra effort. Nobody has to work harder or faster. " +
-                  "That is why you fix the waiting first."),
+        title: t(
+          busy
+            ? "A plane spent " + pct(L.pce) + " of its time being worked on"
+            : "A plane spent only " + pct(L.pce) + " of its time being worked on",
+          busy
+            ? "Kapal terbang dikerjakan selama " + pct(L.pce) + " daripada masanya"
+            : "Kapal terbang hanya dikerjakan selama " + pct(L.pce) +
+              " daripada masanya"),
+        body: t(
+          "Follow one plane through. It was in the line for " +
+          secs(L.avgLeadMs) + ". Somebody was actually touching it for " +
+          secs(L.avgVaMs) + " of that, and for the other " +
+          secs(L.avgWaitMs) + " it just sat in a pile, waiting its turn. " +
+          (busy
+            ? "That is a good result — the aeroplanes are nearly always " +
+              "being worked on rather than queuing. There is little left to " +
+              "win here, so look at the slowest station instead."
+            : "Think about what that means: getting rid of the waiting costs " +
+              "nobody any extra effort. Nobody has to work harder or faster. " +
+              "That is why you fix the waiting first."),
+
+          "Ikut satu kapal terbang dari awal hingga akhir. Ia berada dalam " +
+          "barisan selama " + secs(L.avgLeadMs) + ". Seseorang benar-benar " +
+          "mengerjakannya selama " + secs(L.avgVaMs) + " sahaja, dan selama " +
+          secs(L.avgWaitMs) + " lagi ia hanya terletak dalam timbunan, " +
+          "menunggu giliran. " +
+          (busy
+            ? "Ini keputusan yang baik — kapal terbang hampir sentiasa " +
+              "dikerjakan dan bukan menunggu dalam barisan. Tidak banyak lagi " +
+              "yang boleh diperbaiki di sini, jadi lihat stesen paling lambat pula."
+            : "Fikirkan maksudnya: menghapuskan masa menunggu tidak memerlukan " +
+              "usaha tambahan daripada sesiapa. Tiada siapa perlu bekerja lebih " +
+              "kuat atau lebih pantas. Itulah sebabnya anda betulkan masa " +
+              "menunggu dahulu.")),
       });
     }
 
@@ -906,22 +1008,43 @@
     if (isNum(L.balanceEfficiency)) {
       out.push({
         tone: L.balanceEfficiency < 0.7 ? "bad" : (L.balanceEfficiency < 0.85 ? "warn" : "good"),
-        title: L.balanceEfficiency >= 0.85
-          ? "The work is shared out fairly evenly"
-          : "The work is shared out unevenly",
-        body: L.balanceEfficiency >= 0.85
-          ? "Everyone's job takes roughly the same time, so nobody is left standing " +
-            "about waiting for the person before them. There is not much left to " +
-            "gain by moving jobs around. " +
-            "The score for this is called line balance, and yours is " +
-            pct(L.balanceEfficiency) + "."
-          : "One person is doing far more than another. Your score is " +
-            pct(L.balanceEfficiency) + ", where 100% would mean everybody's job " +
-            "takes exactly the same time and nobody ever waits. " +
-            "The fix is not to work harder. It is to take one small step of the job " +
-            "away from " + (L.bottleneck ? L.bottleneck.name : "the busiest station") +
-            " and give it to somebody who is sitting idle. " +
-            "This score is called line balance.",
+        title: t(
+          L.balanceEfficiency >= 0.85
+            ? "The work is shared out fairly evenly"
+            : "The work is shared out unevenly",
+          L.balanceEfficiency >= 0.85
+            ? "Kerja dibahagikan dengan agak seimbang"
+            : "Kerja tidak dibahagikan dengan seimbang"),
+        body: t(
+          L.balanceEfficiency >= 0.85
+            ? "Everyone's job takes roughly the same time, so nobody is left standing " +
+              "about waiting for the person before them. There is not much left to " +
+              "gain by moving jobs around. " +
+              "The score for this is called line balance, and yours is " +
+              pct(L.balanceEfficiency) + "."
+            : "One person is doing far more than another. Your score is " +
+              pct(L.balanceEfficiency) + ", where 100% would mean everybody's job " +
+              "takes exactly the same time and nobody ever waits. " +
+              "The fix is not to work harder. It is to take one small step of the job " +
+              "away from " + (L.bottleneck ? L.bottleneck.name : "the busiest station") +
+              " and give it to somebody who is sitting idle. " +
+              "This score is called line balance.",
+
+          L.balanceEfficiency >= 0.85
+            ? "Kerja setiap orang mengambil masa lebih kurang sama, jadi tiada " +
+              "sesiapa terpaksa berdiri menunggu orang sebelumnya. Tidak banyak " +
+              "lagi yang boleh diperoleh dengan memindahkan kerja. " +
+              "Skor untuk ini dipanggil line balance, dan skor anda ialah " +
+              pct(L.balanceEfficiency) + "."
+            : "Seorang membuat jauh lebih banyak daripada yang lain. Skor anda " +
+              "ialah " + pct(L.balanceEfficiency) + ", di mana 100% bermakna kerja " +
+              "setiap orang mengambil masa yang sama dan tiada sesiapa pernah " +
+              "menunggu. " +
+              "Penyelesaiannya bukan bekerja lebih kuat. Ambil satu langkah kecil " +
+              "daripada kerja " +
+              (L.bottleneck ? L.bottleneck.name : "stesen paling sibuk") +
+              " dan berikan kepada orang yang sedang menganggur. " +
+              "Skor ini dipanggil line balance."),
       });
     }
 
@@ -932,14 +1055,26 @@
     if (idlest && isNum(idlest.utilisation) && idlest.utilisation < 0.6) {
       out.push({
         tone: "warn",
-        title: idlest.name + " was only working " + pct(idlest.utilisation) + " of the time",
-        body: "Do not tell them off. This is not their fault and it is not laziness. " +
-              "They were sitting there ready, with nothing to do, because the plane " +
-              "had not arrived yet. " +
-              "An idle person at the end of a line is a clue about the slowest " +
-              "station, not a second problem. " +
-              "The answer is to give " + idlest.name + " more of the job to do — " +
-              "not to tell them to speed up.",
+        title: t(
+          idlest.name + " was only working " + pct(idlest.utilisation) + " of the time",
+          idlest.name + " hanya bekerja " + pct(idlest.utilisation) +
+          " daripada masa"),
+        body: t(
+          "Do not tell them off. This is not their fault and it is not laziness. " +
+          "They were sitting there ready, with nothing to do, because the plane " +
+          "had not arrived yet. " +
+          "An idle person at the end of a line is a clue about the slowest " +
+          "station, not a second problem. " +
+          "The answer is to give " + idlest.name + " more of the job to do — " +
+          "not to tell them to speed up.",
+
+          "Jangan marah mereka. Ini bukan salah mereka dan bukan kerana malas. " +
+          "Mereka duduk bersedia, tiada kerja untuk dibuat, kerana kapal terbang " +
+          "belum sampai. " +
+          "Orang yang menganggur di hujung barisan ialah petunjuk tentang stesen " +
+          "paling lambat, bukan masalah kedua. " +
+          "Jawapannya ialah beri " + idlest.name + " lebih banyak kerja — " +
+          "bukan suruh mereka bergerak lebih pantas."),
       });
     }
 
@@ -947,7 +1082,10 @@
     if (isNum(L.avgWip) && L.avgWip > 1.5) {
       out.push({
         tone: "warn",
-        title: "About " + L.avgWip.toFixed(1) + " planes were stuck in the line at any moment",
+        title: t(
+          "About " + L.avgWip.toFixed(1) + " planes were stuck in the line at any moment",
+          "Kira-kira " + L.avgWip.toFixed(1) + " kapal terbang tersekat dalam " +
+          "barisan pada satu-satu masa"),
         /* No formula here on purpose.
            --------------------------------------------------
            This used to finish with the Little's Law identity —
@@ -959,11 +1097,19 @@
            end of a paragraph about a pile of paper, and the
            sentence was the one that made this finding feel like
            homework. */
-        body: "At the busiest point there were " + L.maxWip + ". " +
-              "Every one of those is a plane you have already paid people to work " +
-              "on, sitting there earning nothing until it comes out the other end. " +
-              "In a real factory that is money on the table doing nothing. " +
-              "Half-finished work like this is called work in progress, or WIP.",
+        body: t(
+          "At the busiest point there were " + L.maxWip + ". " +
+          "Every one of those is a plane you have already paid people to work " +
+          "on, sitting there earning nothing until it comes out the other end. " +
+          "In a real factory that is money on the table doing nothing. " +
+          "Half-finished work like this is called work in progress, or WIP.",
+
+          "Pada waktu paling sibuk ada " + L.maxWip + ". " +
+          "Setiap satu daripadanya ialah kapal terbang yang anda sudah bayar " +
+          "orang untuk mengerjakannya, terletak begitu sahaja tanpa menghasilkan " +
+          "apa-apa sehingga ia keluar di hujung sana. " +
+          "Dalam kilang sebenar, itu wang yang terbiar begitu sahaja. " +
+          "Kerja separuh siap seperti ini dipanggil work in progress, atau WIP."),
       });
     }
 
@@ -972,9 +1118,15 @@
       if (L.rejects === 0) {
         out.push({
           tone: "good",
-          title: "Every single plane passed the check",
-          body: "Not one had to be thrown away, so no effort was wasted. " +
-                "When every item passes first time, that is 100% first pass yield.",
+          title: t("Every single plane passed the check",
+                   "Setiap kapal terbang lulus pemeriksaan"),
+          body: t(
+            "Not one had to be thrown away, so no effort was wasted. " +
+            "When every item passes first time, that is 100% first pass yield.",
+
+            "Tiada satu pun terpaksa dibuang, jadi tiada usaha yang terbazir. " +
+            "Apabila setiap barang lulus pada kali pertama, itulah first pass " +
+            "yield 100%."),
         });
       } else {
         let worst = null;
@@ -983,18 +1135,33 @@
         }
         out.push({
           tone: L.fpy < 0.9 ? "bad" : "warn",
-          title: L.rejects + " of your " + L.completed + " planes were rejected",
-          body: (worst !== null
-                  ? "Most of the faults were made at " + a.stations[worst].name + ". "
-                  : "") +
-                "Those planes used up " + secs(L.wastedVaMs) + " of your team's work " +
-                "and gave you nothing back. " +
-                "And notice where the fault was found: at the very end. By then " +
-                "every station had already spent time on it. " +
-                "It is far cheaper to spot a mistake at the station that made it " +
-                "than to find it at the end. " +
-                "The share that passed first time — " + pct(L.fpy) + " here — is " +
-                "called first pass yield.",
+          title: t(
+            L.rejects + " of your " + L.completed + " planes were rejected",
+            L.rejects + " daripada " + L.completed + " kapal terbang anda ditolak"),
+          body: t(
+            (worst !== null
+              ? "Most of the faults were made at " + a.stations[worst].name + ". "
+              : "") +
+            "Those planes used up " + secs(L.wastedVaMs) + " of your team's work " +
+            "and gave you nothing back. " +
+            "And notice where the fault was found: at the very end. By then " +
+            "every station had already spent time on it. " +
+            "It is far cheaper to spot a mistake at the station that made it " +
+            "than to find it at the end. " +
+            "The share that passed first time — " + pct(L.fpy) + " here — is " +
+            "called first pass yield.",
+
+            (worst !== null
+              ? "Kebanyakan kecacatan berlaku di " + a.stations[worst].name + ". "
+              : "") +
+            "Kapal terbang itu menggunakan " + secs(L.wastedVaMs) + " kerja " +
+            "pasukan anda dan tidak memberikan apa-apa pulangan. " +
+            "Perhatikan di mana kecacatan itu dijumpai: di hujung sekali. Pada " +
+            "ketika itu setiap stesen sudah pun menghabiskan masa padanya. " +
+            "Jauh lebih murah untuk mengesan kesilapan di stesen yang membuatnya " +
+            "daripada menjumpainya di hujung barisan. " +
+            "Peratusan yang lulus pada kali pertama — " + pct(L.fpy) + " di sini — " +
+            "dipanggil first pass yield."),
         });
       }
     }
@@ -1005,12 +1172,20 @@
       if (saving > 5000) {
         out.push({
           tone: "info",
-          title: "You could have finished " + secs(saving) + " earlier",
-          body: "Same people, working at exactly the same speed, but with no stops " +
-                "and no uneven patches: you would have finished in " +
-                clock(L.theoreticalMinMs) + " instead of " + clock(L.runWindowMs) + ". " +
-                "That difference is not about effort. Nobody needed to work harder. " +
-                "It is the stopping and starting.",
+          title: t("You could have finished " + secs(saving) + " earlier",
+                   "Anda boleh siap " + secs(saving) + " lebih awal"),
+          body: t(
+            "Same people, working at exactly the same speed, but with no stops " +
+            "and no uneven patches: you would have finished in " +
+            clock(L.theoreticalMinMs) + " instead of " + clock(L.runWindowMs) + ". " +
+            "That difference is not about effort. Nobody needed to work harder. " +
+            "It is the stopping and starting.",
+
+            "Orang yang sama, bekerja pada kelajuan yang sama, tetapi tanpa " +
+            "berhenti-henti dan tanpa jurang: anda akan siap dalam " +
+            clock(L.theoreticalMinMs) + " dan bukan " + clock(L.runWindowMs) + ". " +
+            "Perbezaan itu bukan tentang usaha. Tiada sesiapa perlu bekerja lebih " +
+            "kuat. Ia berpunca daripada berhenti dan mula semula."),
         });
       }
     }

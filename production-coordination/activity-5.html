@@ -298,7 +298,32 @@
           <div class="fl-metrics" id="metricGrid"></div>
 
           <div class="fl-panel" style="margin-top:16px">
-            <div class="fl-panel-title">What the numbers say</div>
+
+            <!-- ==============================================
+                 READ IT IN EITHER LANGUAGE
+                 ==============================================
+                 Only this section switches. The numbers, the
+                 charts and the tables are the same in both — a
+                 figure is a figure — so the toggle sits here
+                 rather than at the top of the page, where it
+                 would promise to translate things it does not.
+
+                 role="group" with an aria-label, and the chosen
+                 button carries aria-pressed, so a screen reader
+                 announces which language is showing.
+                 ============================================== -->
+            <div class="fl-panel-head">
+              <div class="fl-panel-title" id="findingsTitle">What the numbers say</div>
+              <div class="fl-langswitch" role="group" aria-label="Language / Bahasa">
+                <button type="button" class="fl-lang" data-lang="en" aria-pressed="true">
+                  English
+                </button>
+                <button type="button" class="fl-lang" data-lang="ms" aria-pressed="false">
+                  Bahasa Malaysia
+                </button>
+              </div>
+            </div>
+
             <div class="fl-findings" id="findingsList"></div>
           </div>
 

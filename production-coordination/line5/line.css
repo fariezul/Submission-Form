@@ -663,6 +663,69 @@
 .fl-metric-bad  { --tile-accent: var(--fl-reject); }
 
 
+/* ------------------------------------------------------------
+   THE LANGUAGE SWITCH
+   ------------------------------------------------------------
+   Sits in the findings panel header, beside the title, because
+   it only changes the findings. Putting it at the top of the
+   page would promise to translate the charts and tables too,
+   which it does not — a number needs no translation.
+
+   Both buttons stay visible rather than one toggle that flips
+   its own label. A student who reads Malay should be able to
+   SEE that Malay is available without first working out what
+   the button would do.
+   ------------------------------------------------------------ */
+.fl-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 12px;
+}
+
+.fl-panel-head .fl-panel-title { margin-bottom: 0; }
+
+.fl-langswitch {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--fl-panel-2);
+  border: 1px solid var(--fl-line);
+  border-radius: 999px;
+}
+
+.fl-lang {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--fl-ink-soft);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  padding: 8px 16px;
+  min-height: 40px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fl-lang:hover { color: var(--fl-ink); }
+
+.fl-lang[aria-pressed="true"] {
+  background: var(--fl-sky);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(22, 32, 46, 0.18);
+}
+
+.fl-lang:focus-visible { outline: 3px solid var(--fl-sky); outline-offset: 2px; }
+
+body.fl-display .fl-lang { font-size: 16px; padding: 10px 20px; min-height: 46px; }
+
+@media print { .fl-langswitch { display: none !important; } }
+
+
 /* ============================================================
    FINDINGS — the plain-English read-out
    ============================================================ */

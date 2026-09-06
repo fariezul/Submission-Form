@@ -75,6 +75,8 @@
     liveFlow:    $("liveFlow"),
     metrics:     $("metricGrid"),
     findings:    $("findingsList"),
+    findingsTitle: $("findingsTitle"),
+    langSwitch:  document.querySelector(".fl-langswitch"),
     problems:    $("problemBox"),
     chartsWrap:  $("chartsWrap"),
     stationTable:$("stationTable"),
@@ -794,8 +796,52 @@
              : "", L.teamIdleShare > 0.3 ? "bad" : (L.teamIdleShare > 0.15 ? "warn" : null));
   }
 
+  /* ==========================================================
+     WHICH LANGUAGE THE FINDINGS ARE READ IN
+     ==========================================================
+     Remembered per device, so a class that reads Malay does not
+     re-press the button every round. Only this section moves —
+     the tiles, the charts and the tables are numbers, and a
+     number reads the same in both.
+     ========================================================== */
+  let findingsLang = store.prefs().findingsLang === "ms" ? "ms" : "en";
+
+  const PANEL_TITLE = {
+    en: "What the numbers say",
+    ms: "Apa yang nombor ini beritahu",
+  };
+
+  el.langSwitch.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-lang]");
+    if (!btn) return;
+    setFindingsLang(btn.getAttribute("data-lang"));
+  });
+
+  function setFindingsLang(lang) {
+    findingsLang = (lang === "ms") ? "ms" : "en";
+    store.setPref("findingsLang", findingsLang);
+
+    Array.prototype.forEach.call(
+      el.langSwitch.querySelectorAll("[data-lang]"), function (b) {
+        b.setAttribute("aria-pressed",
+          b.getAttribute("data-lang") === findingsLang ? "true" : "false");
+      });
+
+    el.findingsTitle.textContent = PANEL_TITLE[findingsLang];
+
+    /* Re-render just this panel. The rest of the analysis has not
+       changed, and re-running every chart to swap some prose would
+       make the projector stutter for no reason. */
+    const head = store.header();
+    if (head) renderFindings(A.analyse(store.build()));
+
+    announce(findingsLang === "ms"
+      ? "Analisis ditukar kepada Bahasa Malaysia."
+      : "Analysis switched to English.");
+  }
+
   function renderFindings(a) {
-    const list = A.findings(a);
+    const list = A.findings(a, findingsLang);
     el.findings.innerHTML = list.map(function (f) {
       return '<div class="fl-finding fl-finding-' + f.tone + '">' +
              "<h3>" + esc(f.title) + "</h3><p>" + esc(f.body) + "</p></div>";
@@ -1293,6 +1339,12 @@
      START
      ========================================================== */
   (function boot() {
+    /* Put the buttons and the panel title in step with whatever
+       language this device chose last time, before anything is
+       drawn — otherwise a class that reads Malay sees the English
+       heading flash up on every reload. */
+    setFindingsLang(findingsLang);
+
     const head = store.header();
     if (head) {
       buildSoloButtons();

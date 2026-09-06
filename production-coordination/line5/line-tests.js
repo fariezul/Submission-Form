@@ -293,6 +293,102 @@ ok(isNum(lopsided.line.avgStationCycleMs),
    "the station average still reports when one station has fewer readings");
 
 
+describe("Every finding exists in Bahasa Malaysia as well as English");
+
+/* The two languages are written as one t("...", "...") call per
+   sentence so they cannot drift apart in the source. This checks
+   the result: for every shape of round, each finding must come
+   back DIFFERENT in Malay — an untranslated one falls through to
+   the English and would otherwise sit there unnoticed, because
+   the panel still looks full.
+   ------------------------------------------------------------
+   Checked across several shapes because the findings branch a
+   lot: over/under takt, busy/idle, rejects/none, drained or not.
+   A single round exercises maybe half of them. */
+/* Fixtures built here rather than borrowed from later sections —
+   reaching forward for a const declared below throws at load, and
+   this block has to run before the wording checks. */
+const biFull = ex;
+
+const biRejects = A.analyse(Object.assign({}, EXAMPLE, {
+  verdicts: { 0: { verdict: "reject", cause: 1 } },
+}));
+
+const biJammed = A.analyse({
+  stations: STATIONS, itemCount: 4,
+  exits: [[5 * S, 10 * S, 15 * S, 20 * S],
+          [45 * S, 85 * S, 125 * S, 165 * S],
+          [50 * S, 90 * S, 130 * S, 170 * S],
+          [55 * S, 95 * S, 135 * S, 175 * S]],
+  verdicts: {}, taktMs: 30 * S,        // over takt, so that branch runs too
+});
+
+const biTidy = A.analyse({
+  stations: STATIONS, itemCount: 3,
+  exits: [[10 * S, 40 * S, 70 * S],
+          [20 * S, 50 * S, 80 * S],
+          [25 * S, 55 * S, 85 * S],
+          [30 * S, 60 * S, 90 * S]],
+  verdicts: {}, taktMs: null,
+});
+
+const biPartial = A.analyse({
+  stations: STATIONS, itemCount: 20,
+  exits: [[10 * S, 20 * S, 30 * S], [40 * S, 70 * S], [45 * S], []],
+  verdicts: {}, taktMs: 90 * S,
+});
+
+const biEmpty = A.analyse({
+  stations: STATIONS, itemCount: 20,
+  exits: [[], [], [], []], verdicts: {}, taktMs: 90 * S,
+});
+
+[["the worked example", biFull],
+ ["a round with rejects", biRejects],
+ ["a jammed round over takt", biJammed],
+ ["an efficient round", biTidy],
+ ["a half-finished round", biPartial],
+ ["an empty round", biEmpty]].forEach(function (pair) {
+  const label = pair[0];
+  const en = A.findings(pair[1], "en");
+  const ms = A.findings(pair[1], "ms");
+
+  ok(en.length === ms.length,
+     label + " gives the same number of findings in both languages");
+
+  let untranslated = [];
+  en.forEach(function (f, i) {
+    if (!ms[i]) return;
+    if (ms[i].title === f.title) untranslated.push("title: " + f.title);
+    if (ms[i].body === f.body) untranslated.push("body of: " + f.title);
+  });
+  ok(untranslated.length === 0,
+     label + " has no untranslated finding" +
+     (untranslated.length ? " (" + untranslated[0] + ")" : ""));
+});
+
+/* English is what you get if nobody asks for anything. */
+ok(A.findings(ex)[0].title === A.findings(ex, "en")[0].title,
+   "English is the default when no language is given");
+ok(A.findings(ex, "zz")[0].title === A.findings(ex, "en")[0].title,
+   "and an unknown language falls back to English rather than breaking");
+
+/* The switch itself. */
+ok(SRC.board_html.indexOf('data-lang="en"') !== -1 &&
+   SRC.board_html.indexOf('data-lang="ms"') !== -1,
+   "the page offers both language buttons");
+ok(/aria-pressed/.test(SRC.board_html),
+   "and marks which one is chosen, for a screen reader");
+ok(/findingsLang/.test(SRC.store) === false && /findingsLang/.test(SRC.board),
+   "the choice is remembered by the dashboard via the shared prefs");
+
+/* Only the findings translate. If the tiles or tables ever grow a
+   Malay branch, this section needs rewriting rather than
+   half-doing it — so the boundary is asserted. */
+ok(!/Bahasa|bahasa/.test(SRC.charts),
+   "the charts carry no language of their own — numbers need none");
+
+
 describe("The wording is aimed at a first-semester student");
 
 /* The technical terms are still taught — they are in the
