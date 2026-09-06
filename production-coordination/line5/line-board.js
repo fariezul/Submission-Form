@@ -1249,25 +1249,171 @@
      localhost would have the teacher write a dead URL on the
      whiteboard. Hence the check rather than a constant.
      ---------------------------------------------------------- */
-  function buildJoinLinks() {
+  function stationLinks() {
     const base = location.href.replace(/[^/]*$/, "") + "line5/";
     const host = location.hostname;
     const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(host) ||
                   location.protocol === "file:";
 
-    el.joinLinks.innerHTML = config.STATIONS.map(function (st) {
+    return config.STATIONS.map(function (st) {
       const letter = st.key.toLowerCase();
       const href = base + "station-" + letter + ".html";
-      const shown = local
-        ? href.replace(/^https?:\/\//, "")
-        : host + "/line/" + letter;
+      /* The short form is what a student types, so it is what gets
+         copied and shared. On localhost there are no rewrites, so
+         the full path is both what is shown and what is sent. */
+      const shareUrl = local ? href : "https://" + host + "/line/" + letter;
 
-      return '<div class="fl-join-card" style="--st-colour:' + st.colour + '">' +
-        "<b>" + esc(st.key + " · " + st.name) + "</b>" +
-        '<a class="fl-join-url" href="' + esc(href) + '" target="_blank" ' +
-        'rel="noopener">' + esc(shown) + "</a></div>";
+      return {
+        st: st,
+        href: href,
+        shareUrl: shareUrl,
+        shown: shareUrl.replace(/^https?:\/\//, ""),
+      };
+    });
+  }
+
+  function buildJoinLinks() {
+    const canShare = typeof navigator.share === "function";
+
+    el.joinLinks.innerHTML = stationLinks().map(function (L) {
+      return '<div class="fl-join-card" style="--st-colour:' + L.st.colour + '">' +
+        "<b>" + esc(L.st.key + " · " + L.st.name) + "</b>" +
+        '<a class="fl-join-url" href="' + esc(L.href) + '" target="_blank" ' +
+        'rel="noopener">' + esc(L.shown) + "</a>" +
+        '<div class="fl-join-actions">' +
+          '<button type="button" class="fl-mini" data-copy="' +
+            esc(L.shareUrl) + '">Copy link</button>' +
+          (canShare
+            ? '<button type="button" class="fl-mini" data-share="' +
+              esc(L.shareUrl) + '" data-share-title="' +
+              esc(L.st.key + " · " + L.st.name) + '">Share</button>'
+            : "") +
+        "</div></div>";
     }).join("");
   }
+
+  /* ----------------------------------------------------------
+     COPYING AND SHARING
+     ----------------------------------------------------------
+     A teacher does not read four URLs out loud; they paste them
+     into the class group chat. So: one button per station, and
+     one that takes all four at once with the line code attached,
+     which is the message they actually want to send.
+
+     navigator.share is offered only where it exists — on a phone
+     or tablet it opens the real share sheet, which is how this
+     will usually be done. On a laptop the Copy buttons are the
+     whole story and no dead Share button is drawn.
+     ---------------------------------------------------------- */
+  function allLinksMessage() {
+    const code = ($("cfgCode").value || store.prefs().code || "").trim().toUpperCase();
+    const head = store.header();
+    const lines = ["Flight Line — Activity 5"];
+
+    if (code) lines.push("Line code: " + code);
+    else if (head) lines.push("Line code: " + head.code);
+
+    lines.push("");
+    stationLinks().forEach(function (L) {
+      lines.push(L.st.key + " · " + L.st.name + " — " + L.shareUrl);
+    });
+    return lines.join("\n");
+  }
+
+  /* Returns a promise so the caller can report honestly rather
+     than claiming success and hoping. The modern API needs a
+     secure context; the textarea fallback is for an older browser
+     or a page opened over plain http on the school network. */
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(function () { return true; },
+                                                      function () { return false; });
+    }
+    return new Promise(function (resolve) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-1000px";
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      resolve(ok);
+    });
+  }
+
+  /* Says what happened on the button itself, then puts it back.
+     A teacher pressing Copy in front of a class needs to know it
+     worked without looking anywhere else. */
+  function flashButton(btn, message) {
+    if (btn.dataset.busy) return;
+    const original = btn.textContent;
+    btn.dataset.busy = "1";
+    btn.textContent = message;
+    btn.classList.add("is-done");
+    setTimeout(function () {
+      btn.textContent = original;
+      btn.classList.remove("is-done");
+      delete btn.dataset.busy;
+    }, 1600);
+  }
+
+  el.joinLinks.addEventListener("click", async function (e) {
+    const copyBtn = e.target.closest("[data-copy]");
+    if (copyBtn) {
+      const ok = await copyText(copyBtn.getAttribute("data-copy"));
+      flashButton(copyBtn, ok ? "Copied" : "Press Ctrl+C");
+      announce(ok ? "Link copied." : "Could not copy automatically.");
+      return;
+    }
+
+    const shareBtn = e.target.closest("[data-share]");
+    if (shareBtn) {
+      try {
+        await navigator.share({
+          title: shareBtn.getAttribute("data-share-title"),
+          text: "Flight Line — open your station and wait for the round to start.",
+          url: shareBtn.getAttribute("data-share"),
+        });
+      } catch (err) {
+        /* A cancelled share sheet throws AbortError. That is the
+           user changing their mind, not a failure, and telling
+           them it went wrong would be worse than saying nothing. */
+        if (err && err.name !== "AbortError") {
+          const ok = await copyText(shareBtn.getAttribute("data-share"));
+          flashButton(shareBtn, ok ? "Copied instead" : "Could not share");
+        }
+      }
+    }
+  });
+
+  $("copyAllBtn").addEventListener("click", async function () {
+    const ok = await copyText(allLinksMessage());
+    flashButton($("copyAllBtn"),
+      ok ? "All four copied" : "Could not copy");
+    announce(ok ? "All four links copied." : "Could not copy automatically.");
+  });
+
+  (function initShareAll() {
+    const btn = $("shareAllBtn");
+    if (typeof navigator.share !== "function") { btn.hidden = true; return; }
+    btn.addEventListener("click", async function () {
+      try {
+        await navigator.share({
+          title: "Flight Line — Activity 5",
+          text: allLinksMessage(),
+        });
+      } catch (err) {
+        if (err && err.name !== "AbortError") {
+          const ok = await copyText(allLinksMessage());
+          flashButton(btn, ok ? "Copied instead" : "Could not share");
+        }
+      }
+    });
+  })();
+
   buildJoinLinks();
 
 

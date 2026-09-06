@@ -210,10 +210,25 @@
           <div style="margin-top:26px">
             <div class="fl-panel-title">The four station pages</div>
             <p class="fl-field-hint" style="margin:-6px 0 12px">
-              Write these on the board, or open one on each phone yourself
-              before you hand them out. Each page remembers its line code, so
-              a student only types it once.
+              Write these on the board, send them to the class, or open one on
+              each phone yourself before you hand them out. Each page remembers
+              its line code, so a student only types it once.
             </p>
+
+            <!-- Send all four at once — the message a teacher
+                 actually wants in the class group chat, with the
+                 line code already in it. Share is hidden where the
+                 browser has no share sheet, rather than drawn as a
+                 button that does nothing. -->
+            <div class="fl-btn-row" style="margin-bottom:12px">
+              <button type="button" class="fl-btn fl-btn-primary" id="copyAllBtn">
+                Copy all four links
+              </button>
+              <button type="button" class="fl-btn" id="shareAllBtn">
+                Share all four
+              </button>
+            </div>
+
             <div class="fl-join" id="joinLinks"></div>
           </div>
         </section>

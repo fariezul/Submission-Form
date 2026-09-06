@@ -945,6 +945,49 @@ body.fl-display .fl-lang { font-size: 16px; padding: 10px 20px; min-height: 46px
 
 .fl-join-card b { display: block; font-size: 17px; margin-bottom: 3px; }
 
+/* The Copy / Share pair on each card. Small, because the URL
+   above them is the thing being read — but still 34px tall, which
+   is a real target for a finger on a tablet at the front of a
+   class. */
+.fl-join-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.fl-mini {
+  appearance: none;
+  border: 1px solid var(--fl-line);
+  background: var(--fl-panel);
+  color: var(--fl-ink-soft);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  padding: 0 12px;
+  min-height: 34px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s, color .15s;
+}
+
+.fl-mini:hover {
+  background: var(--fl-panel-2);
+  border-color: var(--st-colour, var(--fl-sky));
+  color: var(--fl-ink);
+}
+
+.fl-mini:focus-visible { outline: 3px solid var(--fl-sky); outline-offset: 2px; }
+
+/* Confirmation, in the station colour so it reads as "this one". */
+.fl-mini.is-done {
+  background: var(--st-colour, var(--fl-sky));
+  border-color: var(--st-colour, var(--fl-sky));
+  color: #fff;
+}
+
+@media print { .fl-join-actions { display: none !important; } }
+
 .fl-join-url {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 15px;

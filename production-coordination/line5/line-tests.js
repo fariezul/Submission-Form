@@ -1275,6 +1275,37 @@ stationIds.forEach(function (id) {
   ok(hasId(SRC.station_html, id), "station-a.html contains #" + id);
 });
 
+describe("Sharing the station links");
+
+ok(/data-copy=/.test(SRC.board), "each station card offers a copy button");
+ok(SRC.board_html.indexOf('id="copyAllBtn"') !== -1,
+   "and there is one button for all four at once");
+
+/* Share is offered only where the browser actually has a share
+   sheet. A dead button that does nothing on a laptop is worse
+   than no button, because the teacher presses it in front of a
+   class and has to recover. */
+ok(/typeof navigator\.share === "function"/.test(SRC.board),
+   "the share button is feature-detected, not assumed");
+ok(/btn\.hidden = true/.test(SRC.board),
+   "and hidden outright where sharing is unavailable");
+
+/* A cancelled share sheet throws AbortError. Treating that as a
+   failure would tell a teacher something went wrong when they
+   simply changed their mind. */
+ok(/AbortError/.test(SRC.board),
+   "a cancelled share is not reported as an error");
+
+/* The clipboard API needs a secure context, which a school
+   network serving plain http would not give. */
+ok(/window\.isSecureContext/.test(SRC.board),
+   "the clipboard write checks for a secure context");
+ok(/execCommand\("copy"\)/.test(SRC.board),
+   "and falls back to a selection when it cannot be used");
+ok(/ok \? "Copied" : "Press Ctrl\+C"/.test(SRC.board),
+   "a failed copy says so rather than claiming success");
+
+
 describe("Tabs and panels line up");
 
 /* Every tab button in the HTML must have a panel the dashboard
