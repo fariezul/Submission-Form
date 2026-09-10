@@ -77,7 +77,11 @@ farizuljaafar.com/line/c     Labelling
 farizuljaafar.com/line/d     Quality Check
 ```
 
-Those short paths are rewrites in `vercel.json`. If you move the site
+Those short paths are **redirects** in `vercel.json` — deliberately
+not rewrites. The station pages load their scripts by relative path,
+and a rewrite serves the page at the short address without moving the
+browser, so every script 404s while the tab title still looks right.
+The tests fail if one is ever changed back. If you move the site
 somewhere without them, the real files are at
 `production-coordination/line5/station-a.html` and so on — the
 dashboard shows whichever form actually works from where it is being
