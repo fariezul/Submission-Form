@@ -1,29 +1,46 @@
 # ============================================================
 # Keep the Supabase project awake
 # ============================================================
-# Supabase pauses a free project after about a week without
-# traffic. That is fine for a hobby project and awful for a
-# classroom one: the first class back finds that every result
-# silently fails to save.
+# Supabase pauses a Free-plan project that shows "low activity
+# over a 7-day period". That is fine for a hobby project and bad
+# for a classroom one: the first class back finds that the
+# leaderboard is blank and every result silently fails to save.
 #
-# This sends one harmless read request a few times a week, which
-# counts as traffic and stops the clock running down.
+# ------------------------------------------------------------
+# WHY THIS RUNS TWICE A DAY, NOT THREE TIMES A WEEK
+# ------------------------------------------------------------
+# The first version pinged once on Monday, Wednesday and Friday,
+# on the assumption that any request reset a 7-day countdown.
+# It does not. Supabase judges the VOLUME of database activity
+# across the whole week — its own docs say "typically a few user
+# requests to the database each day" keeps a project up.
 #
-# IT CAN ALSO BE RUN BY HAND. Actions -> Keep Supabase awake ->
-# Run workflow. Worth doing a few minutes before a class if the
-# quiz has not been used in a while.
+# Three single requests a week was below that line. The project
+# paused on about 17 September 2026, two days after a ping that
+# had succeeded.
+#
+# So now: every day at 09:00 and 21:00 Malaysia time, three real
+# queries each run — about 42 a week. Reads only, so nothing is
+# written into the quiz data or the visitor count.
+#
+# ------------------------------------------------------------
+# THIS IS A HEURISTIC, NOT A GUARANTEE
+# ------------------------------------------------------------
+# Supabase does not publish the exact threshold. The only way to
+# make pausing impossible is the Pro plan. If this workflow ever
+# fails, treat it as "the project is paused, go and restore it",
+# and the failure message will say exactly that.
+#
+# IT CAN ALSO BE RUN BY HAND: Actions -> Keep Supabase awake ->
+# Run workflow. Worth doing a few minutes before a class.
 # ============================================================
 
 name: Keep Supabase awake
 
 on:
   schedule:
-    # 03:00 UTC = 11:00 Malaysia, on Monday, Wednesday and Friday.
-    # Never more than three days between pings, well inside the
-    # roughly seven-day pause window.
-    - cron: "0 3 * * 1,3,5"
-
-  # The manual button.
+    # 01:00 and 13:00 UTC = 09:00 and 21:00 Malaysia, every day.
+    - cron: "0 1,13 * * *"
   workflow_dispatch:
 
 jobs:
@@ -35,50 +52,77 @@ jobs:
       - name: Check out the site
         uses: actions/checkout@v4
 
-      # The URL and key are read straight out of the file the quiz
-      # itself uses, so there is one source of truth. Change the
-      # project in quiz-config.js and this follows automatically.
-      #
-      # The anon key is public by design and already committed in
-      # that file, so nothing secret is being exposed here.
+      # The URL and key come straight out of the file the quiz uses,
+      # so there is one source of truth. The anon key is public by
+      # design and already committed there.
       - name: Read the Supabase settings from quiz-config.js
         id: cfg
         run: |
           CONFIG="production-coordination/quiz/quiz-config.js"
-
           URL=$(grep -oP 'SUPABASE_URL:\s*"\K[^"]+' "$CONFIG")
           KEY=$(grep -oPz 'SUPABASE_ANON_KEY:\s*\n?\s*"\K[^"]+' "$CONFIG" | tr -d '\0')
-
           if [ -z "$URL" ] || [ -z "$KEY" ]; then
             echo "::error::Could not read SUPABASE_URL or SUPABASE_ANON_KEY from $CONFIG"
             exit 1
           fi
-
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "::add-mask::$KEY"
           echo "key=$KEY" >> "$GITHUB_OUTPUT"
-          echo "Pinging $URL"
 
       - name: Ping the database
+        # "set +e" is deliberate. GitHub runs steps with errexit on,
+        # which made the first version die the instant curl failed —
+        # BEFORE it could print why. A paused project then showed up
+        # as a bare "exit code 6". Every failure below now reports
+        # its real cause.
         run: |
+          set +e
           URL="${{ steps.cfg.outputs.url }}"
           KEY="${{ steps.cfg.outputs.key }}"
 
-          # A read-only call that touches Postgres, so it counts as
-          # real traffic rather than just hitting a gateway.
-          STATUS=$(curl -s -o /tmp/body -w "%{http_code}" \
-            -X POST "$URL/rest/v1/rpc/quiz_leaderboard" \
-            -H "Content-Type: application/json" \
-            -H "apikey: $KEY" \
-            -H "Authorization: Bearer $KEY" \
-            -d '{"row_limit":1}')
+          ping() {
+            local fn="$1" body="$2"
+            local status
+            status=$(curl -s -o /tmp/body -w "%{http_code}" --max-time 20 \
+              -X POST "$URL/rest/v1/rpc/$fn" \
+              -H "Content-Type: application/json" \
+              -H "apikey: $KEY" \
+              -H "Authorization: Bearer $KEY" \
+              -d "$body")
+            local rc=$?
 
-          echo "HTTP $STATUS"
-          head -c 300 /tmp/body; echo
+            if [ $rc -eq 6 ] || [ $rc -eq 7 ]; then
+              echo "::error::Cannot reach $URL (curl $rc). The Supabase project is almost certainly PAUSED. Restore it: https://supabase.com/dashboard/project/_ -> Resume project."
+              return 1
+            fi
+            if [ $rc -ne 0 ]; then
+              echo "::error::The request to $fn failed before getting an answer (curl exit $rc)."
+              return 1
+            fi
+            # A 5xx straight after a restore is the API still warming
+            # up (e.g. PGRST002, "schema cache ... Retrying"). Give it
+            # one more chance rather than raising a false alarm.
+            if [ "${status:0:1}" = "5" ] && [ -z "$RETRIED" ]; then
+              echo "  $fn -> HTTP $status, retrying once in 8s"
+              sleep 8
+              RETRIED=1 ping "$fn" "$body"
+              return $?
+            fi
+            if [ "$status" != "200" ]; then
+              echo "::error::$fn answered HTTP $status: $(head -c 200 /tmp/body)"
+              return 1
+            fi
+            echo "  $fn -> HTTP 200"
+            return 0
+          }
 
-          if [ "$STATUS" != "200" ]; then
-            echo "::error::Supabase did not answer (HTTP $STATUS). The project may be paused — restore it in the dashboard."
-            exit 1
-          fi
+          echo "Pinging $URL"
+          failed=0
+          ping quiz_leaderboard      '{"row_limit":1}'  || failed=1
+          sleep 2
+          ping quiz_recent_attempts  '{"row_limit":1}'  || failed=1
+          sleep 2
+          ping quiz_leaderboard      '{"row_limit":10}' || failed=1
 
-          echo "Supabase is awake."
+          if [ $failed -ne 0 ]; then exit 1; fi
+          echo "Supabase is awake — 3 queries sent."
