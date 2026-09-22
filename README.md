@@ -260,14 +260,3 @@ problem, Supabase supports adding CAPTCHA protection, or you can move the
 insert behind an Edge Function that validates first.
 
 ---
-
-## The FARIZUL page (`/farizul.html`)
-
-FARIZUL is currently a local under-construction page in this repository.
-It is served from `farizul.html` and no longer proxies to the separate
-Plate Guard deployment.
-
-For compatibility with existing bookmarks, `vercel.json` redirects
-`/farizul` and older paths below `/farizul/` to `/farizul.html`. The
-separate Plate Guard project is not deleted, but it is detached from this
-website and receives no traffic through the `farizuljaafar.com` routes.

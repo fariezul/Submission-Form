@@ -2,16 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
-      "source": "/farizul",
-      "destination": "/farizul.html",
-      "permanent": false
-    },
-    {
-      "source": "/farizul/:match*",
-      "destination": "/farizul.html",
-      "permanent": false
-    },
-    {
       "source": "/line",
       "destination": "/production-coordination/activity-5.html",
       "permanent": false
