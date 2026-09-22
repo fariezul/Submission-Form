@@ -283,6 +283,15 @@
     noteAt(t + 0.01, 520 + rise * 420, 0.05, 0.05, "triangle", false);
   }
 
+  /* chime() — a student's group has been decided: a bright two-note
+     "ding-ding", clearly different from the ticks before it. */
+  function chime() {
+    if (!enabled || !ready()) return;
+    const t = ctx.currentTime;
+    noteAt(t, 1047, 0.18, 0.07, "triangle", false);
+    noteAt(t + 0.08, 1568, 0.32, 0.07, "triangle", false);
+  }
+
   /* sparkle() — the leaders being chosen: a quick run of bells. */
   function sparkle() {
     if (!enabled || !usable()) return;
@@ -308,6 +317,7 @@
     stopDrumroll: stopDrumroll,
     fanfare: fanfare,
     deal: deal,
+    chime: chime,
     sparkle: sparkle,
     setEnabled: setEnabled,
     isEnabled: function () { return enabled; },

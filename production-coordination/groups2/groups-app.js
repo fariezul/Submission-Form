@@ -74,6 +74,13 @@
     confetti:    $("confettiCanvas"),
     toast:       $("toast"),
     live:        $("srLive"),
+    spot:        $("spotlight"),
+    spotCount:   $("spotCount"),
+    spotName:    $("spotName"),
+    spotGroup:   $("spotGroup"),
+    speedDramatic: $("speedDramatic"),
+    speedNormal: $("speedNormal"),
+    speedQuick:  $("speedQuick"),
   };
 
 
@@ -90,6 +97,7 @@
       mode: "groups",        // "groups" or "size"
       value: 6,
       leader: false,         // off unless the lecturer switches it on
+      speed: "dramatic",     // "dramatic", "normal" or "quick" — the reveal
       sound: true,
       groupNames: [],        // renamed groups, by position; blank = default
       result: null,          // [{ members, leader }] once made
@@ -105,6 +113,7 @@
       f.mode = s.mode === "size" ? "size" : "groups";
       f.value = Math.max(1, Math.floor(s.value) || 6);
       f.leader = s.leader === true;
+      f.speed = ["dramatic", "normal", "quick"].indexOf(s.speed) !== -1 ? s.speed : "dramatic";
       f.sound = s.sound !== false;
       f.groupNames = Array.isArray(s.groupNames) ? s.groupNames.map(function (x) { return x ? String(x) : ""; }) : [];
       if (Array.isArray(s.result)) {
@@ -270,8 +279,13 @@
       G.describe(n, plannedGroups()).replace(/(\d+ groups? of \d+)/g, "<b>$1</b>");
 
     el.leader.setAttribute("aria-checked", state.leader ? "true" : "false");
-    el.make.textContent = state.result ? "SHUFFLE AGAIN" : "MAKE GROUPS!";
-    el.make.disabled = busy || n === 0;
+    el.make.textContent = busy ? "SKIP ▸▸" : state.result ? "SHUFFLE AGAIN" : "MAKE GROUPS!";
+    el.make.classList.toggle("is-skip", busy);
+    el.make.disabled = !busy && n === 0;
+    [["dramatic", el.speedDramatic], ["normal", el.speedNormal], ["quick", el.speedQuick]].forEach(function (p) {
+      p[1].setAttribute("aria-checked", state.speed === p[0] ? "true" : "false");
+      p[1].disabled = busy;
+    });
     el.minus.disabled = busy || state.value <= 1;
     el.plus.disabled = busy || state.value >= maxValue();
     [el.modeGroups, el.modeSize, el.leader, el.sort, el.clear, el.sampleBtn].forEach(function (b) { b.disabled = busy; });
@@ -352,8 +366,33 @@
       root.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  /* THE REVEAL
+     How long each student's reveal takes, by the "Reveal speed"
+     setting. Dramatic is the default: one student at a time in the
+     spotlight while the group names roll past like a slot machine,
+     slowing down until it stops on their group. About 1.7 seconds
+     each, so a class of 30 takes under a minute; SKIP finishes it
+     at any moment.
+       steps  how many group names roll past before it stops
+       first  the gap between the first two (ms)
+       last   the gap before the final one — the slow-down
+       hold   how long the answer sits in the spotlight
+       fly    how long the name takes to fly into its card */
+  const SPEEDS = {
+    dramatic: { steps: 10, first: 55, last: 210, hold: 260, fly: 420 },
+    normal:   { steps: 5,  first: 45, last: 120, hold: 120, fly: 300 },
+  };
+
+  let skipping = false;
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
   function make() {
-    if (busy || names().length === 0) return;
+    // During the reveal the big button is SKIP.
+    if (busy) { skipping = true; return; }
+    if (names().length === 0) return;
     if (state.sound) { Audio.unlock(); checkSound(); }
 
     state.result = G.makeGroups(names(), plannedGroups(), state.leader);
@@ -368,41 +407,181 @@
     }
 
     busy = true;
+    skipping = false;
     renderGroups(true);
     renderControls();
-    fitFull();
     el.stage.classList.add("is-dealing");
+    fitFull();                 // full screen: fit the groups above the banner
 
     const order = G.dealOrder(state.result);
-    // The whole deal takes about three seconds, however big the class.
-    const gap = M_clamp(Math.round(2800 / Math.max(1, order.length)), 45, 160);
-    order.forEach(function (pair, k) {
-      setTimeout(function () {
-        const li = el.groups.querySelector('.gm-member[data-group="' + pair[0] + '"][data-index="' + pair[1] + '"]');
-        if (li) {
-          li.classList.remove("is-waiting");
-          li.classList.add("is-dealt");
-        }
-        if (state.sound) Audio.deal(k);
-      }, k * gap);
+    const run = state.speed === "quick"
+      ? quickDeal(order)
+      : spotlightDeal(order, SPEEDS[state.speed] || SPEEDS.dramatic);
+    run.then(endDeal, function (e) {
+      // Never leave the page stuck mid-reveal: show everything, and
+      // print what went wrong.
+      showMsg("The reveal stopped early: " + (e && e.message ? e.message : e));
+      endDeal();
     });
+  }
 
-    setTimeout(function () {
-      // Star the leaders, then the ta-da.
-      if (state.leader) {
+  function memberLi(pair) {
+    return el.groups.querySelector('.gm-member[data-group="' + pair[0] + '"][data-index="' + pair[1] + '"]');
+  }
+
+  function land(pair) {
+    const li = memberLi(pair);
+    if (li && li.classList.contains("is-waiting")) {
+      li.classList.remove("is-waiting");
+      li.classList.add("is-dealt");
+    }
+  }
+
+  /* Quick: the whole class dealt in about three seconds. */
+  async function quickDeal(order) {
+    const gap = M_clamp(Math.round(2800 / Math.max(1, order.length)), 45, 160);
+    for (let k = 0; k < order.length; k++) {
+      if (skipping) return;
+      land(order[k]);
+      if (state.sound) Audio.deal(k);
+      await wait(gap);
+    }
+  }
+
+  /* Dramatic and Normal: one student at a time in the spotlight. */
+  async function spotlightDeal(order, sp) {
+    const spot = el.spot;
+    const count = state.result.length;
+    spot.hidden = false;
+    spot.classList.remove("is-out");
+
+    for (let k = 0; k < order.length; k++) {
+      if (skipping) break;
+      const pair = order[k];
+      const g = pair[0];
+      const name = W.displayName(state.result[g].members[pair[1]]);
+
+      el.spotCount.textContent = "Student " + (k + 1) + " of " + order.length;
+      el.spotName.textContent = name;
+      spot.classList.remove("is-landed");
+      restartAnimation(el.spotName, "is-new");
+
+      /* The roll: random groups flick past, the gaps growing from
+         "first" to "last", then it stops on the real one. With one
+         group there is nothing to roll through. */
+      let prev = -1;
+      for (let st = 0; count > 1 && st < sp.steps; st++) {
+        if (skipping) break;
+        let r;
+        do { r = W.pickIndex(count, W.cryptoUint32); } while (r === prev);
+        prev = r;
+        showRoll(r);
+        if (state.sound) Audio.tick();
+        const t = st / Math.max(1, sp.steps - 1);
+        await wait(sp.first + (sp.last - sp.first) * t * t);
+      }
+      if (skipping) break;
+
+      showRoll(g);
+      spot.classList.add("is-landed");
+      if (state.sound) Audio.chime();
+      const card = el.groups.querySelector('.gm-group[data-group="' + g + '"]');
+      if (card) restartAnimation(card, "is-called");
+      await wait(sp.hold);
+      if (skipping) break;
+
+      await flyToCard(pair, sp.fly);
+      land(pair);
+      if (state.sound) Audio.deal(k);
+      await wait(80);
+    }
+
+    spot.classList.add("is-out");
+    await wait(skipping ? 0 : 200);
+    spot.hidden = true;
+    spot.classList.remove("is-out", "is-landed");
+  }
+
+  /* Show group r in the rolling pill: its name, in its colour. */
+  function showRoll(r) {
+    const c = G.colour(r);
+    el.spotGroup.textContent = groupName(r);
+    el.spotGroup.style.background = c.fill;
+    el.spotGroup.style.color = c.ink;
+  }
+
+  /* Re-run a one-shot CSS animation by removing and re-adding its
+     class (reading offsetWidth in between makes the browser notice). */
+  function restartAnimation(node, cls) {
+    node.classList.remove(cls);
+    void node.offsetWidth;
+    node.classList.add(cls);
+  }
+
+  /* The name flies from the spotlight into its place in the card,
+     as a name tag the same size as the row it lands in: it starts
+     over the spotlight a little larger, and shrinks as it travels.
+     The row is already there (hidden), so it can be measured. */
+  function flyToCard(pair, ms) {
+    const li = memberLi(pair);
+    if (!li) return Promise.resolve();
+    const from = el.spotName.getBoundingClientRect();
+    const to = li.getBoundingClientRect();
+    const left = from.left + from.width / 2 - to.width / 2;
+    const top = from.top + from.height / 2 - to.height / 2;
+    const tag = doc.createElement("div");
+    tag.className = "gm-flyer";
+    tag.style.setProperty("--g-fill", G.colour(pair[0]).fill);
+    tag.style.left = left + "px";
+    tag.style.top = top + "px";
+    tag.style.width = to.width + "px";
+    tag.style.minHeight = to.height + "px";
+    tag.style.fontSize = getComputedStyle(li).fontSize;
+    const dot = doc.createElement("span");
+    dot.className = "gm-dot";
+    tag.appendChild(dot);
+    tag.appendChild(doc.createTextNode(el.spotName.textContent));
+    tag.style.transform = "scale(1.5)";
+    doc.body.appendChild(tag);
+    void tag.offsetWidth;
+    tag.style.transition = "transform " + ms + "ms cubic-bezier(0.5, 0, 0.2, 1)";
+    tag.style.transform = "translate(" + (to.left - left) + "px," + (to.top - top) + "px) scale(1)";
+    return wait(ms).then(function () { tag.remove(); });
+  }
+
+  /* After the last student (or SKIP): everyone still waiting drops
+     in at once, the leaders get their stars, and the ta-da plays. */
+  function endDeal() {
+    let k = 0;
+    el.groups.querySelectorAll(".gm-member.is-waiting").forEach(function (li) {
+      li.classList.remove("is-waiting");
+      li.classList.add("is-dealt");
+      k++;
+    });
+    if (k && state.sound) Audio.deal(40);
+    el.spot.hidden = true;
+    el.spot.classList.remove("is-out", "is-landed");
+    doc.querySelectorAll(".gm-flyer").forEach(function (f) { f.remove(); });
+
+    const done = function () {
+      busy = false;
+      skipping = false;
+      el.stage.classList.remove("is-dealing");
+      renderControls();        // (re-fits full screen without the banner)
+      finish();
+    };
+    if (state.leader) {
+      setTimeout(function () {
         el.groups.querySelectorAll(".gm-member").forEach(function (li) {
           const g = state.result[+li.dataset.group];
           if (g && g.leader === +li.dataset.index) li.classList.add("is-leader", "is-starred");
         });
         if (state.sound) Audio.sparkle();
-      }
-      setTimeout(function () {
-        busy = false;
-        el.stage.classList.remove("is-dealing");
-        renderControls();
-        finish();
-      }, state.leader ? 450 : 50);
-    }, order.length * gap + 250);
+        setTimeout(done, 500);
+      }, 250);
+    } else {
+      setTimeout(done, 150);
+    }
   }
 
   function finish() {
@@ -646,6 +825,7 @@
   function showMsg(text) {
     el.msg.textContent = text;
     el.msg.hidden = !text;
+    fitFull();                 // a message takes room: re-fit full screen
   }
 
   let toastTimer = null;
@@ -669,6 +849,9 @@
     el.minus.addEventListener("click", function () { step(-1); });
     el.plus.addEventListener("click", function () { step(1); });
     el.leader.addEventListener("click", toggleLeader);
+    [["dramatic", el.speedDramatic], ["normal", el.speedNormal], ["quick", el.speedQuick]].forEach(function (p) {
+      p[1].addEventListener("click", function () { state.speed = p[0]; save(); renderControls(); });
+    });
 
     el.names.addEventListener("input", onType);
     el.names.addEventListener("paste", onPaste);

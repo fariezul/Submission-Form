@@ -172,6 +172,12 @@
             <span id="leaderLabel">Pick a leader in each group</span>
             <button type="button" class="gm-switch" id="leaderBtn" role="switch" aria-checked="false" aria-labelledby="leaderLabel"></button>
           </div>
+          <p class="gm-sublabel" id="speedLabel">Reveal speed</p>
+          <div class="gm-seg gm-seg-3" role="radiogroup" aria-labelledby="speedLabel">
+            <button type="button" role="radio" id="speedDramatic" aria-checked="true">Dramatic</button>
+            <button type="button" role="radio" id="speedNormal" aria-checked="false">Normal</button>
+            <button type="button" role="radio" id="speedQuick" aria-checked="false">Quick</button>
+          </div>
         </div>
         <div class="gm-card">
           <h2><label for="namesInput">Students</label> <span class="gm-badge gm-badge-blue" id="studentCount">0</span></h2>
@@ -189,6 +195,14 @@
 
     </div>
   </main>
+
+  <!-- The spotlight: one student at a time during the reveal. -->
+  <div class="gm-spot" id="spotlight" aria-hidden="true" hidden>
+    <p class="gm-spot-count" id="spotCount"></p>
+    <p class="gm-spot-name" id="spotName"></p>
+    <p class="gm-spot-joins">joins</p>
+    <p class="gm-spot-group" id="spotGroup"></p>
+  </div>
 
   <canvas class="gm-confetti" id="confettiCanvas" aria-hidden="true"></canvas>
   <div class="gm-toast" id="toast" role="status" hidden></div>
