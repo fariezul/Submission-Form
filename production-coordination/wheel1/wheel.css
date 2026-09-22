@@ -72,7 +72,7 @@
 /* ---------- layout ---------- */
 .nw-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr) 380px;
   gap: 22px;
   align-items: start;
 }
@@ -184,13 +184,13 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 20.6%;
-  height: 20.6%;
+  width: 17%;
+  height: 17%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   border: 0;
   background: radial-gradient(circle at 50% 38%, #ffffff 0%, #eef2f8 100%);
-  box-shadow: 0 0 0 7px var(--nw-navy), 0 8px 16px rgba(11, 31, 58, 0.45);
+  box-shadow: 0 0 0 6px var(--nw-navy), 0 8px 16px rgba(11, 31, 58, 0.45);
   color: var(--nw-navy);
   font-family: inherit;
   font-weight: 900;
@@ -321,6 +321,8 @@
   color: var(--nw-ink);
   resize: vertical;
   background: #fff;
+  white-space: pre;        /* one name per line, never soft-wrapped */
+  overflow-x: auto;
 }
 .nw-names:focus { outline: none; border-color: var(--nw-blue); box-shadow: 0 0 0 3px rgba(30, 123, 240, 0.18); }
 .nw-names[readonly] { background: #f8f9fc; color: var(--nw-muted); }

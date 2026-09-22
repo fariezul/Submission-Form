@@ -151,7 +151,7 @@
       outer: S * 0.49,       // navy edge
       ring: S * 0.4767,      // white ring
       R: S * 0.4533,         // the segments
-      hubR: S * 0.1033,
+      hubR: S * 0.085,       // kept small: the room is for the names
       lightR: S * 0.465,
     };
   }
@@ -168,7 +168,7 @@
     const top = el.area.getBoundingClientRect().top + (root.scrollY || 0);
     const size = full
       ? Math.min(width, h - 180)
-      : Math.min(width, 620, Math.max(420, h - top - 135));
+      : Math.min(width, 680, Math.max(460, h - top - 135));
     S = Math.max(240, Math.floor(size));
     dpr = Math.min(root.devicePixelRatio || 1, 2);
 
@@ -176,7 +176,7 @@
     el.box.style.height = S + "px";
     el.canvas.width = Math.round(S * dpr);
     el.canvas.height = Math.round(S * dpr);
-    el.hub.style.fontSize = Math.round(26 * S / 600) + "px";
+    el.hub.style.fontSize = Math.round(22 * S / 600) + "px";
 
     buildCache();
     draw();
@@ -220,12 +220,13 @@
       }
     }
 
-    /* The names, reading from the middle outwards and ending just
-       inside the rim. The font is as large as the segment's width
-       allows, capped so a short list does not look shouty. */
-    const pad = 18 * G.k;
-    const room = G.R - pad - G.hubR - 10 * G.k;          // length available
+    /* The FULL names, reading from the middle outwards and ending
+       just inside the rim. The font is as large as the segment's
+       width allows, capped so a short list does not look shouty. */
+    const pad = 16 * G.k;
+    const room = G.R - pad - G.hubR - 8 * G.k;           // length available
     const arc = 2 * Math.PI * (G.R * 0.7) / n;           // segment width near the text
+    const thin = 2 * Math.PI * (G.hubR + room * 0.25) / n;  // width near the inner end
     const size = M.clamp(arc * 0.42, 9, 30 * G.k);
 
     c.textAlign = "right";
@@ -233,31 +234,56 @@
     for (let i = 0; i < n; i++) {
       const col = CFG.PALETTE[M.colourIndex(i, n, CFG.PALETTE.length)];
       const mid = (i + 0.5) * seg - 90;
-      const fitted = fitLabel(c, state.names[i], size, room);
+      const fitted = fitLabel(c, M.displayName(state.names[i]), size, room, thin);
+      const lh = fitted.size * 1.04;
       c.save();
       c.translate(G.c, G.c);
       c.rotate(mid * Math.PI / 180);
       c.font = fontFor(fitted.size);
       c.fillStyle = col.ink;
-      c.fillText(fitted.text, G.R - pad, 0);
+      fitted.lines.forEach(function (line, k) {
+        const y = (k - (fitted.lines.length - 1) / 2) * lh;
+        c.fillText(line, G.R - pad, y);
+      });
       c.restore();
     }
   }
 
-  /* Make a name fit along its segment: shrink it a little first,
-     and only if it is still too long, cut it with an ellipsis.
-     The pop-up always shows the full name. */
-  function fitLabel(c, text, size, room) {
-    c.font = fontFor(size);
-    let w = c.measureText(text).width;
-    if (w <= room) return { text: text, size: size };
-    const smaller = Math.max(9, size * 0.75, size * room / w);
-    c.font = fontFor(smaller);
-    w = c.measureText(text).width;
-    if (w <= room) return { text: text, size: smaller };
+  /* Fit a full name along its segment, in this order of
+     preference:
+       1. one line at the normal size
+       2. one line, shrunk a little (to 70%)
+       3. two lines, split at the most even space — if the segment
+          is wide enough to hold two lines
+       4. two lines (or one), shrunk as small as it takes
+     The wheel only has to look right while it spins; nobody reads
+     it closely. The pop-up is where the name must be clear, and it
+     always shows it in full, large. Only an absurdly long name is
+     ever cut with an ellipsis. */
+  function fitLabel(c, text, size, room, thin) {
+    const widthAt = function (t, px) { c.font = fontFor(px); return c.measureText(t).width; };
+
+    let w = widthAt(text, size);
+    if (w <= room) return { lines: [text], size: size };
+
+    const shrunk = size * room / w;
+    if (shrunk >= size * 0.7 && shrunk >= 10) return { lines: [text], size: Math.floor(shrunk * 10) / 10 };
+
+    const two = M.splitTwoLines(text);
+    let twoPx = 0;
+    if (two.length === 2) {
+      const widest = Math.max(widthAt(two[0], size), widthAt(two[1], size));
+      twoPx = Math.min(size, size * room / widest, thin / 2.15);
+      if (twoPx >= 9) return { lines: two, size: Math.floor(twoPx * 10) / 10 };
+    }
+
+    // Crowded wheel: whichever of one or two lines comes out bigger.
+    if (twoPx >= 6 && twoPx > shrunk) return { lines: two, size: Math.floor(twoPx * 10) / 10 };
+    const tiny = Math.max(6, shrunk);
+    if (widthAt(text, tiny) <= room) return { lines: [text], size: tiny };
     let cut = text;
-    while (cut.length > 1 && c.measureText(cut + "…").width > room) cut = cut.slice(0, -1);
-    return { text: cut.trim() + "…", size: smaller };
+    while (cut.length > 1 && widthAt(cut + "…", tiny) > room) cut = cut.slice(0, -1);
+    return { lines: [cut.trim() + "…"], size: tiny };
   }
 
   /* One pie slice, in wheel coordinates (segment 0 starting at the
@@ -469,7 +495,7 @@
     const col = CFG.PALETTE[M.colourIndex(index, n, CFG.PALETTE.length)];
     pending = index;
 
-    el.wName.textContent = name;
+    el.wName.textContent = M.displayName(name);
     el.wName.style.background = col.fill;
     el.wName.style.color = col.ink;
     el.wMeta.innerHTML = "Pick <b>#" + (state.picked.length + 1) + "</b> &nbsp;·&nbsp; <b>" +
@@ -480,7 +506,7 @@
     fitName();
     Confetti.burst();
     el.remove.focus();
-    say("The wheel picked " + name + ".");
+    say("The wheel picked " + M.displayName(name) + ".");
   }
 
   /* Shrink the name until it fits on one line. A very long full
@@ -591,7 +617,7 @@
       num.style.color = col.ink;
       num.textContent = i + 1;
       chip.appendChild(num);
-      chip.appendChild(doc.createTextNode(p.name));
+      chip.appendChild(doc.createTextNode(M.displayName(p.name)));
       if (!p.removed) {
         const k = doc.createElement("span");
         k.className = "nw-chip-kept";
@@ -724,6 +750,20 @@
     el.keep.addEventListener("click", function () { closeWinner(false); });
 
     el.names.addEventListener("input", onType);
+    /* A paste from Excel or a register is cleaned up at once — row
+       numbers, IC numbers and the header row disappear — so the
+       lecturer sees straight away exactly which names went on. */
+    el.names.addEventListener("paste", function () {
+      setTimeout(function () {
+        clearTimeout(typingTimer);
+        state.names = M.parseNames(el.names.value).slice(0, CFG.MAX_NAMES);
+        highlight = -1;
+        save();
+        syncNamesBox();
+        rebuild();
+        say(state.names.length + " names on the wheel.");
+      }, 0);
+    });
 
     el.shuffle.addEventListener("click", function () {
       state.names = M.shuffle(state.names);
@@ -743,7 +783,7 @@
       el.names.focus();
     });
     el.restore.addEventListener("click", function () {
-      if (!root.confirm("Replace the names with the saved class list, and clear who has been picked?")) return;
+      if (!root.confirm("Replace the names in the box with the sample names, and clear who has been picked?")) return;
       const s = fresh();
       state.names = s.names;
       state.picked = [];

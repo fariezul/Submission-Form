@@ -162,6 +162,29 @@ check("a single comma line is a list", same(M.parseNames("Ali, Abu,Siti ,"), ["A
 check("commas kept inside a multi-line list", same(M.parseNames("Tan, Mei Ling\nAbu"), ["Tan, Mei Ling", "Abu"]));
 check("duplicates both stay", same(M.parseNames("Aisyah\nAisyah"), ["Aisyah", "Aisyah"]));
 check("empty box", same(M.parseNames(""), []) && same(M.parseNames(null), []));
+check("full names kept whole", same(M.parseNames("MUHAMMAD AIMAN HAKIMI BIN ABDULLAH\nNUR AINA SOFEA BINTI RAZAK"),
+  ["MUHAMMAD AIMAN HAKIMI BIN ABDULLAH", "NUR AINA SOFEA BINTI RAZAK"]));
+check("Excel rows: number, name, IC → the name",
+  same(M.parseNames("BIL\tNAMA\tNO. KP\n1\tAHMAD BIN ALI\t050101-04-1234\n2\tSITI AISYAH BINTI OMAR\t050202-04-5678\n"),
+    ["AHMAD BIN ALI", "SITI AISYAH BINTI OMAR"]));
+check("Excel rows with a matric column after the name",
+  same(M.parseNames("1\tMT2301-001\tLIM MEI LING\n2\tMT2301-002\tARVIND A/L KUMAR"), ["LIM MEI LING", "ARVIND A/L KUMAR"]));
+check("numbered lines from a PDF", same(M.parseNames("1. Ahmad bin Ali\n2) Siti binti Omar\n10 Adam"), ["Ahmad bin Ali", "Siti binti Omar", "Adam"]));
+check("IC number after the name, space-separated", same(M.parseNames("AHMAD BIN ALI 050101-04-1234"), ["AHMAD BIN ALI"]));
+check("header row skipped", same(M.parseNames("Nama Pelajar\nAhmad\nNAMA:\nSiti"), ["Ahmad", "Siti"]));
+check("lines of only numbers dropped", same(M.parseNames("1\n2\nAhmad\n050101-04-1234"), ["Ahmad"]));
+
+
+/* ---------- displayName and splitTwoLines ---------- */
+console.log("displayName");
+check("CAPITALS become Title Case, bin/binti small",
+  M.displayName("MUHAMMAD AIMAN HAKIMI BIN ABDULLAH") === "Muhammad Aiman Hakimi bin Abdullah");
+check("a/l and hyphenated names", M.displayName("ARVIND A/L KUMAR-RAJ") === "Arvind a/l Kumar-Raj");
+check("apostrophe stays lower after it", M.displayName("NUR'AIN BINTI ALI") === "Nur'ain binti Ali");
+check("mixed case left exactly as typed", M.displayName("Mohd McDonald bin Ali") === "Mohd McDonald bin Ali");
+check("split at the most even space",
+  same(M.splitTwoLines("Muhammad Aiman Hakimi bin Abdullah"), ["Muhammad Aiman Hakimi", "bin Abdullah"]));
+check("one word is not split", same(M.splitTwoLines("Aisyah"), ["Aisyah"]));
 
 
 /* ---------- config ---------- */

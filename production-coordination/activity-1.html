@@ -149,7 +149,7 @@
         <p class="nw-hint"><span class="nw-hint-keys">or press <kbd>Space</kbd> &nbsp;·&nbsp; </span>or click the middle of the wheel</p>
 
         <p class="nw-sample" id="sampleNote" hidden>
-          These are <b>sample names</b>. Type or paste your class into the box — one name per line.
+          These are <b>sample names</b>. Paste your class list into the box — full names are fine.
         </p>
         <p class="nw-msg" id="wheelMsg" role="alert" hidden></p>
       </section>
@@ -160,14 +160,14 @@
       <aside class="nw-side">
         <div class="nw-card">
           <h2><label for="namesInput">Names</label> <span class="nw-badge nw-badge-blue" id="nameCount">0</span></h2>
-          <p class="nw-card-sub">One name per line. Paste straight from a register.</p>
-          <textarea class="nw-names" id="namesInput" spellcheck="false" autocomplete="off"></textarea>
+          <p class="nw-card-sub">Paste full names straight from Excel or the register — one per line. Row numbers, IC numbers and the header are removed for you.</p>
+          <textarea class="nw-names" id="namesInput" spellcheck="false" autocomplete="off" wrap="off"></textarea>
           <div class="nw-row">
             <button type="button" class="nw-mini nw-mini-blue" id="shuffleBtn">Shuffle</button>
             <button type="button" class="nw-mini nw-mini-violet" id="sortBtn">Sort A–Z</button>
             <button type="button" class="nw-mini nw-mini-grey" id="clearBtn">Clear</button>
           </div>
-          <button type="button" class="nw-link" id="restoreBtn">Restore the saved class list</button>
+          <button type="button" class="nw-link" id="restoreBtn">Load the sample names</button>
         </div>
 
         <div class="nw-card">

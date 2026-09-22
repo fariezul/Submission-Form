@@ -136,22 +136,111 @@
     return plain;
   }
 
-  /* Turn whatever was pasted into the box into a clean list.
-     One name per line. A single line with commas in it is taken
-     as a comma-separated list, since that is what a register
-     copied out of an email usually looks like. Spare spaces go;
-     blank lines are ignored. Two people with the same name both
-     stay on the wheel. */
+  /* Turn whatever was pasted into the box into a clean list of
+     full names. It is built for a class list copied straight out
+     of Excel, a PDF register or iLearn, so it copes with:
+
+       - one name per line (the normal case)
+       - whole spreadsheet rows, where the cells arrive separated
+         by tabs: "1 <tab> AHMAD BIN ALI <tab> 050101-04-1234".
+         The cell that looks most like a name wins: letters, no
+         digits, and the longest such cell.
+       - row numbers in front: "1.", "2)", "3 -", "4"
+       - IC or matric numbers after the name: anything at the end
+         with a digit in it. A real name has no digits.
+       - a header row ("NAMA", "Nama Pelajar", "Name"...), skipped
+       - a single line of names separated by commas
+
+     Spare spaces go and blank lines are ignored. Two people with
+     the same name both stay on the wheel. */
+  const HEADERS = ["nama", "name", "names", "nama pelajar", "nama penuh",
+    "student name", "student names", "full name", "senarai nama", "bil", "no",
+    "no kp", "no ic", "ic", "no matrik", "matrik", "kelas", "jantina"];
+
+  function isHeader(cell) {
+    return HEADERS.indexOf(String(cell).toLowerCase().replace(/[.:]/g, "").replace(/\s+/g, " ").trim()) !== -1;
+  }
+
+  function cleanName(s) {
+    let t = String(s).replace(/\s+/g, " ").trim();
+    t = t.replace(/^\d+\s*[.)\-:]?\s*(?=\D)/, "");           // leading row number
+    const words = t.split(" ");
+    while (words.length > 1 && /\d/.test(words[words.length - 1])) words.pop();  // trailing IC / matric
+    t = words.join(" ").replace(/[\s,;|\-–]+$/, "").trim();
+    if (!/[A-Za-zÀ-ɏ؀-ۿ一-鿿]/.test(t)) return "";
+    if (isHeader(t)) return "";
+    return t;
+  }
+
+  function nameFromRow(line) {
+    if (line.indexOf("\t") === -1) return cleanName(line);
+    const cells = line.split("\t");
+    // A spreadsheet header row ("BIL | NAMA | NO. KP") is skipped whole.
+    if (cells.some(isHeader)) return "";
+    let best = "";
+    cells.forEach(function (cell) {
+      const c = cell.replace(/\s+/g, " ").trim();
+      if (/\d/.test(c)) return;               // numbers, IC, phone, matric
+      const n = cleanName(c);
+      if (n.length > best.length) best = n;
+    });
+    return best;
+  }
+
   function parseNames(text) {
     const raw = String(text || "").replace(/\r\n?/g, "\n");
     let parts = raw.split("\n");
     const filled = parts.filter(function (s) { return s.trim() !== ""; });
-    if (filled.length === 1 && filled[0].indexOf(",") !== -1) {
+    if (filled.length === 1 && filled[0].indexOf(",") !== -1 && filled[0].indexOf("\t") === -1) {
       parts = filled[0].split(",");
     }
     return parts
-      .map(function (s) { return s.replace(/\s+/g, " ").trim(); })
+      .map(nameFromRow)
       .filter(function (s) { return s !== ""; });
+  }
+
+  /* Registers are often in CAPITALS, which is loud on a big screen
+     and takes far more room on the wheel. A name typed entirely in
+     capitals is shown in Title Case ("NUR AINA BINTI ALI" becomes
+     "Nur Aina binti Ali"). Anything typed in mixed case is left
+     exactly as it was typed. */
+  const LOWER_WORDS = ["bin", "binti", "bt", "bte", "b.", "bt.", "a/l", "a/p", "s/o", "d/o", "@"];
+
+  function displayName(name) {
+    const s = String(name);
+    if (s !== s.toUpperCase() || !/[A-Z]/.test(s)) return s;
+    return s.toLowerCase().split(" ").map(function (w) {
+      if (LOWER_WORDS.indexOf(w) !== -1) return w;
+      return w.replace(/(^|[-(])([a-zà-ɏ])/g, function (m, p, c) { return p + c.toUpperCase(); });
+    }).join(" ");
+  }
+
+  /* Split a long name into two lines for the wheel, at the space
+     that makes the two halves most even. "Muhammad Aiman Hakimi
+     bin Abdullah" becomes "Muhammad Aiman Hakimi" / "bin
+     Abdullah". A single word cannot be split, so it comes back
+     as one line. */
+  function splitTwoLines(name) {
+    const words = String(name).split(" ");
+    if (words.length < 2) return [name];
+    let best = null;
+    for (let i = 1; i < words.length; i++) {
+      const a = words.slice(0, i).join(" ");
+      const b = words.slice(i).join(" ");
+      const worst = Math.max(a.length, b.length);
+      if (best === null || worst < best.worst) best = { worst: worst, lines: [a, b] };
+    }
+    /* Breaking just before "bin" / "binti" reads more naturally, so
+       it wins whenever it is nearly as even as the most even split. */
+    const at = words.findIndex(function (w, i) {
+      return i > 0 && /^(bin|binti|bt|bte|a\/l|a\/p|s\/o|d\/o)$/i.test(w);
+    });
+    if (at > 0) {
+      const a = words.slice(0, at).join(" ");
+      const b = words.slice(at).join(" ");
+      if (Math.max(a.length, b.length) <= best.worst * 1.35) return [a, b];
+    }
+    return best.lines;
   }
 
   /* A fair shuffle (Fisher-Yates), using the secure source. */
@@ -175,6 +264,8 @@
     clamp: clamp,
     colourIndex: colourIndex,
     parseNames: parseNames,
+    displayName: displayName,
+    splitTwoLines: splitTwoLines,
     shuffle: shuffle,
   };
 
