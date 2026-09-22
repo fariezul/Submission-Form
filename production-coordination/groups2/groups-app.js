@@ -89,7 +89,7 @@
       version: VERSION,
       mode: "groups",        // "groups" or "size"
       value: 6,
-      leader: true,
+      leader: false,         // off unless the lecturer switches it on
       sound: true,
       groupNames: [],        // renamed groups, by position; blank = default
       result: null,          // [{ members, leader }] once made
@@ -104,7 +104,7 @@
       const f = fresh();
       f.mode = s.mode === "size" ? "size" : "groups";
       f.value = Math.max(1, Math.floor(s.value) || 6);
-      f.leader = s.leader !== false;
+      f.leader = s.leader === true;
       f.sound = s.sound !== false;
       f.groupNames = Array.isArray(s.groupNames) ? s.groupNames.map(function (x) { return x ? String(x) : ""; }) : [];
       if (Array.isArray(s.result)) {

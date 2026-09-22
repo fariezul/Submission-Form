@@ -115,44 +115,6 @@
     <div class="gm-grid">
 
       <!-- ==================================================
-           THE CLASS AND THE SETTINGS
-           ================================================== -->
-      <aside class="gm-side">
-        <div class="gm-card">
-          <h2><label for="namesInput">Students</label> <span class="gm-badge gm-badge-blue" id="studentCount">0</span></h2>
-          <p class="gm-card-sub">Shared with the Name Wheel. Paste full names straight from Excel — one per line.</p>
-          <textarea class="gm-names" id="namesInput" spellcheck="false" autocomplete="off" wrap="off"></textarea>
-          <p class="gm-sample" id="sampleNote" hidden>These are <b>sample names</b>. Paste your class over them.</p>
-          <div class="gm-row">
-            <button type="button" class="gm-mini gm-mini-violet" id="sortBtn">Sort A–Z</button>
-            <button type="button" class="gm-mini gm-mini-grey" id="clearBtn">Clear</button>
-          </div>
-          <button type="button" class="gm-link" id="sampleBtn">Load the sample names</button>
-        </div>
-
-        <div class="gm-card">
-          <h2 id="splitLabel">Split into</h2>
-          <div class="gm-seg" role="radiogroup" aria-labelledby="splitLabel">
-            <button type="button" role="radio" id="modeGroups" aria-checked="true">Number of groups</button>
-            <button type="button" role="radio" id="modeSize" aria-checked="false">People per group</button>
-          </div>
-          <div class="gm-stepper">
-            <button type="button" class="gm-step" id="minusBtn" aria-label="Fewer">−</button>
-            <div class="gm-count">
-              <output id="countValue" aria-live="polite">6</output>
-              <span id="countUnit">groups</span>
-            </div>
-            <button type="button" class="gm-step" id="plusBtn" aria-label="More">+</button>
-          </div>
-          <p class="gm-plan" id="planText"></p>
-          <div class="gm-toggle">
-            <span id="leaderLabel">Pick a leader in each group</span>
-            <button type="button" class="gm-switch" id="leaderBtn" role="switch" aria-checked="true" aria-labelledby="leaderLabel"></button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- ==================================================
            THE GROUPS
            ================================================== -->
       <section class="gm-stage" id="stage" aria-label="The groups">
@@ -186,6 +148,44 @@
         <div class="gm-groups" id="groups"></div>
         <p class="gm-hint" id="hint"></p>
       </section>
+
+      <!-- ==================================================
+           THE SETTINGS AND THE CLASS (right-hand side)
+           ================================================== -->
+      <aside class="gm-side">
+        <div class="gm-card">
+          <h2 id="splitLabel">Split into</h2>
+          <div class="gm-seg" role="radiogroup" aria-labelledby="splitLabel">
+            <button type="button" role="radio" id="modeGroups" aria-checked="true">Number of groups</button>
+            <button type="button" role="radio" id="modeSize" aria-checked="false">People per group</button>
+          </div>
+          <div class="gm-stepper">
+            <button type="button" class="gm-step" id="minusBtn" aria-label="Fewer">−</button>
+            <div class="gm-count">
+              <output id="countValue" aria-live="polite">6</output>
+              <span id="countUnit">groups</span>
+            </div>
+            <button type="button" class="gm-step" id="plusBtn" aria-label="More">+</button>
+          </div>
+          <p class="gm-plan" id="planText"></p>
+          <div class="gm-toggle">
+            <span id="leaderLabel">Pick a leader in each group</span>
+            <button type="button" class="gm-switch" id="leaderBtn" role="switch" aria-checked="false" aria-labelledby="leaderLabel"></button>
+          </div>
+        </div>
+        <div class="gm-card">
+          <h2><label for="namesInput">Students</label> <span class="gm-badge gm-badge-blue" id="studentCount">0</span></h2>
+          <p class="gm-card-sub">Shared with the Name Wheel. Paste full names straight from Excel — one per line.</p>
+          <textarea class="gm-names" id="namesInput" spellcheck="false" autocomplete="off" wrap="off"></textarea>
+          <p class="gm-sample" id="sampleNote" hidden>These are <b>sample names</b>. Paste your class over them.</p>
+          <div class="gm-row">
+            <button type="button" class="gm-mini gm-mini-violet" id="sortBtn">Sort A–Z</button>
+            <button type="button" class="gm-mini gm-mini-grey" id="clearBtn">Clear</button>
+          </div>
+          <button type="button" class="gm-link" id="sampleBtn">Load the sample names</button>
+        </div>
+
+      </aside>
 
     </div>
   </main>

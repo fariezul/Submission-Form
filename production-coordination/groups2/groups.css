@@ -57,7 +57,7 @@
 /* ---------- layout ---------- */
 .gm-grid {
   display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 360px;   /* groups | settings on the right */
   gap: 22px;
   align-items: start;
 }
@@ -581,7 +581,6 @@ body.gm-full .gm-hint { display: none; }
 /* ---------- smaller screens ---------- */
 @media (max-width: 960px) {
   .gm-grid { grid-template-columns: minmax(0, 1fr); }
-  .gm-stage { order: -1; }
 }
 @media (max-width: 600px) {
   .gm { padding: 14px 16px 24px; }
