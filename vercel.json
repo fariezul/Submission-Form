@@ -1,21 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    {
-      "source": "/farizul.html",
-      "destination": "https://plate-guard-indol.vercel.app/farizul"
-    },
+  "redirects": [
     {
       "source": "/farizul",
-      "destination": "https://plate-guard-indol.vercel.app/farizul"
+      "destination": "/farizul.html",
+      "permanent": false
     },
     {
       "source": "/farizul/:match*",
-      "destination": "https://plate-guard-indol.vercel.app/farizul/:match*"
-    }
-  ],
-
-  "redirects": [
+      "destination": "/farizul.html",
+      "permanent": false
+    },
     {
       "source": "/line",
       "destination": "/production-coordination/activity-5.html",
