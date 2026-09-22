@@ -49,10 +49,17 @@
 
   <!--
     The activity pages are still placeholders and carry a noindex
-    tag, so they are deliberately absent here. Activity 3 is the
-    exception: it holds the Zero Defect Rush quiz, so it has real
-    content, no noindex, and belongs in the sitemap.
+    tag, so they are deliberately absent here. Activities 1 and 3
+    are the exceptions: they hold the Who's Next? name wheel and
+    the Zero Defect Rush quiz, so they have real content, no
+    noindex, and belong in the sitemap.
   -->
+  <url>
+    <loc>https://www.farizuljaafar.com/production-coordination/activity-1.html</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://www.farizuljaafar.com/production-coordination/activity-3.html</loc>
     <lastmod>2026-08-15</lastmod>

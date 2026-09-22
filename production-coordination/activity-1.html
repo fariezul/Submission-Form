@@ -1,35 +1,55 @@
 <!DOCTYPE html>
 <!--
   Production Coordination — Activity 1
+  WHO'S NEXT? — a wheel of names.
 
-  A placeholder. When the real activity content is written, replace
-  the "under construction" section below.
+  WHAT THIS PAGE IS
+  A random name picker for the class. Press SPIN, the wheel
+  spins with a drumroll and a tick-tick-tick, slows down, and
+  stops on one name. The name pops up large, with confetti and a
+  ta-da, and the lecturer chooses whether to take it off the
+  wheel (the default) or leave it on.
 
-  NOTE ON THE ROBOTS TAG
-  While this page has no real content, noindex asks search engines
-  not to list it. Twenty near-empty pages in Google would dilute the
-  site. Delete that meta line once the activity is written.
+  The winner is decided at random BEFORE the wheel moves; the
+  spin only shows it. See wheel1/wheel-math.js.
+
+  THE CLASS LIST
+  The names the wheel starts with are in wheel1/wheel-config.js.
+  Anyone can also type or paste names straight into the box on
+  the page; that list is remembered on the computer it was typed
+  on. Nothing is sent anywhere — there is no server behind this
+  page.
+
+  THE ORDER THE SCRIPTS LOAD IN MATTERS
+      wheel-config.js     settings, nothing else
+      wheel-math.js       pure maths (tested in wheel-tests.js)
+      wheel-audio.js      sound, made live in the browser
+      wheel-confetti.js   the confetti
+      wheel-app.js        needs all four above
 
   NOTE ON THE ".." IN THE PATHS
-  This file sits inside the production-coordination/ folder, so ".." means
-  "go up one level to the main folder" where style.css and logo-mark.png
-  live.
+  This file sits inside the production-coordination/ folder, so
+  ".." means "go up one level to the main folder" where
+  style.css, nav.js and logo-mark.png live. This activity's own
+  files are in wheel1/, which is beside this file.
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <!-- Browser tab icon and home-screen icon -->
   <link rel="icon" type="image/png" href="../logo-mark.png" />
   <link rel="apple-touch-icon" href="../logo-mark.png" />
 
-  <meta name="robots" content="noindex, follow" />
+  <title>Who's Next? — Activity 1 | Production Coordination</title>
+  <meta name="description" content="Who's Next?: a colourful spinning wheel of names for picking a student at random, with a drumroll, ticks and a ta-da. Activity 1 of Production Coordination at TVETMARA Masjid Tanah." />
 
-  <title>Activity 1 | Production Coordination — Ts. Farizul Jaafar</title>
-  <meta name="description" content="Activity 1 of the Production Coordination TVET competency area at TVETMARA Masjid Tanah. Content in preparation." />
+  <!-- The wheel's pink, so the phone's browser bar tells a
+       student which activity they are in. -->
+  <meta name="theme-color" content="#f0286e" />
 
   <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="wheel1/wheel.css" />
 </head>
 
 <body>
@@ -64,7 +84,6 @@
     </div>
   </nav>
 
-  <!-- The activity sub-tabs -->
   <nav class="subtab-bar" aria-label="Production Coordination activities">
     <div class="subtab-bar-inner">
         <a href="activity-1.html" class="subtab subtab-active" aria-current="page">Activity 1</a>
@@ -80,26 +99,104 @@
     </div>
   </nav>
 
-  <main>
+  <main class="nw" id="wheelMain">
 
-    <section class="hero hero-compact">
-      <div class="hero-inner">
-        <!-- A breadcrumb: where this page sits in the site -->
-        <p class="hero-eyebrow">
-          <a href="../production-coordination.html" class="crumb-link">Production Coordination</a>
+    <p class="nw-sr" id="srLive" role="status" aria-live="polite"></p>
+
+    <div class="nw-head">
+      <h1 class="nw-title" aria-label="Who's Next?"><span>W</span><span>h</span><span>o</span><span>’</span><span>s</span> <span>N</span><span>e</span><span>x</span><span>t</span><span>?</span></h1>
+      <p class="nw-tag">Spin the wheel — it picks one name at random.</p>
+    </div>
+
+    <div class="nw-grid">
+
+      <!-- ==================================================
+           THE WHEEL
+           ================================================== -->
+      <section class="nw-stage" id="wheelStage" aria-label="The wheel">
+        <div class="nw-blob" style="width:260px;height:260px;background:#ffc61a;left:-90px;bottom:-80px"></div>
+        <div class="nw-blob" style="width:220px;height:220px;background:#f0286e;right:-70px;top:120px"></div>
+        <div class="nw-blob" style="width:180px;height:180px;background:#14c4b8;left:40px;top:-60px"></div>
+        <div class="nw-blob" style="width:200px;height:200px;background:#8a4dff;right:30px;bottom:-110px"></div>
+
+        <p class="nw-count"><b id="onWheel">0</b> <span id="onWheelText">names on the wheel</span></p>
+
+        <div class="nw-tools">
+          <button type="button" class="nw-tool" id="soundBtn" aria-pressed="true">
+            <svg class="nw-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+            <svg class="nw-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+            <span id="soundLabel">Sound on</span>
+          </button>
+          <button type="button" class="nw-tool" id="fsBtn" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+            <span id="fsLabel">Full screen</span>
+          </button>
+        </div>
+
+        <div class="nw-area" id="wheelArea">
+          <div class="nw-wheel" id="wheelBox">
+            <canvas id="wheelCanvas" role="img" aria-label="A wheel of names"></canvas>
+            <svg class="nw-pointer" id="wheelPointer" viewBox="0 0 64 64" aria-hidden="true">
+              <path d="M6 4 L58 4 Q62 4 59 10 L35 54 Q32 59 29 54 L5 10 Q2 4 6 4 Z"
+                    fill="#f0286e" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+              <circle cx="32" cy="16" r="6" fill="#ffffff"/>
+            </svg>
+            <button type="button" class="nw-hub" id="hubBtn" aria-label="Spin the wheel">SPIN</button>
+          </div>
+        </div>
+
+        <button type="button" class="nw-spin" id="spinBtn">SPIN!</button>
+        <p class="nw-hint"><span class="nw-hint-keys">or press <kbd>Space</kbd> &nbsp;·&nbsp; </span>or click the middle of the wheel</p>
+
+        <p class="nw-sample" id="sampleNote" hidden>
+          These are <b>sample names</b>. Type or paste your class into the box — one name per line.
         </p>
-        <h1>Activity 1</h1>
-      </div>
-    </section>
-
-    <div class="content-wrap">
-      <section class="section section-construction">
-        <p class="construction-note">This activity still under construction</p>
-        <p class="construction-sub">Content for this activity is being prepared.</p>
-        <a href="../production-coordination.html" class="btn-plain">Back to Production Coordination</a>
+        <p class="nw-msg" id="wheelMsg" role="alert" hidden></p>
       </section>
+
+      <!-- ==================================================
+           THE LIST AND THE HISTORY
+           ================================================== -->
+      <aside class="nw-side">
+        <div class="nw-card">
+          <h2><label for="namesInput">Names</label> <span class="nw-badge nw-badge-blue" id="nameCount">0</span></h2>
+          <p class="nw-card-sub">One name per line. Paste straight from a register.</p>
+          <textarea class="nw-names" id="namesInput" spellcheck="false" autocomplete="off"></textarea>
+          <div class="nw-row">
+            <button type="button" class="nw-mini nw-mini-blue" id="shuffleBtn">Shuffle</button>
+            <button type="button" class="nw-mini nw-mini-violet" id="sortBtn">Sort A–Z</button>
+            <button type="button" class="nw-mini nw-mini-grey" id="clearBtn">Clear</button>
+          </div>
+          <button type="button" class="nw-link" id="restoreBtn">Restore the saved class list</button>
+        </div>
+
+        <div class="nw-card">
+          <h2>Already picked <span class="nw-badge nw-badge-pink" id="pickedCount">0</span></h2>
+          <p class="nw-none" id="pickedNone">Nobody yet. Press SPIN!</p>
+          <ol class="nw-chips" id="pickedList"></ol>
+          <button type="button" class="nw-link" id="putBackBtn" hidden>Start again — put everyone back on the wheel</button>
+        </div>
+      </aside>
+
     </div>
   </main>
+
+  <!-- ==================================================
+       THE POP-UP, shown when the wheel stops
+       ================================================== -->
+  <div class="nw-ov" id="winner" role="dialog" aria-modal="true" aria-labelledby="winnerName" hidden>
+    <canvas class="nw-confetti" id="confettiCanvas" aria-hidden="true"></canvas>
+    <div class="nw-wcard">
+      <p class="nw-wtop"><span aria-hidden="true">★</span> The wheel picked <span aria-hidden="true">★</span></p>
+      <p class="nw-wname" id="winnerName"></p>
+      <p class="nw-wmeta" id="winnerMeta"></p>
+      <div class="nw-wbtns">
+        <button type="button" class="nw-wb nw-wb-main" id="removeBtn">✓ Remove &amp; close</button>
+        <button type="button" class="nw-wb nw-wb-alt" id="keepBtn">↺ Keep on wheel</button>
+      </div>
+      <p class="nw-wkeys">Enter = remove &nbsp;·&nbsp; Esc = keep</p>
+    </div>
+  </div>
 
   <footer class="site-footer">
     <p>&copy; 2026 Ts. Farizul Jaafar · TVETMARA Masjid Tanah</p>
@@ -113,5 +210,12 @@
   </footer>
 
   <script src="../nav.js"></script>
+
+  <!-- Dependency order: see the note at the top of this file. -->
+  <script src="wheel1/wheel-config.js"></script>
+  <script src="wheel1/wheel-math.js"></script>
+  <script src="wheel1/wheel-audio.js"></script>
+  <script src="wheel1/wheel-confetti.js"></script>
+  <script src="wheel1/wheel-app.js"></script>
 </body>
 </html>
