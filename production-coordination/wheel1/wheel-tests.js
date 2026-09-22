@@ -189,8 +189,7 @@ check("one word is not split", same(M.splitTwoLines("Aisyah"), ["Aisyah"]));
 
 /* ---------- config ---------- */
 console.log("config");
-check("class list is within the limit", CFG.CLASS_NAMES.length > 0 && CFG.CLASS_NAMES.length <= CFG.MAX_NAMES);
-check("no blank names in the class list", CFG.CLASS_NAMES.every((s) => typeof s === "string" && s.trim() === s && s !== ""));
+check("no class list is built into the config", !("CLASS_NAMES" in CFG));
 check("spin lengths make sense", CFG.SPIN_MS_MIN > 1000 && CFG.SPIN_MS_MAX >= CFG.SPIN_MS_MIN);
 
 
@@ -203,9 +202,9 @@ const wanted = [...app.matchAll(/\$\("([A-Za-z0-9_-]+)"\)/g)].map((m) => m[1]);
 const missing = wanted.filter((id) => !new RegExp('id="' + id + '"').test(html));
 check("every id the app uses is on the page (" + wanted.length + ")", missing.length === 0, missing.join(", "));
 
-const order = ["wheel-config.js", "wheel-math.js", "wheel-audio.js", "wheel-confetti.js", "wheel-app.js"];
-const at = order.map((f) => html.indexOf('src="wheel1/' + f + '"'));
-check("all five scripts are loaded", at.every((i) => i !== -1), at.join(","));
+const order = ["wheel1/wheel-config.js", "wheel1/wheel-math.js", "shared/class-list.js", "wheel1/wheel-audio.js", "wheel1/wheel-confetti.js", "wheel1/wheel-app.js"];
+const at = order.map((f) => html.indexOf('src="' + f + '"'));
+check("all six scripts are loaded", at.every((i) => i !== -1), at.join(","));
 check("scripts load in dependency order", at.every((v, i) => i === 0 || v > at[i - 1]));
 check("stylesheet is linked", html.includes('href="wheel1/wheel.css"'));
 check("placeholder noindex is gone", !/name="robots"[^>]*noindex/.test(html));

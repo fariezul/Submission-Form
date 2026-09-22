@@ -14,15 +14,16 @@
   spin only shows it. See wheel1/wheel-math.js.
 
   THE CLASS LIST
-  The names the wheel starts with are in wheel1/wheel-config.js.
-  Anyone can also type or paste names straight into the box on
-  the page; that list is remembered on the computer it was typed
-  on. Nothing is sent anywhere — there is no server behind this
-  page.
+  The lecturer pastes the class into the box on the page. It is
+  remembered in that browser only, and shared with the group
+  maker (Activity 2) — see shared/class-list.js. The website's
+  files hold no student names; until a class is pasted the page
+  shows made-up sample names. Nothing is sent anywhere.
 
   THE ORDER THE SCRIPTS LOAD IN MATTERS
       wheel-config.js     settings, nothing else
       wheel-math.js       pure maths (tested in wheel-tests.js)
+      shared/class-list.js  the class list, shared with Activity 2
       wheel-audio.js      sound, made live in the browser
       wheel-confetti.js   the confetti
       wheel-app.js        needs all four above
@@ -214,6 +215,7 @@
   <!-- Dependency order: see the note at the top of this file. -->
   <script src="wheel1/wheel-config.js"></script>
   <script src="wheel1/wheel-math.js"></script>
+  <script src="shared/class-list.js"></script>
   <script src="wheel1/wheel-audio.js"></script>
   <script src="wheel1/wheel-confetti.js"></script>
   <script src="wheel1/wheel-app.js"></script>

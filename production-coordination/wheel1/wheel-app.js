@@ -88,22 +88,33 @@
   /* ----------------------------------------------------------
      SAVED STATE
      ---------------------------------------------------------- */
+  /* The class comes from the shared list (../shared/class-list.js),
+     which the group maker uses too. It must be read BEFORE the
+     wheel's own state: the migration from the old wheel-only list
+     happens inside ClassList.load(). */
+  let classList = root.ClassList.load();
   let state = load();
 
+  /* The wheel's own state: the names still ON the wheel (the class
+     minus anyone taken off), who has been picked, and the sound
+     setting. classStamp says which version of the class it was
+     built from. */
   function fresh() {
     return {
       version: CFG.LIST_VERSION,
-      names: CFG.CLASS_NAMES.slice(0, CFG.MAX_NAMES),
+      classStamp: classList.stamp,
+      names: classList.names.slice(0, CFG.MAX_NAMES),
       picked: [],            // [{ name, removed }], oldest first
       sound: true,
     };
   }
 
-  /* A saved list from an older LIST_VERSION is thrown away: the
-     class list in wheel-config.js has changed since. Storage can
-     also be missing altogether (a private window, a locked-down
-     school browser), in which case the page simply starts fresh
-     each time. */
+  /* A saved state from an older LIST_VERSION is thrown away. So is
+     one built from a different class — the class was replaced on
+     the group maker or in another tab — though the sound setting
+     is kept. Storage can also be missing altogether (a private
+     window, a locked-down school browser), in which case the page
+     simply starts fresh each time. */
   function load() {
     try {
       const raw = root.localStorage.getItem(CFG.STORAGE_KEY);
@@ -112,8 +123,14 @@
       if (!s || s.version !== CFG.LIST_VERSION || !Array.isArray(s.names) || !Array.isArray(s.picked)) {
         return fresh();
       }
+      if (s.classStamp !== classList.stamp) {
+        const f = fresh();
+        f.sound = s.sound !== false;
+        return f;
+      }
       return {
         version: CFG.LIST_VERSION,
+        classStamp: s.classStamp,
         names: s.names.map(String).slice(0, CFG.MAX_NAMES),
         picked: s.picked.filter(function (p) { return p && typeof p.name === "string"; }),
         sound: s.sound !== false,
@@ -121,6 +138,15 @@
     } catch (e) {
       return fresh();
     }
+  }
+
+  /* The lecturer typed, pasted, cleared or loaded a new class in
+     the box: that becomes the shared class. The "already picked"
+     history is kept while they are only editing — it is cleared
+     only when a whole new class is pasted (see the paste handler). */
+  function shareClass() {
+    classList = root.ClassList.save(state.names);
+    state.classStamp = classList.stamp;
   }
 
   function save() {
@@ -560,6 +586,7 @@
       if (list.length > CFG.MAX_NAMES) list = list.slice(0, CFG.MAX_NAMES);
       state.names = list;
       highlight = -1;
+      shareClass();
       save();
       rebuild();
     }, 250);
@@ -585,9 +612,7 @@
     }
 
     // Sample names still showing?
-    const sample = CFG.SAMPLE && n > 0 && state.names.every(function (x) {
-      return CFG.CLASS_NAMES.indexOf(x) !== -1;
-    });
+    const sample = root.ClassList.isSample(state.names);
     el.sample.hidden = !sample;
 
     if (n > CFG.COMFORT_NAMES) {
@@ -754,9 +779,15 @@
        numbers, IC numbers and the header row disappear — so the
        lecturer sees straight away exactly which names went on. */
     el.names.addEventListener("paste", function () {
+      // Pasting over the whole box (or into an empty one) is a new
+      // class, so the old class's "already picked" history goes.
+      const t = el.names;
+      const wholeBox = t.value.trim() === "" || (t.selectionStart === 0 && t.selectionEnd === t.value.length);
       setTimeout(function () {
         clearTimeout(typingTimer);
         state.names = M.parseNames(el.names.value).slice(0, CFG.MAX_NAMES);
+        if (wholeBox) state.picked = [];
+        shareClass();
         highlight = -1;
         save();
         syncNamesBox();
@@ -777,16 +808,18 @@
     });
     el.clear.addEventListener("click", function () {
       if (state.names.length === 0) return;
-      if (!root.confirm("Take every name off the wheel?")) return;
+      if (!root.confirm("Clear the whole class list? It is shared with the Group Maker, so it clears there too. Then paste the new class.")) return;
       state.names = [];
+      state.picked = [];
+      shareClass();
       highlight = -1; save(); syncNamesBox(); rebuild();
       el.names.focus();
     });
     el.restore.addEventListener("click", function () {
       if (!root.confirm("Replace the names in the box with the sample names, and clear who has been picked?")) return;
-      const s = fresh();
-      state.names = s.names;
+      state.names = root.ClassList.SAMPLE.slice();
       state.picked = [];
+      shareClass();
       highlight = -1; save(); syncNamesBox(); rebuild();
     });
     el.putBack.addEventListener("click", putEveryoneBack);
@@ -801,6 +834,16 @@
     });
     el.fsBtn.addEventListener("click", toggleFull);
     doc.addEventListener("fullscreenchange", onFsChange);
+
+    // The class was replaced in another tab (the group maker, say).
+    root.ClassList.onChange(function (list) {
+      if (spinning || overlayOpen()) return;
+      classList = list;
+      state = fresh();
+      state.sound = el.soundBtn.getAttribute("aria-pressed") === "true";
+      save(); syncNamesBox(); rebuild();
+      say("The class list was updated.");
+    });
     doc.addEventListener("webkitfullscreenchange", onFsChange);
 
     doc.addEventListener("keydown", function (e) {

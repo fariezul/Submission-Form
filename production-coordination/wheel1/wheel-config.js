@@ -4,13 +4,11 @@
    Activity 1 is a wheel of names. This file holds everything a
    lecturer might want to change, and nothing else.
 
-   TO CHANGE THE CLASS LIST
-   Edit CLASS_NAMES below — one name per line, in quotes, with a
-   comma after each. Then add 1 to LIST_VERSION. Bumping the
-   version is what makes every computer that has used the wheel
-   before throw away its saved list and load the new one; without
-   it, a laptop that ran last week's class keeps showing last
-   week's names.
+   THE CLASS LIST IS NOT HERE
+   The class is pasted into the page on the classroom laptop and
+   kept in that browser, shared with the group maker (Activity 2)
+   — see ../shared/class-list.js. No student's name is ever
+   stored in the website's files.
    ============================================================ */
 
 "use strict";
@@ -19,19 +17,10 @@
 
   root.WHEEL_CONFIG = {
 
-    /* Add 1 whenever CLASS_NAMES changes. See the note above. */
+    /* The shape of what the wheel saves in the browser. Add 1
+       only if that shape changes; every laptop then starts the
+       wheel afresh (the shared class list is kept). */
     LIST_VERSION: 1,
-
-    /* SAMPLE NAMES. Replace these with the real class.
-       While this list is unchanged the page shows a note saying
-       they are samples, so nobody mistakes them for a register. */
-    SAMPLE: true,
-    CLASS_NAMES: [
-      "Aisyah", "Haziq", "Nurul Izzah", "Amirul", "Farhana", "Danial",
-      "Syafiqah", "Irfan", "Balqis", "Hakimi", "Aqilah", "Zulkarnain",
-      "Mei Ling", "Arvind", "Hafizah", "Luqman", "Qistina", "Adam",
-      "Sofea", "Iman", "Harith", "Alya", "Rizwan", "Nadia",
-    ],
 
     /* Beyond this many names the text on the wheel gets too small
        to read from the back of a room. The wheel still takes more,

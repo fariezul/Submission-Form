@@ -270,6 +270,28 @@
     });
   }
 
+  /* The group maker (Activity 2) uses these two, plus fanfare().
+
+     deal(step) — a card flicked onto the table as one student
+     lands in a group: a quick swoosh of noise with a small "tok",
+     rising gently in pitch with each card so the deal builds. */
+  function deal(step) {
+    if (!enabled || !ready()) return;
+    const t = ctx.currentTime;
+    hitAt(t, { type: "bandpass", freq: 1800 + Math.random() * 900, q: 0.9, dur: 0.06, vol: 0.2 });
+    const rise = Math.min(1, (step || 0) / 40);
+    noteAt(t + 0.01, 520 + rise * 420, 0.05, 0.05, "triangle", false);
+  }
+
+  /* sparkle() — the leaders being chosen: a quick run of bells. */
+  function sparkle() {
+    if (!enabled || !usable()) return;
+    const t = ctx.currentTime + 0.01;
+    [1319, 1568, 2093, 2637].forEach(function (f, i) {
+      noteAt(t + i * 0.06, f, 0.25, 0.05, "triangle", false);
+    });
+  }
+
   function setEnabled(on) {
     enabled = !!on;
     if (!enabled) stopDrumroll();
@@ -285,6 +307,8 @@
     drumroll: drumroll,
     stopDrumroll: stopDrumroll,
     fanfare: fanfare,
+    deal: deal,
+    sparkle: sparkle,
     setEnabled: setEnabled,
     isEnabled: function () { return enabled; },
     lastError: function () { return error; },
