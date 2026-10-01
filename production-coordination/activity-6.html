@@ -1,35 +1,26 @@
 <!DOCTYPE html>
 <!--
-  Production Coordination — Activity 6
-
-  A placeholder. When the real activity content is written, replace
-  the "under construction" section below.
-
-  NOTE ON THE ROBOTS TAG
-  While this page has no real content, noindex asks search engines
-  not to list it. Twenty near-empty pages in Google would dilute the
-  site. Delete that meta line once the activity is written.
-
-  NOTE ON THE ".." IN THE PATHS
-  This file sits inside the production-coordination/ folder, so ".." means
-  "go up one level to the main folder" where style.css and logo-mark.png
-  live.
+  Production Coordination — Activity 6, REVISION 1.
+  A 20-question paper drawn from the Test 1 marking scheme and the
+  supplied aerocomposite production workflow. Quiz files and score
+  storage are isolated from Activity 4.
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <!-- Browser tab icon and home-screen icon -->
   <link rel="icon" type="image/png" href="../logo-mark.png" />
   <link rel="apple-touch-icon" href="../logo-mark.png" />
 
-  <meta name="robots" content="noindex, follow" />
+  <title>REVISION 1 — Activity 6 | Production Coordination</title>
+  <meta name="description" content="REVISION 1: a 20-question, 20-minute aircraft manufacturing revision challenge on coordination, materials, QC tools, Lean, waste and the aerocomposite production workflow." />
 
-  <title>Activity 6 | Production Coordination — Ts. Farizul Jaafar</title>
-  <meta name="description" content="Activity 6 of the Production Coordination TVET competency area at TVETMARA Masjid Tanah. Content in preparation." />
+  <meta name="theme-color" content="#101c2b" />
 
   <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="quiz6/quiz.css" />
 </head>
 
 <body>
@@ -62,7 +53,6 @@
     </div>
   </nav>
 
-  <!-- The activity sub-tabs -->
   <nav class="subtab-bar" aria-label="Production Coordination activities">
     <div class="subtab-bar-inner">
         <a href="activity-1.html" class="subtab">Activity 1</a>
@@ -80,23 +70,423 @@
 
   <main>
 
-    <section class="hero hero-compact">
-      <div class="hero-inner">
-        <!-- A breadcrumb: where this page sits in the site -->
-        <p class="hero-eyebrow">
-          <a href="../production-coordination.html" class="crumb-link">Production Coordination</a>
-        </p>
-        <h1>Activity 6</h1>
-      </div>
-    </section>
+    <!-- ========================================================
+         THE GAME
+         ========================================================
+         Six screens live inside this one element. Only one is
+         ever visible; quiz-app.js flips the "hidden" attribute.
+         Using hidden rather than a CSS class means a screen
+         reader ignores the screens that are put away.
 
-    <div class="content-wrap">
-      <section class="section section-construction">
-        <p class="construction-note">This activity still under construction</p>
-        <p class="construction-sub">Content for this activity is being prepared.</p>
-        <a href="../production-coordination.html" class="btn-plain">Back to Production Coordination</a>
+         EVERY id BELOW IS LOOKED UP BY NAME in quiz-app.js. If
+         you rename or remove one, the quiz does not degrade —
+         it throws on the first question and the student is
+         stuck. That happened once on Activity 3, with
+         feedbackFlash. quiz-tests.js now cross-checks the two
+         files against each other for exactly this reason.
+         ======================================================== -->
+    <div class="quiz-root" id="quizRoot">
+
+      <!-- ====================================================
+           SCREEN 1 — WELCOME
+           ==================================================== -->
+      <section class="quiz-screen" id="screenWelcome" aria-labelledby="gameTitle">
+
+        <div class="welcome-head">
+          <div class="welcome-head-text">
+            <h1 class="quiz-title" id="gameTitle">REVISION 1</h1>
+            <p class="quiz-tagline">
+              Aircraft manufacturing · Test 1 revision
+            </p>
+          </div>
+          <button type="button" class="sound-toggle" data-sound-toggle aria-pressed="true">🔊</button>
+        </div>
+
+        <div class="quiz-panel">
+          <form id="welcomeForm" novalidate>
+
+            <div class="quiz-field">
+              <label for="studentName">Student Name</label>
+              <input
+                type="text"
+                id="studentName"
+                name="studentName"
+                placeholder="Your full name"
+                autocomplete="name"
+                enterkeyhint="next"
+                maxlength="80"
+                required
+                aria-describedby="studentNameError" />
+              <p class="field-error" id="studentNameError" role="alert"></p>
+            </div>
+
+            <div class="quiz-field">
+              <label for="className">Class</label>
+              <input
+                type="text"
+                id="className"
+                name="className"
+                placeholder="e.g. DTP 3A"
+                autocomplete="off"
+                enterkeyhint="go"
+                maxlength="40"
+                required
+                aria-describedby="classNameError" />
+              <p class="field-error" id="classNameError" role="alert"></p>
+            </div>
+
+            <button type="submit" class="quiz-btn">Continue →</button>
+
+            <div class="quiz-btn-row">
+              <button type="button" class="quiz-btn quiz-btn-secondary" id="leaderboardButton">
+                🏆 Leaderboard
+              </button>
+            </div>
+
+            <p class="quiz-note">
+              No account and no password. Your name and class are used only
+              to record your score for this activity.
+            </p>
+          </form>
+
+          <div class="institution-block">
+            <p class="institution-line">
+              <span class="institution-label">Institution</span>
+              <span class="institution-value">TVETMARA Masjid Tanah</span>
+            </p>
+            <p class="institution-line">
+              <span class="institution-label">Course Code</span>
+              <span class="institution-value">IQA 10063</span>
+            </p>
+            <p class="institution-line">
+              <span class="institution-label">Lecturer</span>
+              <span class="institution-value">Ts. Farizul Jaafar</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ====================================================
+           SCREEN 2 — INSTRUCTIONS
+           ==================================================== -->
+      <section class="quiz-screen" id="screenInstructions" hidden aria-labelledby="briefingTitle">
+
+        <div class="welcome-head">
+          <div class="welcome-head-text">
+            <h2 class="quiz-title" id="briefingTitle" style="font-size: clamp(1.7rem, 7vw, 2.4rem);">
+              Mission Briefing
+            </h2>
+            <p class="briefing-who">
+              <strong id="briefingName">—</strong>
+              <span class="briefing-class" id="briefingClass">—</span>
+            </p>
+          </div>
+          <button type="button" class="sound-toggle" data-sound-toggle aria-pressed="true">🔊</button>
+        </div>
+
+        <div class="quiz-panel">
+
+          <div class="rule-grid">
+            <div class="rule-tile">
+              <span class="rule-value">20</span>
+              <span class="rule-label">Questions</span>
+            </div>
+            <div class="rule-tile">
+              <span class="rule-value">20</span>
+              <span class="rule-label">Marks</span>
+            </div>
+            <div class="rule-tile">
+              <span class="rule-value">20:00</span>
+              <span class="rule-label">Minutes</span>
+            </div>
+            <div class="rule-tile">
+              <span class="rule-value">100%</span>
+              <span class="rule-label">To Pass</span>
+            </div>
+          </div>
+
+          <ul class="brief-list">
+            <li>
+              <span class="brief-icon" aria-hidden="true">▤</span>
+              <span>Questions cover <strong>coordination, materials, QC tools, Lean and the production workflow</strong> from your Test 1 marking scheme.</span>
+            </li>
+            <li>
+              <span class="brief-icon" aria-hidden="true">✅</span>
+              <span>One mark per question. <strong>You need all 20</strong> to complete the challenge.</span>
+            </li>
+            <li>
+              <span class="brief-icon" aria-hidden="true">🚫</span>
+              <span>A wrong answer will <strong>not</strong> show you the correct one — review the marking scheme and try again.</span>
+            </li>
+            <li>
+              <span class="brief-icon" aria-hidden="true">🔀</span>
+              <span>The questions <strong>change every attempt</strong>, so you cannot memorise the order.</span>
+            </li>
+            <li>
+              <span class="brief-icon" aria-hidden="true">♾️</span>
+              <span><strong>Unlimited attempts.</strong> Miss it, revise, and come straight back.</span>
+            </li>
+            <li>
+              <span class="brief-icon" aria-hidden="true">⚡</span>
+              <span>Speed does not add marks — but it does decide your place on the leaderboard.</span>
+            </li>
+          </ul>
+
+          <p class="brief-warning">
+            ⏱️ The 20-minute clock starts the moment you tap START CHALLENGE.
+            When it hits zero the attempt ends, and anything unanswered is marked wrong.
+          </p>
+
+          <div style="margin-top: 18px;">
+            <button type="button" class="quiz-btn" id="startChallengeButton">
+              🚀 Start Challenge
+            </button>
+          </div>
+
+          <div class="quiz-btn-row">
+            <button type="button" class="quiz-btn quiz-btn-secondary" id="briefingBackButton">
+              ← Back
+            </button>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ====================================================
+           SCREEN 3 — THE QUIZ
+           ==================================================== -->
+      <section class="quiz-screen" id="screenGame" hidden aria-label="Quiz in progress">
+
+        <div class="game-bar">
+          <span class="game-brand">REVISION 1</span>
+
+          <div class="timer-badge" id="timerBadge">
+            <span class="timer-icon" aria-hidden="true">⏱️</span>
+            <!-- aria-live off: a value announced every second would
+                 make a screen reader unusable. The countdown is
+                 announced by the warning sounds instead. -->
+            <span id="timerValue">20:00</span>
+          </div>
+
+          <button type="button" class="sound-toggle" data-sound-toggle aria-pressed="true">🔊</button>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="progress-meta">
+          <span id="questionCounter">1 / 20</span>
+          <span class="score-chip">Score: <span id="scoreValue">0</span></span>
+        </div>
+
+        <div class="question-card" id="questionCard">
+          <span class="question-type-badge" id="questionTypeBadge">Choose one</span>
+
+          <h2 class="question-text" id="questionText">—</h2>
+
+          <div class="question-image-wrap" id="questionImageWrap" hidden>
+            <img id="questionImage" src="" alt="" loading="eager" decoding="async" />
+          </div>
+          <button type="button" class="workflow-zoom-button" id="workflowZoomButton" hidden>
+            ⤢ Enlarge workflow
+          </button>
+
+          <div class="answer-list" id="answerList"></div>
+
+          <div class="multi-submit-wrap" id="multiSubmitWrap" hidden>
+            <p class="multi-hint">Select every correct answer, then submit.</p>
+            <button type="button" class="quiz-btn" id="multiSubmitButton" disabled>
+              Submit Answer
+            </button>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ====================================================
+           SCREEN 4 — BELOW 20/20
+           ==================================================== -->
+      <section class="quiz-screen result-screen" id="screenResult" hidden aria-labelledby="resultHeadline">
+
+        <h2 class="result-headline" id="resultHeadline">Almost There!</h2>
+
+        <p class="result-student" id="resultName">—</p>
+        <p class="result-class" id="resultClass">—</p>
+
+        <div class="score-dial">
+          <span class="score-main" id="resultScore">0 / 20</span>
+          <span class="score-pct" id="resultPercent">0%</span>
+          <span class="score-attempt" id="resultAttempt">Attempt 1</span>
+        </div>
+
+        <p class="result-message" id="resultMessage">
+          Review the marking scheme and give it another try!
+        </p>
+        <p class="result-rule" id="resultRule">
+          You need 20 / 20 to complete this challenge.
+        </p>
+
+        <!-- The live class scoreboard: everyone's most recent
+             attempts, pass or fail. Scores only — it never says
+             which questions anyone missed. -->
+        <section class="attempt-history" aria-labelledby="resultHistoryTitle">
+          <div class="attempt-history-head">
+            <h3 class="attempt-history-title" id="resultHistoryTitle">📊 Class Scoreboard</h3>
+            <button type="button" class="attempt-refresh" id="resultHistoryRefresh"
+                    aria-label="Refresh the class scoreboard">↻</button>
+          </div>
+          <ol class="attempt-list" id="resultHistoryList"></ol>
+          <p class="attempt-summary" id="resultHistorySummary"></p>
+        </section>
+
+        <button type="button" class="quiz-btn" id="tryAgainButton">
+          🔁 Try Again
+        </button>
+
+        <div class="quiz-btn-row">
+          <button type="button" class="quiz-btn quiz-btn-secondary" id="resultHomeButton">
+            ← Back to Home
+          </button>
+        </div>
+
+        <p class="save-status" id="resultSaveStatus"></p>
+      </section>
+
+
+      <!-- ====================================================
+           SCREEN 5 — PERFECT SCORE
+           ==================================================== -->
+      <section class="quiz-screen result-screen perfect-screen" id="screenPerfect" hidden aria-labelledby="perfectHeadline">
+
+        <div class="trophy" aria-hidden="true">🏆</div>
+
+        <h2 class="result-headline" id="perfectHeadline">Congratulations!</h2>
+
+        <p class="result-student" id="perfectName">—</p>
+        <p class="result-class" id="perfectClass">—</p>
+
+        <div class="score-dial">
+          <span class="score-main" id="perfectScore">20 / 20</span>
+          <span class="score-pct" id="perfectPercent">100%</span>
+          <span class="score-attempt" id="perfectAttempt">First attempt</span>
+        </div>
+
+        <p class="perfect-time">
+          <span class="perfect-time-label">Time</span>
+          <span id="perfectTime">00:00</span>
+        </p>
+
+        <p class="result-message">
+          A perfect run. Your time is on the leaderboard.
+        </p>
+
+        <!-- The same scoreboard as the failed screen, so a
+             student who has just gone perfect can see where they
+             sit against everyone else. -->
+        <section class="attempt-history" aria-labelledby="perfectHistoryTitle">
+          <div class="attempt-history-head">
+            <h3 class="attempt-history-title" id="perfectHistoryTitle">📊 Class Scoreboard</h3>
+            <button type="button" class="attempt-refresh" id="perfectHistoryRefresh"
+                    aria-label="Refresh the class scoreboard">↻</button>
+          </div>
+          <ol class="attempt-list" id="perfectHistoryList"></ol>
+          <p class="attempt-summary" id="perfectHistorySummary"></p>
+        </section>
+
+        <button type="button" class="quiz-btn" id="perfectLeaderboardButton">
+          🏆 View Leaderboard
+        </button>
+
+        <div class="quiz-btn-row">
+          <button type="button" class="quiz-btn quiz-btn-secondary" id="perfectHomeButton">
+            ← Back to Home
+          </button>
+        </div>
+
+        <p class="save-status" id="perfectSaveStatus"></p>
+      </section>
+
+
+      <!-- ====================================================
+           SCREEN 6 — LEADERBOARD
+           ==================================================== -->
+      <section class="quiz-screen" id="screenLeaderboard" hidden aria-labelledby="boardTitle">
+
+        <div class="quiz-panel">
+          <div class="board-head">
+            <h2 id="boardTitle">🏆 Top 10 Fastest</h2>
+            <button type="button" class="sound-toggle" data-sound-toggle aria-pressed="true">🔊</button>
+          </div>
+
+          <p class="board-subtitle">Perfect scores only — 20 / 20, ranked by time.</p>
+
+          <p class="board-status" id="leaderboardStatus"></p>
+
+          <ol class="board-list" id="leaderboardBody"></ol>
+
+          <div class="quiz-btn-row">
+            <button type="button" class="quiz-btn quiz-btn-secondary" id="leaderboardRefreshButton">
+              ↻ Refresh
+            </button>
+            <button type="button" class="quiz-btn quiz-btn-secondary" id="leaderboardBackButton">
+              ← Back
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- The full-screen correct / wrong flash. It sits at the
+           top level rather than inside the game screen because
+           it covers the whole viewport, and it lets taps pass
+           straight through so it can never swallow one. -->
+      <div class="feedback-flash" id="feedbackFlash" hidden></div>
+
+      <!-- Confetti and fireworks are drawn here. -->
+      <canvas class="celebration-canvas" id="celebrationCanvas" aria-hidden="true"></canvas>
+    </div>
+
+    <dialog class="workflow-zoom-dialog" id="workflowZoomDialog" aria-label="Enlarged production workflow" aria-describedby="workflowZoomHint">
+      <div class="workflow-zoom-toolbar">
+        <strong>Production process workflow</strong>
+        <button type="button" id="workflowZoomClose" aria-label="Close enlarged workflow">Close ✕</button>
+      </div>
+      <p class="workflow-zoom-hint" id="workflowZoomHint">Swipe sideways to follow the numbered steps.</p>
+      <div class="workflow-zoom-viewport">
+        <img id="workflowZoomImage" alt="" />
+      </div>
+    </dialog>
+
+
+    <!-- ========================================================
+         CONTEXT FOR THE PAGE
+         ========================================================
+         Sits below the game and is hidden while a question is on
+         screen, so the quiz has the whole phone to itself.
+         ======================================================== -->
+    <div class="content-wrap quiz-intro-block">
+      <section class="section">
+        <h2>About This Activity</h2>
+        <p class="lead">
+          <strong>REVISION 1</strong> prepares you for Test 1 in aircraft composite
+          production. Each attempt draws 20 questions from a bank of 23. You have
+          20 minutes and need 20 / 20 to pass.
+        </p>
+        <p>
+          Revise coordination, direct and indirect materials, the seven QC tools,
+          Lean Manufacturing, the eight wastes and the aerocomposite production
+          process. For a workflow question, choose the sequence that fills all
+          three blanks. You can enlarge the diagram on a phone. Attempts are
+          unlimited, and questions change each time.
+        </p>
+        <p>
+          Your name and class identify your result on this activity's own class
+          scoreboard and leaderboard.
+        </p>
       </section>
     </div>
+
   </main>
 
   <footer class="site-footer">
@@ -110,5 +500,25 @@
   </footer>
 
   <script src="../nav.js"></script>
+
+  <!-- Load order matters: config and data first, then the logic
+       that uses them, then the app that drives it all. -->
+  <script src="quiz6/quiz-config.js"></script>
+
+  <!-- THIS ORDER DIFFERS FROM ACTIVITY 3, ON PURPOSE.
+       There, quiz-visits.js talked to Supabase itself and could
+       load before anything else. Here it hands the headcount to
+       QuizDatabase.recordVisit(), so quiz-sheets.js must be in
+       memory first. Put visits back above sheets and the visit
+       is silently dropped — silently, because a failed headcount
+       is swallowed by design so a student never sees it. -->
+  <script src="quiz6/quiz-sheets.js"></script>
+  <script src="quiz6/quiz-visits.js"></script>
+
+  <script src="quiz6/quiz-questions.js"></script>
+  <script src="quiz6/quiz-engine.js"></script>
+  <script src="quiz6/quiz-audio.js"></script>
+  <script src="quiz6/quiz-celebration.js"></script>
+  <script src="quiz6/quiz-app.js"></script>
 </body>
 </html>
