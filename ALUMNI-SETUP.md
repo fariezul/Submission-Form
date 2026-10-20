@@ -25,7 +25,14 @@ footer of all 24 pages that have navigation. It sits **second, straight
 after Profile**, everywhere.
 
 `vercel.json` now rewrites `/alumni` to `alumni.html`, so the address on
-a poster or a WhatsApp message is the short one.
+a poster or a WhatsApp message is the short one. A *rewrite* rather than
+a redirect: a redirect would bounce visitors to `/alumni.html` and that
+is not the address on the poster.
+
+Note for next time: `vercel.json` is checked against a schema that
+allows no unknown top-level keys, and JSON has no comments. A `"//"`
+note added there fails the build outright — explanations belong here
+instead.
 
 ---
 
