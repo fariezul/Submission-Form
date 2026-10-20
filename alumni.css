@@ -1,0 +1,246 @@
+/* ============================================================
+   alumni.css — styles used only by the Alumni page
+   ============================================================
+   style.css is loaded first and does the heavy lifting: the
+   header, the tab bar, the card, the text inputs and the submit
+   button all come from there. This file adds the few things the
+   alumni form needs that no other page has:
+
+     - the institution logo above the title
+     - radio buttons that look like tappable cards
+     - the two branch sections that appear and disappear
+     - the photo picker and its preview
+
+   Keeping them here means style.css stays the shared file and
+   nothing on the other pages can shift because of this page.
+   ============================================================ */
+
+/* The alumni form asks more questions than the registration one,
+   so it is given a slightly wider card to breathe in. */
+.card-alumni {
+  max-width: 620px;
+}
+
+
+/* ------------------------------------------------------------
+   THE INSTITUTION LOGO
+   ------------------------------------------------------------
+   The artwork is a long, thin wordmark. height:auto together
+   with the width/height attributes in the HTML lets the browser
+   reserve the right space before the file arrives, so the title
+   below it does not jump down on a slow connection.
+   ------------------------------------------------------------ */
+.alumni-crest {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.alumni-crest img {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+}
+
+
+/* ------------------------------------------------------------
+   REQUIRED-FIELD ASTERISK
+   ------------------------------------------------------------ */
+.req {
+  color: var(--error);
+  font-weight: 700;
+}
+
+
+/* ------------------------------------------------------------
+   RADIO GROUPS
+   ------------------------------------------------------------
+   style.css makes every <label> uppercase, which is right for a
+   field name but wrong for a sentence-long answer, so the choice
+   labels put that back to normal.
+   ------------------------------------------------------------ */
+.choice-set {
+  border: none;
+  padding: 0;
+  margin: 0;
+  /* Stops the fieldset refusing to shrink on a narrow phone —
+     a long-standing browser quirk. */
+  min-width: 0;
+}
+
+.choice-set legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy-900);
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  /* A question can be two lines long; this keeps it readable. */
+  line-height: 1.45;
+}
+
+/* One answer = the circle and its words, side by side.
+   The whole box is the label, so tapping anywhere on it picks
+   the answer — which matters far more on a phone than on a
+   mouse. */
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  /* These four override the global label rule from style.css */
+  text-transform: none;
+  font-weight: 400;
+  font-size: 14.5px;
+  color: var(--text-dark);
+
+  margin-bottom: 8px;
+  padding: 11px 13px;
+  border: 1px solid #c8d0dd;
+  border-radius: var(--radius);
+  background-color: var(--white);
+  cursor: pointer;
+  line-height: 1.45;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.choice:hover {
+  border-color: var(--navy-600);
+  background-color: var(--navy-100);
+}
+
+/* The radio itself. width:auto undoes the global "input
+   { width: 100% }" rule, which would otherwise stretch the
+   little circle across the whole row. */
+.choice input[type="radio"] {
+  width: auto;
+  margin: 2px 0 0;
+  flex-shrink: 0;
+  accent-color: var(--navy-600);
+}
+
+/* :has() styles the box from the state of the radio inside it.
+   Browsers without :has() simply show the plain box — the form
+   still works, it just loses the tint. */
+.choice:has(input[type="radio"]:checked) {
+  border-color: var(--navy-600);
+  background-color: var(--navy-100);
+}
+
+/* The focus ring belongs on the whole box, so someone moving
+   through the form with the keyboard can see where they are. */
+.choice:has(input[type="radio"]:focus-visible) {
+  outline: none;
+  border-color: var(--navy-600);
+  box-shadow: 0 0 0 3px rgba(27, 58, 107, 0.15);
+}
+
+/* When a group is left unanswered, JS adds this class to the
+   fieldset and every box in it turns red. */
+.choice-set.choice-error .choice {
+  border-color: var(--error);
+  background-color: #fffafa;
+}
+
+
+/* ------------------------------------------------------------
+   BRANCH SECTIONS
+   ------------------------------------------------------------
+   "Sambung Belajar" and "Bekerja" are hidden with the HTML
+   hidden attribute until the matching answer is chosen. The
+   rule below is needed because display:flex and friends beat
+   hidden; being explicit keeps it hidden whatever else happens.
+   ------------------------------------------------------------ */
+.branch[hidden] {
+  display: none;
+}
+
+.branch {
+  margin: 26px 0 4px;
+  padding-top: 20px;
+  border-top: 1px solid var(--navy-100);
+}
+
+.branch-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy-600);
+  letter-spacing: 0.3px;
+  margin-bottom: 16px;
+}
+
+
+/* ------------------------------------------------------------
+   PHOTO PICKER
+   ------------------------------------------------------------ */
+.file-input {
+  /* The file button is drawn by the operating system, so the
+     padding of a text input would leave it floating oddly. */
+  padding: 9px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.file-input::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy-600);
+  background-color: var(--white);
+  border: 1px solid #c8d0dd;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.file-input::file-selector-button:hover {
+  background-color: var(--navy-100);
+  border-color: var(--navy-600);
+}
+
+.photo-preview {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.photo-preview img {
+  max-width: 180px;
+  max-height: 180px;
+  border-radius: var(--radius);
+  border: 1px solid var(--navy-100);
+}
+
+.photo-meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+
+/* ------------------------------------------------------------
+   THE LINE UNDER THE SUBMIT BUTTON
+   ------------------------------------------------------------
+   It reports progress while the photo is being shrunk and sent,
+   so a slow phone connection does not look like a dead button.
+   ------------------------------------------------------------ */
+.submit-status {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+
+/* ------------------------------------------------------------
+   SMALL SCREENS
+   ------------------------------------------------------------ */
+@media (max-width: 520px) {
+  .card-alumni {
+    padding: 26px 20px 24px;
+  }
+
+  .choice {
+    font-size: 14px;
+  }
+}

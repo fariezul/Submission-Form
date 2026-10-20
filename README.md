@@ -14,6 +14,11 @@ to install. Three files and it runs.
 | `style.css`  | How it looks — navy & white corporate styling |
 | `app.js`     | Supabase settings + validation + saving |
 
+The alumni survey at `/alumni` is a separate page with its own files
+(`alumni.html`, `alumni.css`, `alumni.js`, `alumni-config.js`). It
+writes to a Google Sheet rather than Supabase — see
+[ALUMNI-SETUP.md](ALUMNI-SETUP.md).
+
 ## The admin page (`admin.html`)
 
 A private page that lists every submission, with search and sorting.

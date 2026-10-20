@@ -35,6 +35,18 @@
   </url>
 
   <!--
+    The alumni survey. Listed at its tidy address, /alumni, which
+    is the one printed on posters and sent by WhatsApp. vercel.json
+    serves alumni.html there.
+  -->
+  <url>
+    <loc>https://www.farizuljaafar.com/alumni</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!--
     The activity pages are still placeholders and carry a noindex
     tag, so they are deliberately absent here. Activities 1, 2 and 3
     are the exceptions: they hold the Who's Next? name wheel, the

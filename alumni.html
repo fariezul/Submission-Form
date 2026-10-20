@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<!--
+  alumni.html — the alumni survey page.
+  Structure only. alumni.css paints it, alumni.js makes it work,
+  and alumni-config.js says where the answers are sent.
+-->
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="icon" type="image/png" href="logo-mark.png" />
+  <link rel="apple-touch-icon" href="logo-mark.png" />
+
+  <title>Alumni DTP &amp; IAC | TVETMARA Masjid Tanah</title>
+
+  <meta name="description" content="Borang alumni Jabatan Teknologi Polimer Komposit &amp; Industri Aeroangkasa, TVETMARA Masjid Tanah (dahulunya KKTM Masjid Tanah). Kemaskini maklumat pekerjaan atau pengajian anda." />
+  <link rel="canonical" href="https://www.farizuljaafar.com/alumni" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="alumni.css" />
+</head>
+
+<body>
+
+  <!-- ===== TOP BAR WITH NAVIGATION ===== -->
+  <header class="site-header site-header-nav">
+    <div class="header-inner">
+
+      <a href="index.html" class="header-logo-link" aria-label="Home">
+        <img src="logo-mark.png" alt="" class="brand-mark" width="200" height="200" />
+        <span class="brand-name"><span class="brand-name-main">FarizulJaafar</span><span class="brand-name-tld">.com</span></span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main">
+        <button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="menuDropdown">
+          Menu <span class="menu-caret" aria-hidden="true">▾</span>
+        </button>
+        <ul class="menu-dropdown is-hidden" id="menuDropdown">
+          <li><a href="alumni.html">Alumni</a></li>
+          <li><a href="permohonan.html">Permohonan TVETMARA</a></li>
+          <li><a href="composite-repair.html">Composite Repair</a></li>
+          <li><a href="production-coordination.html">Production Coordination</a></li>
+        </ul>
+      </nav>
+
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Sections">
+    <div class="tab-bar-inner">
+      <a href="index.html" class="tab">Profile</a>
+      <a href="alumni.html" class="tab tab-active" aria-current="page">Alumni</a>
+      <a href="permohonan.html" class="tab">Permohonan TVETMARA</a>
+      <a href="composite-repair.html" class="tab">Composite Repair</a>
+      <a href="production-coordination.html" class="tab">Production Coordination</a>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN CONTENT ============================================ -->
+  <main class="page">
+
+    <section class="card card-alumni" aria-labelledby="form-title">
+
+      <!-- The institution logo sits above the title. The alt text is
+           the full name, because that is what a screen reader should
+           read out in place of the picture. -->
+      <div class="alumni-crest">
+        <img src="tvetmara-logo.png" alt="TVETMARA Masjid Tanah" width="1000" height="187" />
+      </div>
+
+      <div class="card-header">
+        <h1 id="form-title">Kaji Selidik Alumni</h1>
+        <p class="card-subtitle">
+          Jabatan Teknologi Polimer Komposit &amp; Industri Aeroangkasa —
+          TVETMARA Masjid Tanah (dahulunya Kolej Kemahiran Tinggi MARA
+          Masjid Tanah), Melaka.
+        </p>
+      </div>
+
+      <!-- Shown by alumni.js once the answers are safely stored. -->
+      <div id="successMessage" class="alert alert-success is-hidden" role="status">
+        <strong>Terima kasih.</strong>
+        Maklumat anda telah direkodkan.
+      </div>
+
+      <!-- Shown only when something goes wrong on the way to the sheet. -->
+      <div id="errorMessage" class="alert alert-error is-hidden" role="alert"></div>
+
+      <!-- novalidate = we write our own messages, in Malay, so the
+           browser keeps its own English popups to itself. -->
+      <form id="alumniForm" novalidate>
+
+        <!-- ================= BAHAGIAN 1 — MAKLUMAT ASAS ============== -->
+
+        <div class="field">
+          <label for="nama">Nama <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="nama" name="nama" autocomplete="name" placeholder="Nama penuh" />
+          <p class="error-text" id="namaError"></p>
+        </div>
+
+        <div class="field">
+          <label for="emel">Emel <span class="req" aria-hidden="true">*</span></label>
+          <input type="email" id="emel" name="emel" autocomplete="email" placeholder="nama@contoh.com" />
+          <p class="hint">Supaya kami boleh menghubungi anda semula.</p>
+          <p class="error-text" id="emelError"></p>
+        </div>
+
+        <!-- A group of radio buttons is not one control but several,
+             so it needs a <fieldset> with a <legend> rather than a
+             <label>. That is what tells a screen reader which
+             question the options belong to. -->
+        <div class="field">
+          <fieldset class="choice-set">
+            <legend>Lepasan Program <span class="req" aria-hidden="true">*</span></legend>
+
+            <label class="choice">
+              <input type="radio" name="program" value="Diploma Teknologi Kejuruteraan Pemprosesan Polimer Komposit (DTP)" />
+              <span>Diploma Teknologi Kejuruteraan Pemprosesan Polimer Komposit (DTP)</span>
+            </label>
+
+            <label class="choice">
+              <input type="radio" name="program" value="Diploma Industri Pembuatan Komposit Aeroangkasa (IAC)" />
+              <span>Diploma Industri Pembuatan Komposit Aeroangkasa (IAC)</span>
+            </label>
+
+            <p class="error-text" id="programError"></p>
+          </fieldset>
+        </div>
+
+        <div class="field">
+          <label for="tamat">Tamat Belajar (Graduate) pada tahun <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="tamat" name="tamat" placeholder="Sesi Julai 2019" />
+          <p class="hint">Nyatakan sesi &amp; tahun (Sesi Januari Tahun @ Sesi Julai Tahun).</p>
+          <p class="error-text" id="tamatError"></p>
+        </div>
+
+        <div class="field">
+          <fieldset class="choice-set">
+            <legend>
+              Setelah tamat belajar di TVETMARA Masjid Tanah (KKTM Masjid
+              Tanah), apa yang anda lakukan? <span class="req" aria-hidden="true">*</span>
+            </legend>
+
+            <!-- data-branch names the follow-up section each answer
+                 opens. alumni.js reads it; "none" opens nothing. -->
+            <label class="choice">
+              <input type="radio" name="status" value="Sambung Belajar - Diploma / Diploma Lanjutan" data-branch="study" />
+              <span>Sambung Belajar — Diploma / Diploma Lanjutan</span>
+            </label>
+
+            <label class="choice">
+              <input type="radio" name="status" value="Sambung Belajar - Ijazah" data-branch="study" />
+              <span>Sambung Belajar — Ijazah</span>
+            </label>
+
+            <label class="choice">
+              <input type="radio" name="status" value="Bekerja" data-branch="work" />
+              <span>Bekerja</span>
+            </label>
+
+            <label class="choice">
+              <input type="radio" name="status" value="Tiada Buat Apa @ Menganggur" data-branch="none" />
+              <span>Tiada Buat Apa @ Menganggur</span>
+            </label>
+
+            <p class="error-text" id="statusError"></p>
+          </fieldset>
+        </div>
+
+        <!-- ================= BAHAGIAN 2 — SAMBUNG BELAJAR ============
+             Hidden until one of the "Sambung Belajar" answers is
+             picked. The hidden attribute (rather than a class) also
+             keeps the fields out of the keyboard tab order while
+             they are away.
+             ========================================================== -->
+        <section class="branch" id="branchStudy" hidden>
+          <h2 class="branch-title">Sambung Belajar</h2>
+
+          <div class="field">
+            <label for="programSambung">Sambung belajar dalam program?</label>
+            <input type="text" id="programSambung" name="programSambung" placeholder="Ijazah Kejuruteraan Bahan (Kepujian)" />
+            <p class="hint">Cth: Ijazah Kejuruteraan Bahan (Kepujian) / Ijazah Tek. Kejuruteraan Pembuatan (Kepujian).</p>
+          </div>
+
+          <div class="field">
+            <label for="institusi">Nama institusi sambung belajar</label>
+            <input type="text" id="institusi" name="institusi" placeholder="Universiti / Kolej / Institusi" />
+            <p class="hint">Nyatakan nama Institusi / Kolej / Universiti.</p>
+          </div>
+
+          <div class="field">
+            <fieldset class="choice-set">
+              <legend>Dapat tajaan / pinjaman</legend>
+
+              <label class="choice">
+                <input type="radio" name="tajaan" value="Tajaan / Pinjaman MARA" />
+                <span>Tajaan / Pinjaman MARA</span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="tajaan" value="Tajaan / Biasiswa" />
+                <span>Tajaan / Biasiswa</span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="tajaan" value="PTPTN" />
+                <span>PTPTN</span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="tajaan" value="Sendiri" />
+                <span>Sendiri</span>
+              </label>
+            </fieldset>
+          </div>
+
+          <div class="field">
+            <label for="namaTajaan">Nama tajaan / biasiswa</label>
+            <input type="text" id="namaTajaan" name="namaTajaan" placeholder="Nama penaja" />
+          </div>
+        </section>
+
+        <!-- ================= BAHAGIAN 3 — BEKERJA =================== -->
+        <section class="branch" id="branchWork" hidden>
+          <h2 class="branch-title">Bekerja</h2>
+
+          <div class="field">
+            <label for="syarikat">Nama syarikat anda bekerja</label>
+            <input type="text" id="syarikat" name="syarikat" placeholder="Nama syarikat" />
+          </div>
+
+          <div class="field">
+            <label for="jawatan">Apakah posisi atau jawatan anda</label>
+            <input type="text" id="jawatan" name="jawatan" placeholder="Juruteknik" />
+            <p class="hint">Cth: Leader / Supervisor / Juruteknik / Pembantu Jurutera / Jurutera / Eksekutif.</p>
+          </div>
+
+          <div class="field">
+            <fieldset class="choice-set">
+              <legend>Julat gaji yang ditawarkan</legend>
+
+              <label class="choice">
+                <input type="radio" name="gaji" value="Kurang daripada RM2,500" />
+                <span>Kurang daripada RM2,500</span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="gaji" value="RM2,501 – RM5,000" />
+                <span>RM2,501 – RM5,000</span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="gaji" value="RM5,001 - RM7,000" />
+                <span>RM5,001 – RM7,000</span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="gaji" value="RM7,001 dan lebih" />
+                <span>RM7,001 dan lebih</span>
+              </label>
+            </fieldset>
+          </div>
+
+          <div class="field">
+            <fieldset class="choice-set">
+              <legend>Ini syarikat anda bekerja yang ke?</legend>
+
+              <label class="choice">
+                <input type="radio" name="syarikatKe" value="Pertama" />
+                <span>Pertama</span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="syarikatKe" value="Kedua" />
+                <span>Kedua</span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="syarikatKe" value="Ketiga &amp; keatas" />
+                <span>Ketiga &amp; ke atas</span>
+              </label>
+            </fieldset>
+          </div>
+
+          <div class="field">
+            <fieldset class="choice-set">
+              <legend>Ada kaitan dengan bidang komposit</legend>
+
+              <label class="choice">
+                <input type="radio" name="komposit" value="Ya" />
+                <span>Ya</span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="komposit" value="Tidak" />
+                <span>Tidak</span>
+              </label>
+            </fieldset>
+          </div>
+        </section>
+
+        <!-- ================= BAHAGIAN 4 — GAMBAR =====================
+             Asked only of alumni who are studying or working. Someone
+             who answers "Tiada Buat Apa @ Menganggur" never sees this
+             section, so they are not held up by a photograph they may
+             not want to send.
+             ========================================================== -->
+        <section class="branch" id="branchPhoto" hidden>
+          <h2 class="branch-title">Gambar</h2>
+
+          <div class="field">
+            <label for="gambar">Masukkan gambar anda <span class="req" aria-hidden="true">*</span></label>
+
+            <!-- accept= filters the phone picker down to pictures. It
+                 is a convenience, not a guarantee, so alumni.js checks
+                 the file type again before sending. -->
+            <input type="file" id="gambar" name="gambar" accept="image/*" class="file-input" />
+
+            <p class="hint">Gambar yang kasual / profesional. Maksimum 15 MB.</p>
+
+            <!-- The chosen picture is shown back, so nobody submits
+                 the wrong photo without noticing. -->
+            <div class="photo-preview is-hidden" id="photoPreview">
+              <img id="photoPreviewImg" alt="Pratonton gambar yang dipilih" />
+              <p class="photo-meta" id="photoMeta"></p>
+            </div>
+
+            <p class="error-text" id="gambarError"></p>
+          </div>
+        </section>
+
+        <button type="submit" class="btn-submit" id="submitButton">
+          Hantar Maklumat
+        </button>
+
+        <!-- Progress line: "Memproses gambar…", "Menghantar…" -->
+        <p class="submit-status is-hidden" id="submitStatus" role="status"></p>
+
+      </form>
+
+      <div class="card-footer">
+        <p>Created by Farizul Jaafar</p>
+
+        <div class="footer-buttons">
+          <button type="button" class="btn-share" id="shareButton">
+            Kongsi Borang Ini Kepada Alumni Lain
+</button>
+        </div>
+
+        <p class="share-status is-hidden" id="shareStatus" role="status"></p>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="nav.js"></script>
+  <script src="alumni-config.js"></script>
+  <script src="alumni.js"></script>
+
+</body>
+</html>

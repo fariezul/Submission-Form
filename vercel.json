@@ -1,5 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+
+  "//": "A rewrite serves alumni.html at the tidy address /alumni without changing what the address bar says. A redirect would bounce visitors to /alumni.html, which is not the address printed on the poster.",
+  "rewrites": [
+    {
+      "source": "/alumni",
+      "destination": "/alumni.html"
+    }
+  ],
+
   "redirects": [
     {
       "source": "/line",
