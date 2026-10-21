@@ -59,4 +59,10 @@ window.ALUMNI_CONFIG = {
   /* Largest file the page will accept from the picker, in
      megabytes, BEFORE shrinking. */
   PHOTO_MAX_MB: 15,
+
+  /* The years offered in the "Tamat Belajar" dropdown. The list is
+     built from these two numbers, newest first, so adding next
+     year's graduating batch is one number to change here. */
+  GRADUATION_YEAR_FROM: 2008,
+  GRADUATION_YEAR_TO: 2025,
 };

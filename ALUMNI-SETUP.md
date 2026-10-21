@@ -107,12 +107,20 @@ This catches everybody once.
 
 ## What ends up in the sheet
 
-One row per alumnus, sixteen columns:
+One row per alumnus, fifteen columns:
 
 `timestamp`, `nama`, `emel`, `program`, `tamat_belajar`,
 `status_selepas_tamat`, `program_sambungan`, `institusi`, `tajaan`,
-`nama_tajaan`, `syarikat`, `jawatan`, `julat_gaji`, `syarikat_ke`,
-`kaitan_komposit`, `gambar`
+`syarikat`, `jawatan`, `julat_gaji`, `syarikat_ke`, `kaitan_komposit`,
+`gambar`
+
+**If you ever add or remove a column**, change `HEADERS` in
+`alumni-Code.gs`, run `setup` again, and *redeploy*. `setup` rewrites
+the heading row to match — but only while the sheet is still empty.
+Once there are answers in it, it refuses and says so, because
+quietly shifting a column full of real data is worse than stopping.
+Redeploying matters just as much: a deployment still writing the old
+number of values puts every answer in the wrong column.
 
 The branch columns are blank when they do not apply — someone who is
 working leaves the study columns empty, and the other way round. The
@@ -139,13 +147,37 @@ rather than opening the whole folder.
 
 ## Differences from the original Google Form
 
-Two, both deliberate:
+All deliberate:
 
 1. **An e-mail field was added.** The Google Form collected the address
    automatically from the signed-in Google account. A public web page
    has no account to read, so the question is asked outright. It is
    required.
-2. **A spelling fix.** The DTP option read "Polimer Komposir" in the
+2. **The photograph is optional.** It was required in the Google
+   Form. Here nobody is blocked by it: the answers are worth more
+   than the picture, and an alumnus who cannot find a photo on the
+   spot would otherwise abandon the form altogether. The question
+   is still only shown to those who are studying or working, and
+   the `gambar` column is simply blank when none is sent.
+3. **The e-mail address is optional**, so nobody is turned away for
+   not having one. If something *is* typed it must look like an
+   address, because a typo is worse than a blank: it looks
+   contactable and is not.
+4. **"Tamat Belajar" is two dropdowns**, session and year
+   (2008–2025, newest first), instead of a text box. Typed answers
+   come back as "julai 19", "2019 julai", "sesi 2 2019" — unsortable
+   and uncountable. The year range lives in `alumni-config.js`, so
+   next year's batch is one number to change.
+5. **Sponsorship has two answers**, "Tajaan / Pinjaman MARA" and
+   "Tajaan lain / Tidak berkaitan", and the separate "Nama tajaan /
+   biasiswa" box is gone.
+6. **The branch questions are required.** On Sambung Belajar:
+   programme and institution. On Bekerja: company, position, salary
+   range and whether the work relates to composites. All were
+   optional in the original, which is how you end up with rows that
+   say only "Bekerja". Each is enforced only while its section is on
+   screen — a hidden field can never block a submission.
+7. **A spelling fix.** The DTP option read "Polimer Komposir" in the
    original; it is written "Polimer Komposit" here.
 
 Everything else — the questions, the order, the option wording, the

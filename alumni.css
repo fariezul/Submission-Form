@@ -50,6 +50,44 @@
   font-weight: 700;
 }
 
+/* ------------------------------------------------------------
+   THE TWO "TAMAT BELAJAR" DROPDOWNS
+   ------------------------------------------------------------
+   Side by side on a normal screen, stacked on a narrow one. The
+   year box is given more room because "2008" plus the arrow is
+   wider than "Januari" needs to look comfortable.
+   ------------------------------------------------------------ */
+.select-row {
+  display: flex;
+  gap: 10px;
+}
+
+.select-row select {
+  flex: 1 1 0;
+  min-width: 0;              /* lets a select shrink inside a flex row */
+  padding: 11px 13px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text-dark);
+  background-color: var(--white);
+  border: 1px solid #c8d0dd;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.select-row select:focus {
+  outline: none;
+  border-color: var(--navy-600);
+  box-shadow: 0 0 0 3px rgba(27, 58, 107, 0.15);
+}
+
+/* JavaScript adds input-error when a dropdown is left unchosen. */
+.select-row select.input-error {
+  border-color: var(--error);
+  background-color: #fffafa;
+}
+
 
 /* ------------------------------------------------------------
    RADIO GROUPS
@@ -242,5 +280,10 @@
 
   .choice {
     font-size: 14px;
+  }
+
+  /* Two dropdowns side by side get cramped on a small phone. */
+  .select-row {
+    flex-direction: column;
   }
 }

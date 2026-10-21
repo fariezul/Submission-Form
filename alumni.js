@@ -29,6 +29,9 @@ const submitStatus = document.getElementById("submitStatus");
 const successMessage = document.getElementById("successMessage");
 const errorMessage = document.getElementById("errorMessage");
 
+const tamatSesi = document.getElementById("tamatSesi");
+const tamatTahun = document.getElementById("tamatTahun");
+
 const branchStudy = document.getElementById("branchStudy");
 const branchWork = document.getElementById("branchWork");
 const branchPhoto = document.getElementById("branchPhoto");
@@ -141,6 +144,26 @@ function showError(friendly, detail) {
   errorMessage.classList.remove("is-hidden");
   errorMessage.scrollIntoView({ behavior: "smooth", block: "center" });
 }
+
+
+/* ------------------------------------------------------------
+   STEP 2b — Fill the year dropdown
+   ------------------------------------------------------------
+   Newest first, because a recent graduate is the likeliest
+   person to be filling this in and should not have to scroll
+   seventeen years to find their own.
+   ------------------------------------------------------------ */
+(function fillYears() {
+  const from = config.GRADUATION_YEAR_FROM || 2008;
+  const to = config.GRADUATION_YEAR_TO || 2025;
+
+  for (let year = to; year >= from; year--) {
+    const option = document.createElement("option");
+    option.value = String(year);
+    option.textContent = String(year);
+    tamatTahun.appendChild(option);
+  }
+})();
 
 
 /* ------------------------------------------------------------
@@ -376,9 +399,12 @@ function validate() {
   // something. Strict e-mail patterns reject valid addresses.
   const looksLikeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emel);
 
+  /* Optional — an alumnus without an e-mail address, or who would
+     rather not give one, should still be recorded. But if they do
+     type something it has to look like an address, because a typo
+     is worse than a blank: it looks contactable and is not. */
   if (emel === "") {
-    setFieldError(emelInput, emelError, "Sila isi alamat emel anda.");
-    firstProblem = firstProblem || emelInput;
+    clearFieldError(emelInput, emelError);
   } else if (!looksLikeEmail) {
     setFieldError(emelInput, emelError, "Alamat emel ini tidak lengkap.");
     firstProblem = firstProblem || emelInput;
@@ -397,15 +423,19 @@ function validate() {
     clearGroupError(programSet, programError);
   }
 
-  /* ---- Tamat belajar ---- */
-  const tamatInput = document.getElementById("tamat");
+  /* ---- Tamat belajar: both halves, or neither counts ---- */
   const tamatError = document.getElementById("tamatError");
+  const tamatSet = tamatSesi.closest(".choice-set");
 
-  if (tamatInput.value.trim() === "") {
-    setFieldError(tamatInput, tamatError, "Sila nyatakan sesi dan tahun anda tamat belajar.");
-    firstProblem = firstProblem || tamatInput;
+  if (tamatSesi.value === "" || tamatTahun.value === "") {
+    setGroupError(tamatSet, tamatError, "Sila pilih sesi dan tahun anda tamat belajar.");
+    tamatSesi.classList.add("input-error");
+    tamatTahun.classList.add("input-error");
+    firstProblem = firstProblem || tamatSesi;
   } else {
-    clearFieldError(tamatInput, tamatError);
+    clearGroupError(tamatSet, tamatError);
+    tamatSesi.classList.remove("input-error");
+    tamatTahun.classList.remove("input-error");
   }
 
   /* ---- Apa yang anda lakukan ---- */
@@ -419,20 +449,58 @@ function validate() {
     clearGroupError(statusSet, statusError);
   }
 
-  /* ---- Gambar ----
-     Required, but only for the people who are asked for it: the
-     section is hidden for "Tiada Buat Apa @ Menganggur", and an
-     invisible field must never be able to block a submission. */
-  const gambarError = document.getElementById("gambarError");
+  /* ---- The branch questions ----
+     Each is required, but ONLY while its section is on screen. A
+     hidden field must never be able to block a submission — an
+     error nobody can see is an error nobody can fix.
 
-  if (branchPhoto.hidden) {
-    clearFieldError(photoInput, gambarError);
-  } else if (!photoInput.files || photoInput.files.length === 0) {
-    setFieldError(photoInput, gambarError, "Sila masukkan gambar anda.");
-    firstProblem = firstProblem || photoInput;
-  } else {
-    clearFieldError(photoInput, gambarError);
+     Two small helpers, because the same shape repeats six times
+     and six copies is six chances to get one of them wrong. */
+
+  function requireText(id, message, sectionVisible) {
+    const input = document.getElementById(id);
+    const errorEl = document.getElementById(id + "Error");
+
+    if (sectionVisible && input.value.trim() === "") {
+      setFieldError(input, errorEl, message);
+      firstProblem = firstProblem || input;
+    } else {
+      clearFieldError(input, errorEl);
+    }
   }
+
+  function requireChoice(name, message, sectionVisible) {
+    const fieldset = radioFieldset(name);
+    const errorEl = document.getElementById(name + "Error");
+    if (!fieldset || !errorEl) return;
+
+    if (sectionVisible && radioValue(name) === "") {
+      setGroupError(fieldset, errorEl, message);
+      firstProblem = firstProblem || fieldset;
+    } else {
+      clearGroupError(fieldset, errorEl);
+    }
+  }
+
+  // Sambung Belajar
+  const studying = !branchStudy.hidden;
+  requireText("programSambung", "Sila nyatakan program yang anda sambung.", studying);
+  requireText("institusi", "Sila nyatakan nama institusi anda.", studying);
+
+  // Bekerja
+  const working = !branchWork.hidden;
+  requireText("syarikat", "Sila nyatakan nama syarikat anda.", working);
+  requireText("jawatan", "Sila nyatakan posisi atau jawatan anda.", working);
+  requireChoice("gaji", "Sila pilih julat gaji anda.", working);
+  requireChoice("komposit", "Sila pilih sama ada ia berkaitan bidang komposit.", working);
+
+  /* ---- Gambar ----
+     Not required of anybody. A missing photograph must never stop
+     an alumnus from being recorded — the answers are worth more
+     than the picture. The file picker still refuses a file that is
+     not an image or is too large; that check lives in the change
+     handler above and is about bad files, not missing ones. */
+  clearFieldError(photoInput, document.getElementById("gambarError"));
 
   return firstProblem;
 }
@@ -530,14 +598,15 @@ form.addEventListener("submit", async function (event) {
       nama: document.getElementById("nama").value.trim(),
       emel: document.getElementById("emel").value.trim(),
       program: radioValue("program"),
-      tamat: document.getElementById("tamat").value.trim(),
+      // The two dropdowns join into the one phrase the sheet has
+      // always held: "Sesi Julai 2019".
+      tamat: "Sesi " + tamatSesi.value + " " + tamatTahun.value,
       status: radioValue("status"),
 
       // Sambung Belajar — empty strings when that section is hidden
       programSambung: document.getElementById("programSambung").value.trim(),
       institusi: document.getElementById("institusi").value.trim(),
       tajaan: radioValue("tajaan"),
-      namaTajaan: document.getElementById("namaTajaan").value.trim(),
 
       // Bekerja — likewise
       syarikat: document.getElementById("syarikat").value.trim(),

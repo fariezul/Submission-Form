@@ -95,7 +95,6 @@ var HEADERS = [
   'program_sambungan',
   'institusi',
   'tajaan',
-  'nama_tajaan',
   'syarikat',
   'jawatan',
   'julat_gaji',
@@ -122,9 +121,12 @@ function setup() {
      and every row reads eight hours early. */
   ss.setSpreadsheetTimeZone('Asia/Kuala_Lumpur');
 
-  ensureSheet(ss, RESPONSES_SHEET, HEADERS);
+  var sh = ensureSheet(ss, RESPONSES_SHEET, HEADERS);
+  var headerNote = repairHeaders(sh, HEADERS);
   var folder = photoFolder();
-  return 'Ready. Photos will go to "' + folder.getName() + '". Now deploy as a Web App.';
+
+  return 'Ready. ' + headerNote +
+         ' Photos will go to "' + folder.getName() + '". Now deploy as a Web App.';
 }
 
 
@@ -138,6 +140,43 @@ function ensureSheet(ss, name, headers) {
     sh.setFrozenRows(1);
   }
   return sh;
+}
+
+
+/* ------------------------------------------------------------
+   Bring an old heading row into line with HEADERS.
+   ------------------------------------------------------------
+   A column removed from HEADERS without the sheet being changed
+   to match is the worst kind of bug here: every later value
+   shifts one column left and the rows look plausible while being
+   wrong. So this is checked, and repaired, by setup().
+
+   It refuses to touch a sheet that already holds answers. With
+   rows in it the right move is a human one — decide what happens
+   to the old column — not a silent rewrite.
+   ------------------------------------------------------------ */
+function repairHeaders(sh, headers) {
+  var lastColumn = Math.max(sh.getLastColumn(), headers.length);
+  var current = sh.getRange(1, 1, 1, lastColumn).getValues()[0];
+
+  var same = current.length === headers.length;
+  if (same) {
+    for (var i = 0; i < headers.length; i++) {
+      if (String(current[i]) !== headers[i]) { same = false; break; }
+    }
+  }
+  if (same) return 'Headings already correct.';
+
+  if (sh.getLastRow() > 1) {
+    return 'HEADINGS DIFFER but the sheet holds ' + (sh.getLastRow() - 1) +
+           ' answer row(s), so nothing was changed. Sort the old column out by hand first.';
+  }
+
+  sh.clear();
+  sh.appendRow(headers);
+  sh.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+  sh.setFrozenRows(1);
+  return 'Headings rewritten to the current ' + headers.length + ' columns.';
 }
 
 
@@ -253,7 +292,6 @@ function doPost(e) {
         clean(body.programSambung, 150),
         clean(body.institusi, 150),
         clean(body.tajaan, 60),
-        clean(body.namaTajaan, 120),
         clean(body.syarikat, 150),
         clean(body.jawatan, 120),
         clean(body.gaji, 40),

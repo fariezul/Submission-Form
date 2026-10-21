@@ -100,7 +100,7 @@
         </div>
 
         <div class="field">
-          <label for="emel">Emel <span class="req" aria-hidden="true">*</span></label>
+          <label for="emel">Emel</label>
           <input type="email" id="emel" name="emel" autocomplete="email" placeholder="nama@contoh.com" />
           <p class="hint">Supaya kami boleh menghubungi anda semula.</p>
           <p class="error-text" id="emelError"></p>
@@ -128,11 +128,33 @@
           </fieldset>
         </div>
 
+        <!-- Two dropdowns rather than a free-text box. Typed answers
+             came back as "julai 19", "2019 julai", "sesi 2 2019" and
+             so on, which cannot be counted or sorted. A list can. -->
         <div class="field">
-          <label for="tamat">Tamat Belajar (Graduate) pada tahun <span class="req" aria-hidden="true">*</span></label>
-          <input type="text" id="tamat" name="tamat" placeholder="Sesi Julai 2019" />
-          <p class="hint">Nyatakan sesi &amp; tahun (Sesi Januari Tahun @ Sesi Julai Tahun).</p>
-          <p class="error-text" id="tamatError"></p>
+          <fieldset class="choice-set">
+            <legend>Tamat Belajar (Graduate) pada <span class="req" aria-hidden="true">*</span></legend>
+
+            <div class="select-row">
+              <!-- The visible label for each dropdown is its first
+                   option, so a screen reader needs aria-label to say
+                   which of the two it is sitting on. -->
+              <select id="tamatSesi" name="tamatSesi" aria-label="Sesi tamat belajar">
+                <option value="">Sesi…</option>
+                <option value="Januari">Januari</option>
+                <option value="Julai">Julai</option>
+              </select>
+
+              <!-- The years are filled in by alumni.js from the range
+                   in alumni-config.js, so next year's intake is one
+                   number to change, not a block of HTML. -->
+              <select id="tamatTahun" name="tamatTahun" aria-label="Tahun tamat belajar">
+                <option value="">Tahun…</option>
+              </select>
+            </div>
+
+            <p class="error-text" id="tamatError"></p>
+          </fieldset>
         </div>
 
         <div class="field">
@@ -178,15 +200,17 @@
           <h2 class="branch-title">Sambung Belajar</h2>
 
           <div class="field">
-            <label for="programSambung">Sambung belajar dalam program?</label>
+            <label for="programSambung">Sambung belajar dalam program? <span class="req" aria-hidden="true">*</span></label>
             <input type="text" id="programSambung" name="programSambung" placeholder="Ijazah Kejuruteraan Bahan (Kepujian)" />
             <p class="hint">Cth: Ijazah Kejuruteraan Bahan (Kepujian) / Ijazah Tek. Kejuruteraan Pembuatan (Kepujian).</p>
+            <p class="error-text" id="programSambungError"></p>
           </div>
 
           <div class="field">
-            <label for="institusi">Nama institusi sambung belajar</label>
+            <label for="institusi">Nama institusi sambung belajar <span class="req" aria-hidden="true">*</span></label>
             <input type="text" id="institusi" name="institusi" placeholder="Universiti / Kolej / Institusi" />
             <p class="hint">Nyatakan nama Institusi / Kolej / Universiti.</p>
+            <p class="error-text" id="institusiError"></p>
           </div>
 
           <div class="field">
@@ -199,25 +223,10 @@
               </label>
 
               <label class="choice">
-                <input type="radio" name="tajaan" value="Tajaan / Biasiswa" />
-                <span>Tajaan / Biasiswa</span>
-              </label>
-
-              <label class="choice">
-                <input type="radio" name="tajaan" value="PTPTN" />
-                <span>PTPTN</span>
-              </label>
-
-              <label class="choice">
-                <input type="radio" name="tajaan" value="Sendiri" />
-                <span>Sendiri</span>
+                <input type="radio" name="tajaan" value="Tajaan lain / Tidak berkaitan" />
+                <span>Tajaan lain / Tidak berkaitan</span>
               </label>
             </fieldset>
-          </div>
-
-          <div class="field">
-            <label for="namaTajaan">Nama tajaan / biasiswa</label>
-            <input type="text" id="namaTajaan" name="namaTajaan" placeholder="Nama penaja" />
           </div>
         </section>
 
@@ -226,19 +235,24 @@
           <h2 class="branch-title">Bekerja</h2>
 
           <div class="field">
-            <label for="syarikat">Nama syarikat anda bekerja</label>
+            <label for="syarikat">Nama syarikat anda bekerja <span class="req" aria-hidden="true">*</span></label>
             <input type="text" id="syarikat" name="syarikat" placeholder="Nama syarikat" />
+            <p class="error-text" id="syarikatError"></p>
           </div>
 
           <div class="field">
-            <label for="jawatan">Apakah posisi atau jawatan anda</label>
+            <label for="jawatan">Apakah posisi atau jawatan anda <span class="req" aria-hidden="true">*</span></label>
             <input type="text" id="jawatan" name="jawatan" placeholder="Juruteknik" />
-            <p class="hint">Cth: Leader / Supervisor / Juruteknik / Pembantu Jurutera / Jurutera / Eksekutif.</p>
+            <p class="hint">
+              Cth: Leader / Supervisor / Juruteknik / Pembantu Jurutera /
+              Jurutera / Eksekutif / Milikan sendiri / Usahawan.
+            </p>
+            <p class="error-text" id="jawatanError"></p>
           </div>
 
           <div class="field">
             <fieldset class="choice-set">
-              <legend>Julat gaji yang ditawarkan</legend>
+              <legend>Julat gaji yang ditawarkan <span class="req" aria-hidden="true">*</span></legend>
 
               <label class="choice">
                 <input type="radio" name="gaji" value="Kurang daripada RM2,500" />
@@ -259,6 +273,8 @@
                 <input type="radio" name="gaji" value="RM7,001 dan lebih" />
                 <span>RM7,001 dan lebih</span>
               </label>
+
+              <p class="error-text" id="gajiError"></p>
             </fieldset>
           </div>
 
@@ -285,7 +301,7 @@
 
           <div class="field">
             <fieldset class="choice-set">
-              <legend>Ada kaitan dengan bidang komposit</legend>
+              <legend>Ada kaitan dengan bidang komposit <span class="req" aria-hidden="true">*</span></legend>
 
               <label class="choice">
                 <input type="radio" name="komposit" value="Ya" />
@@ -296,6 +312,8 @@
                 <input type="radio" name="komposit" value="Tidak" />
                 <span>Tidak</span>
               </label>
+
+              <p class="error-text" id="kompositError"></p>
             </fieldset>
           </div>
         </section>
@@ -310,13 +328,16 @@
           <h2 class="branch-title">Gambar</h2>
 
           <div class="field">
-            <label for="gambar">Masukkan gambar anda <span class="req" aria-hidden="true">*</span></label>
+            <label for="gambar">Masukkan gambar anda</label>
 
             <!-- accept= filters the phone picker down to pictures. It
                  is a convenience, not a guarantee, so alumni.js checks
                  the file type again before sending. -->
             <input type="file" id="gambar" name="gambar" accept="image/*" class="file-input" />
 
+            <!-- No "(tidak wajib)" marker here on purpose: the photo
+                 is simply accepted when it is given and not missed
+                 when it is not. -->
             <p class="hint">Gambar yang kasual / profesional. Maksimum 15 MB.</p>
 
             <!-- The chosen picture is shown back, so nobody submits
