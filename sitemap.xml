@@ -47,11 +47,15 @@
   </url>
 
   <!--
-    The activity pages are still placeholders and carry a noindex
-    tag, so they are deliberately absent here. Activities 1, 2 and 3
-    are the exceptions: they hold the Who's Next? name wheel, the
-    Group Maker and the Zero Defect Rush quiz, so they have real
-    content, no noindex, and belong in the sitemap.
+    Activities 1 to 7 are listed because each one holds real content:
+    the Who's Next? name wheel, the Group Maker, the Zero Defect Rush
+    quiz, the Zero Waste Sprint, the Flight Line, and the REVISION 1
+    and REVISION 2 papers. None of them carries a noindex tag.
+
+    Activities 8, 9 and 10 are still placeholders. They DO carry
+    noindex, so they are deliberately absent here. Add a <url> block
+    for each one as it is written, and delete its noindex line at the
+    same time — the two go together.
   -->
   <url>
     <loc>https://www.farizuljaafar.com/production-coordination/activity-1.html</loc>
@@ -68,6 +72,30 @@
   <url>
     <loc>https://www.farizuljaafar.com/production-coordination/activity-3.html</loc>
     <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.farizuljaafar.com/production-coordination/activity-4.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.farizuljaafar.com/production-coordination/activity-5.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.farizuljaafar.com/production-coordination/activity-6.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.farizuljaafar.com/production-coordination/activity-7.html</loc>
+    <lastmod>2026-10-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
