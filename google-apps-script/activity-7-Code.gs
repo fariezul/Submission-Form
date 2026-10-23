@@ -7,13 +7,13 @@
    ------------------------------------------------------------
    SETUP — about five minutes, once
    ------------------------------------------------------------
-   1. Create a NEW Google Sheet for Activity 7 — not Activity 6's.
-      Name it "REVISION 2 — Activity 7 Results". Its ID is the long
-      string in the address bar between /d/ and /edit.
-   2. Extensions -> Apps Script.
+   1. DONE — the Sheet "REVISION 2 — Activity 7 Results" already
+      exists, in the same Drive folder as Activity 6's, and its ID is
+      already filled into SPREADSHEET_ID below. It is a different
+      Sheet from Activity 6's; do not point this at that one.
+   2. Open that Sheet, then Extensions -> Apps Script.
    3. Delete whatever is in Code.gs and paste this whole file in.
-   4. Replace PASTE_YOUR_ACTIVITY_7_SPREADSHEET_ID below with that
-      ID, then Save.
+   4. Save.
    5. Run -> choose "setup" -> Run. Approve the permission prompt.
       This creates the two tabs with their headings.
    6. Deploy -> New deployment -> gear icon -> Web app.
@@ -52,7 +52,7 @@
    ============================================================ */
 
 var SHARED_TOKEN = 'rev2-2026-iqa10063';
-var SPREADSHEET_ID = 'PASTE_YOUR_ACTIVITY_7_SPREADSHEET_ID';
+var SPREADSHEET_ID = '1CHz2RCAxhMkhMYYaFquMFojbNEWYzCqCsKz65Vfi4og';
 
 function resultsSpreadsheet() {
   return SpreadsheetApp.openById(SPREADSHEET_ID);

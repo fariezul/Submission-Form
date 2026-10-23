@@ -28,15 +28,20 @@ Where the paper awards marks for "any 5" or "any 3", the quiz uses a multiple-se
 
 **One discrepancy to be aware of:** the paper's cover says `IMC 10063` and the marking scheme's cover says `IMC 10007`, and the scheme is dated January–June 2026 while the paper is dated July–December 2026. The quiz page shows `IQA 10063`, matching Activity 6 and the course folder. Correct the source documents if that is wrong.
 
-## Results backend — not connected yet
+## Results backend
 
-Unlike Activity 6, this one has **no Sheet and no deployment yet**. Until it does, the quiz plays perfectly and tells the student honestly that the result could not be saved; the leaderboard and class scoreboard report that they could not be loaded.
+Connected and verified on 23 October 2026.
 
-To connect it:
+| | |
+| --- | --- |
+| Sheet | [REVISION 2 — Activity 7 Results](https://docs.google.com/spreadsheets/d/1CHz2RCAxhMkhMYYaFquMFojbNEWYzCqCsKz65Vfi4og/edit) — `Attempts` and `Visits`, created by `setup()` |
+| Apps Script | **REVISION 2 Activity 7**, bound to that Sheet |
+| Deployment | Version 1, "REVISION 2 Activity 7", Execute as **Me**, access **Anyone** |
+| Web App URL | in `SCRIPT_URL` in [`quiz7/quiz-config.js`](quiz7/quiz-config.js) |
 
-1. Follow the numbered steps at the top of [`../google-apps-script/activity-7-Code.gs`](../google-apps-script/activity-7-Code.gs). Create a **new** Google Sheet — Activity 7 must not write into Activity 6's.
-2. Paste the deployed Web App URL into `SCRIPT_URL` in [`quiz7/quiz-config.js`](quiz7/quiz-config.js), replacing `PASTE_YOUR_ACTIVITY_7_WEB_APP_URL`.
-3. `SHARED_TOKEN` is already `rev2-2026-iqa10063` on both sides. Leave them matching.
+All of it is separate from Activity 6: its own Sheet, its own script project, its own deployment. Neither can write into the other's data.
+
+An end-to-end check passed — a 20/20 attempt from the page showed "Result saved.", the row appeared in `Attempts`, and both `recent` and `leaderboard` read it back. That attempt was recorded as **Connection Test / TEST**; delete that row from `Attempts` when you want a clean leaderboard.
 
 The web app runs as the owner and is accessible to anyone so students can submit scores. The leaderboard exposes the recorded student name, class, score, and time.
 
