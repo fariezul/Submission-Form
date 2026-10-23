@@ -41,7 +41,7 @@ Connected and verified on 23 October 2026.
 
 All of it is separate from Activity 6: its own Sheet, its own script project, its own deployment. Neither can write into the other's data.
 
-An end-to-end check passed — a 20/20 attempt from the page showed "Result saved.", the row appeared in `Attempts`, and both `recent` and `leaderboard` read it back. That attempt was recorded as **Connection Test / TEST**; delete that row from `Attempts` when you want a clean leaderboard.
+An end-to-end check passed on the live site — a 20/20 attempt on farizuljaafar.com showed "Result saved.", the row appeared in `Attempts`, and both `recent` and `leaderboard` read it back. The test rows have since been deleted, so `Attempts` is empty and the leaderboard starts clean.
 
 The web app runs as the owner and is accessible to anyone so students can submit scores. The leaderboard exposes the recorded student name, class, score, and time.
 
