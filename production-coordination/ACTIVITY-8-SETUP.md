@@ -54,21 +54,26 @@ To bring a spare question in, move it above the thirtieth entry in `quiz8/quiz-q
 1. **Set 2's answer document does not match its own question paper.** The Set 2 paper asks for MURA & MURI (Q3a) and a CAPA corrective/preventive action (Q2c), but `ANSWER_IQA10063_SET2_JULYDEC_2026.docx` still answers KAIZEN and has no CAPA section — it looks like an earlier revision that was not updated. Activity 8 is therefore built entirely from Set 1, whose paper and scheme agree with each other. Worth fixing in the source before Set 2 is used.
 2. **The course code is inconsistent across the documents.** The folder is `FINAL IQA10067`, but both papers and both schemes say `IQA10063` on the cover, and the Test 2 documents say `IMC 10063` and `IMC 10007`. The activity is titled **REVISION IQA 10067** as requested, and the page's institution block shows `IQA 10063` to match Activities 6 and 7.
 
-## Results backend — not connected yet
+## Results backend
 
-Activity 8 has **no Sheet and no deployment**. Until it does, the paper plays in full and tells the student honestly that the result could not be saved; the leaderboard and class scoreboard report that they could not be loaded.
+Connected and verified on 23 October 2026.
 
-`SCRIPT_URL` and `SPREADSHEET_ID` are deliberately placeholders — Activity 8 must not write into Activity 6's or Activity 7's Sheet, and `quiz8/quiz-tests.js` asserts that neither of their IDs appears here.
+| | |
+| --- | --- |
+| Sheet | [REVISION IQA 10067 — Activity 8 Results](https://docs.google.com/spreadsheets/d/1EcBJPi1kN8XL5w98zEzoKMURWEAN2oIE7p05MOhH5Xw/edit) — `Attempts` and `Visits`, created by `setup()` |
+| Apps Script | **REVISION IQA 10067 Activity 8**, bound to that Sheet |
+| Deployment | Version 1, "REVISION IQA 10067 Activity 8", Execute as **Me**, access **Anyone** |
+| Web App URL | in `SCRIPT_URL` in [`quiz8/quiz-config.js`](quiz8/quiz-config.js) |
 
-To connect it:
+Its own Sheet, its own script project, its own deployment — separate from Activities 6 and 7, and the tests assert neither of their IDs appears here. That isolation was checked live, not just asserted: after Activity 8 recorded an attempt, Activity 7's endpoint still returned no rows.
 
-1. Create a **new** Google Sheet, "REVISION IQA 10067 - Activity 8 Results", and put its ID into `SPREADSHEET_ID` in [`../google-apps-script/activity-8-Code.gs`](../google-apps-script/activity-8-Code.gs).
-2. Open that Sheet → **Extensions → Apps Script**, paste the file in, Save.
-3. **Run → setup**, approve the permission prompt. The `Attempts` and `Visits` tabs appear.
-4. **Deploy → New deployment → Web app**, Execute as **Me**, access **Anyone**. Copy the Web App URL.
-5. Paste it into `SCRIPT_URL` in [`quiz8/quiz-config.js`](quiz8/quiz-config.js), replacing `PASTE_YOUR_ACTIVITY_8_WEB_APP_URL`.
+An end-to-end check passed: a 30/30 attempt reported "Result saved.", the row reached `Attempts` as `30 / 30` in 48 s, and both `recent` and `leaderboard` read it back. That attempt was recorded as **Backend Check / TEST**; delete that row from `Attempts` when you want a clean leaderboard.
 
-`SHARED_TOKEN` is already `rev8-2026-iqa10063` on both sides. Leave them matching.
+### A second authorisation, unlike Activity 7
+
+Activity 8 asked for authorisation **twice**: once to run `setup()` from the editor, and again — *"The web app requires you to authorise access to your data"* — before the deployment would be created. Activity 7 only asked once. Both prompts open in a popup window, so they have to be approved by hand; expect the same when Activity 9 is set up.
+
+The web app runs as the owner and is accessible to anyone so students can submit scores. The leaderboard exposes the recorded student name, class, score, and time.
 
 For later script changes, create a **new version** under **Deploy → Manage deployments**. Changing the source alone does not update the live web app.
 

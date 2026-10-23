@@ -36,7 +36,7 @@ window.QUIZ_CONFIG = {
   /* The deployed Web App. Remember that editing activity-8-Code.gs
      changes nothing until you redeploy it as a NEW VERSION —
      Deploy -> Manage deployments -> pencil -> Version: New version. */
-  SCRIPT_URL: "PASTE_YOUR_ACTIVITY_8_WEB_APP_URL",
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxUyPvFoYIktbuwktyl7XvVcpSmAPVnl2zhy7-6zSIqPiaA4ZF4R3wNGUGo2PxKUEv0cA/exec",
 
   /* Must match SHARED_TOKEN in activity-8-Code.gs. */
   SHARED_TOKEN: "rev8-2026-iqa10063",

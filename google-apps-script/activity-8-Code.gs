@@ -7,10 +7,10 @@
    ------------------------------------------------------------
    SETUP — about five minutes, once
    ------------------------------------------------------------
-   1. Create a NEW Google Sheet named "REVISION IQA 10067 - Activity 8
-      Results". It must be its own file, NOT Activity 6's or Activity
-      7's. Copy its ID from the address bar, between /d/ and /edit,
-      and paste it into SPREADSHEET_ID below.
+   1. DONE - the Sheet "REVISION IQA 10067 - Activity 8 Results"
+      already exists, in the same Drive folder as Activity 6's and
+      Activity 7's, and its ID is already in SPREADSHEET_ID below. It
+      is its own file; do not point this at either of theirs.
    2. Open that Sheet, then Extensions -> Apps Script.
    3. Delete whatever is in Code.gs and paste this whole file in.
    4. Save.
@@ -52,7 +52,7 @@
    ============================================================ */
 
 var SHARED_TOKEN = 'rev8-2026-iqa10063';
-var SPREADSHEET_ID = 'PASTE_YOUR_ACTIVITY_8_SPREADSHEET_ID';
+var SPREADSHEET_ID = '1EcBJPi1kN8XL5w98zEzoKMURWEAN2oIE7p05MOhH5Xw';
 
 function resultsSpreadsheet() {
   return SpreadsheetApp.openById(SPREADSHEET_ID);
