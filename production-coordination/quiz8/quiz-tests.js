@@ -56,14 +56,49 @@ for (let i = 0; i < 25; i++) {
   for (let j = 0; j < again.length; j++) {
     assert.deepEqual(
       again[j].options.map((o) => o.id),
-      bank[j].options.map((o) => o.id),
-      `${again[j].id}: answer choices keep their written order`
+      paper[j].options.map((o) => o.id),
+      `${again[j].id}: answer choices land in the same order every attempt`
     );
   }
 }
 // Selecting must not mutate the bank it was handed.
 assert.deepEqual(bank.map((q) => q.id), Array.from({ length: 40 }, (_, i) => `f${String(i + 1).padStart(3, "0")}`));
 assert.notEqual(paper[0].options, bank[0].options, "the paper gets its own options array, not the bank's");
+
+/* ---- The answer must not always be option A ------------------
+   The bank is written with the correct answer first, so it can be
+   checked against the marking scheme by eye. Without the rotation
+   that would mean pressing A thirty times scores 30 / 30. */
+const answerSlot = {};
+for (const q of paper) {
+  const key = [].concat(q.correctAnswer);
+  const slot = q.options.findIndex((o) => o.id === key[0]);
+  assert.ok(slot >= 0, `${q.id}: answer is among the options after rotation`);
+  answerSlot[slot] = (answerSlot[slot] || 0) + 1;
+  // Rotation must preserve the option set exactly — nothing added,
+  // nothing dropped, nothing renamed.
+  const bankQ = bank.find((b) => b.id === q.id);
+  assert.deepEqual(
+    q.options.map((o) => o.id).slice().sort(),
+    bankQ.options.map((o) => o.id).slice().sort(),
+    `${q.id}: same options, only reordered`
+  );
+  for (const o of q.options) {
+    assert.equal(o.text, bankQ.options.find((b) => b.id === o.id).text, `${q.id}: ${o.id} keeps its text`);
+  }
+}
+assert.ok((answerSlot[0] || 0) <= paper.length / 2,
+  `the answer sits in slot A on ${answerSlot[0]} of ${paper.length} questions — too many`);
+assert.ok(Object.keys(answerSlot).length >= 3, "the answer appears in at least three different slots");
+
+// A student pressing the first option every time must fail.
+const alwaysFirst = paper.map((q) => q.options[0].id);
+const scoreIfAlwaysA = paper.filter((q, i) => engine.isCorrect(q, alwaysFirst[i])).length;
+assert.ok(scoreIfAlwaysA < paper.length, "always choosing A must not be a pass");
+
+// Rotation is derived from the id, so it is stable across runs.
+const rotatedTwice = engine.rotateOptions(bank[0]).options.map((o) => o.id);
+assert.deepEqual(rotatedTwice, engine.rotateOptions(bank[0]).options.map((o) => o.id), "rotation is stable");
 
 /* ---- Every one of the six exam questions is on the paper ------ */
 const topics = {
@@ -124,6 +159,12 @@ assert.match(html, /<span id="questionCounter">1 \/ 30<\/span>/);
 assert.match(html, /<span id="timerValue">00:00<\/span>/);
 assert.match(html, /No Time Limit/);
 assert.doesNotMatch(html, /quiz4\/|quiz6\/|quiz7\//);
+/* Activity 8 began as a copy of a 20-question activity. Any surviving
+   "20" would be wrong on screen — two of them were static text the
+   student reads, not placeholders the script overwrites. */
+assert.doesNotMatch(html, /20 ?\/ ?20/, "no 20 / 20 left over from Activity 7");
+assert.match(html, /You need 30 \/ 30 to complete this challenge\./);
+assert.match(html, /Perfect scores only — 30 \/ 30, ranked by time\./);
 assert.match(html, /href="activity-7\.html" class="subtab">Activity 7</);
 assert.match(html, /href="activity-8\.html" class="subtab subtab-active" aria-current="page">Activity 8</);
 assert.match(app, /quiz8-images\/.*q\.image/);

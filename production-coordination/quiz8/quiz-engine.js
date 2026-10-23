@@ -96,6 +96,25 @@
     return groups;
   }
 
+  /* A small stable hash of the question id. Not security, just a
+     repeatable number: the same id always yields the same offset,
+     in any browser, with no stored state. */
+  function idOffset(id) {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 100003;
+    return h;
+  }
+
+  /* Rotate an option list left by that offset. Rotation preserves
+     every option and its id — only the order on screen changes, and
+     the answer key keeps pointing at the same options. */
+  function rotateOptions(q) {
+    const n = q.options.length;
+    const by = idOffset(q.id) % n;
+    const options = q.options.slice(by).concat(q.options.slice(0, by));
+    return Object.assign({}, q, { options: options });
+  }
+
   /* Choose the question set for one attempt.
 
      Returns an array of exactly QUESTIONS_PER_ATTEMPT questions,
@@ -118,10 +137,21 @@
        and the class can review the paper together afterwards. */
     const finalSet = bank.slice(0, wanted);
 
-    // Options are NOT shuffled — see the note above.
-    return finalSet.map(function (q) {
-      return Object.assign({}, q, { options: q.options.slice() });
-    });
+    /* Options are not SHUFFLED, but they are ROTATED by a fixed
+       amount derived from the question's own id.
+
+       Why this is needed: the bank is written with the correct
+       answer first, which is what makes it reviewable against the
+       marking scheme. With nothing shuffled, that would put the
+       right answer in slot A on every single question, and a
+       student could score 30/30 by pressing A thirty times.
+
+       A rotation fixes that without giving up determinism. The
+       offset comes from the id, so it is the same for every
+       student, on every attempt, forever — the paper is still
+       fixed, and "option C" still means the same thing to the
+       whole class. */
+    return finalSet.map(rotateOptions);
   }
 
   /* Return a COPY of the question with its options in a new
@@ -319,6 +349,7 @@
     QUESTIONS_PER_ATTEMPT: QUESTIONS_PER_ATTEMPT,
     TIME_LIMIT_MS: TIME_LIMIT_MS,
     TYPE_QUOTAS: TYPE_QUOTAS,
+    rotateOptions: rotateOptions,
     randomInt: randomInt,
     shuffle: shuffle,
     selectQuestions: selectQuestions,

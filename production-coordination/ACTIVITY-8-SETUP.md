@@ -10,11 +10,19 @@ Activities 4, 6 and 7 are randomised challenges. Activity 8 is a **fixed examina
 | --- | --- | --- |
 | Questions per attempt | a random draw | the **first 30** of the bank, in bank order |
 | Question order | shuffled | fixed, the same for everyone |
-| Answer choices | shuffled | fixed, in the order written |
+| Answer choices | shuffled every attempt | fixed, but **rotated** — see below |
 | Time limit | 20 minutes | **none** — the clock counts up |
 | Bank size | 23 / 25 | **40** (30 on the paper, 10 spare) |
 
 Because nothing is shuffled, "option C" means the same thing to every student, so a lecturer can go through the paper with the class question by question afterwards. `quiz8/quiz-tests.js` runs the selection 25 times and asserts the paper and the answer-choice order come back identical every time — if anyone reintroduces a shuffle, the tests fail.
+
+### Why the answer choices are rotated
+
+The bank is written with **the correct answer first**, which is what makes it checkable against the marking scheme by eye. Combined with no shuffling, that had an obvious consequence: the right answer landed in slot A on all 21 single-choice questions, and pressing A thirty times scored 30 / 30.
+
+So the engine rotates each question's options by a fixed amount derived from the question's own id. That is not randomisation — the offset is the same for every student, on every attempt, forever, so the paper stays fixed and reviewable. It only moves the answer off slot A: it now sits in slot A on 6 of the 30, and always-A scores 4 / 30.
+
+Rotation preserves every option and its id, so the answer key is untouched. The tests assert the option set and all the option texts survive the rotation unchanged, that the answer appears in at least three different slots, that it is in slot A on no more than half the paper, and that always choosing the first option cannot pass.
 
 The clock still runs, counting up, because the leaderboard ranks perfect scores by time. It can never end an attempt: `TIME_LIMIT_MS` is `Infinity`, so `hasExpired()` is always false. A duration is still clamped to 3600 seconds before it is sent, because that is the ceiling the Apps Script accepts — a student who leaves the tab open all afternoon is recorded at one hour rather than having the row rejected.
 
