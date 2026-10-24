@@ -4,6 +4,10 @@
     {
       "source": "/alumni",
       "destination": "/alumni.html"
+    },
+    {
+      "source": "/semak",
+      "destination": "/semakan-kelayakan.html"
     }
   ],
 

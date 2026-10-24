@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Semakan Kelayakan Lepasan SPM — TVETMARA Masjid Tanah</title>
+<meta name="robots" content="noindex">
+<!-- ============================================================
+     SEMAKAN KELAYAKAN LEPASAN SPM
+     TikTok Live edition — VERTICAL 9:16 broadcast graphic.
+
+     THIS IS A BUILD TEMPLATE. Do not open it directly.
+     Run  build-semakan.ps1  to inline the logo + program data
+     and produce the self-contained  semakan-kelayakan.html .
+
+     Two states:
+       A  input only, filling the screen  (before the first check)
+       B  input shrinks, one scrollable result list appears
+          — switched by  #stage.ada-hasil
+
+     Kekunci semasa live:
+       Enter  semak          Space  langkau kira detik
+       R      set semula     F      skrin penuh
+       S      panduan safe-area     C  contoh keputusan
+       3 / 5  panjang kira detik    M  senyap / bunyi
+       N      tarik nama seterusnya dari giliran
+       T      tukar tema (lalai GELAP, tekan T untuk terang)
+       Esc    kembali ke borang
+     ============================================================ -->
+<style>
+/* ------------------------------------------------------------
+   Palette lifted verbatim from style.css:17-36 so this tool
+   sits alongside the rest of the site.
+   ------------------------------------------------------------ */
+:root{
+  --navy-900:#0b1f3a;
+  --navy-700:#14294d;
+  --navy-600:#1b3a6b;
+  --navy-100:#e8edf5;
+  --white:#ffffff;
+  --page-bg:#dbe3ef;        /* darker than the site default on purpose - see note below */
+  --text-dark:#1a2233;
+  --text-muted:#5b6779;
+  --error:#b3261e;
+  --error-bg:#fdecea;
+  --success:#1e6f4c;
+  --success-bg:#eaf6f0;
+  --amber:#8a5a00;
+  --amber-bg:#fff6e0;
+  --gold:#c8962a;
+  --radius:8px;
+
+  /* ---- surfaces, routed through tokens so the dark theme is a
+          token swap rather than a second stylesheet ---- */
+  --ground:var(--page-bg);   /* the stage itself        */
+  --surface:#ffffff;         /* panels, cards, controls */
+  --surface-2:#f2f6fb;       /* resting card            */
+  --line-kuat:#c2ccdb;       /* control borders         */
+  --ink-lembut:#a9b5c6;      /* placeholder text        */
+  --jalur:#14294d;           /* queue band              */
+  --isi-utama:#1b3a6b;       /* primary button FILL - separate from
+                                --navy-600, which is mostly text and
+                                has to invert in the dark theme    */
+
+  /* ---- five status hues, deliberately far apart ----
+     Previously LAYAK #1e6f4c and REMEDIAL #2f7d57 were the same
+     colour once TikTok had compressed the stream. */
+  /* Tints deep enough to read as distinct blocks after compression. */
+  --s-layak:#1e6f4c;    --s-layak-bg:#cdebd9;    --s-layak-line:#1e6f4c;
+  --s-remedial:#b07400; --s-remedial-bg:#fbe7bd; --s-remedial-line:#c98f22;
+  --s-syarat:#1c5f91;   --s-syarat-bg:#d2e4f2;   --s-syarat-line:#5f94bc;
+  --s-hampir:#6c7a8d;   --s-hampir-bg:#e6eaf1;   --s-hampir-line:#b6c0cd;
+  --s-lanjut:#9aa6b5;   --s-lanjut-bg:#eef1f5;   --s-lanjut-line:#ccd4de;
+  --cop-teks:#ffffff;
+  --cop-teks-layak:var(--cop-teks);   /* flips to dark ink on the
+                                         bright green used in the
+                                         dark theme               */
+}
+
+/* ================= DARK THEME (tekan T) =================
+   Not a different brand - the same navy and gold, used as the
+   ground instead of as ink. On a phone the light theme put a
+   #fcfdfe card on a #f4f6fa page, a 2% luminance difference that
+   TikTok's compression erased completely; and TikTok's own white
+   UI fights a near-white background.
+   ========================================================= */
+/* Brightened deliberately. The stage is FILMED by a phone's rear
+   camera, not screen-shared: a near-black screen makes the camera
+   lift its exposure, which turns the whole frame into grey noise.
+   A mid-navy screen gives the camera something to expose for. */
+#stage.gelap{
+  --ground:#17314e;
+  --surface:#23456b;
+  --surface-2:#2d5480;
+  --line-kuat:#2c4765;
+  --navy-100:#24405f;
+  --text-dark:#eaf1fa;
+  --text-muted:#9ab0c9;
+  --ink-lembut:#5d7795;
+  --navy-600:#7fb3ec;        /* headings and controls must invert */
+  --navy-700:#5e9bdd;
+
+  /* On a dark ground the cards have to sit ABOVE the panel, not
+     below it. The first pass made them darker than the panel,
+     which produced a 1.01 ratio - no separation at all. */
+  /* Green and gold must differ in BRIGHTNESS as well as hue. At
+     equal luminance they rely on chroma alone, and 4:2:0 chroma
+     subsampling is exactly what a compressed stream throws away. */
+  --s-layak:#34c184;    --s-layak-bg:#15523a;    --s-layak-line:#35c489;
+  --s-remedial:#8f6200; --s-remedial-bg:#51390a; --s-remedial-line:#e0a93d;
+  --s-syarat:#2b7cb8;   --s-syarat-bg:#164163;   --s-syarat-line:#4a9ad1;
+  --s-hampir:#7e90a8;   --s-hampir-bg:#2b3e55;   --s-hampir-line:#46607e;
+  --s-lanjut:#5b6d84;   --s-lanjut-bg:#1d2d40;   --s-lanjut-line:#32475f;
+  --cop-teks:#ffffff;
+  --cop-teks-layak:#06291a;   /* white on #34c184 was only 2.31 */
+
+  /* Header and footer lift slightly off the ground so the bands
+     still read as bands. */
+  --navy-900:#0e2135;
+  --navy-700:#5e9bdd;
+  --jalur:#16304d;
+  --isi-utama:#2b6cb8;
+  --error-bg:#2e1210;
+  --amber-bg:#332509;
+  --success-bg:#10301f;
+  --page-bg:#eaf1fa;        /* now used only as light text on navy */
+
+  /* TikTok's action rail (like / comment / share / gift) sits on
+     the right. Content keeps clear of it. */
+  --rail:150px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* The id rules below set display:flex, which outranks the UA
+   stylesheet's display:none for [hidden]. Without this the
+   results panels show before the first check. */
+[hidden]{display:none !important}
+
+html,body{
+  height:100%;
+  background:#000;              /* letterbox bars */
+  overflow:hidden;
+  font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color:var(--text-dark);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ------------------------------------------------------------
+   THE STAGE  —  1080 x 1920, vertical 9:16
+   ------------------------------------------------------------
+   Broadcast graphics, not a responsive page: a fixed canvas
+   scaled to fit whatever screen it lands on, so the composition
+   he rehearses on the laptop is byte-identical to what goes out
+   on the phone.
+   ------------------------------------------------------------ */
+/* Pinned to the LEFT edge, not centred: the phone filming the
+   screen stands in front of this half, which leaves the rest of
+   the laptop display and the keyboard clear to work on.
+   Press L to centre it instead. */
+#stage{
+  position:absolute;
+  left:0; top:50%;
+  width:1080px; height:1920px;
+  transform-origin:0 50%;
+  background:var(--ground);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
+
+/* ============================ HEADER ============================ */
+#tajuk{
+  flex:0 0 160px;
+  background:var(--navy-900);
+  display:flex; flex-direction:column; justify-content:center;
+  gap:12px; padding:0 22px;
+}
+#tajuk .atas{display:flex;align-items:center;gap:22px}
+
+/* The logo artwork is navy and grey, so it needs its own white
+   plate to read against the navy header bar. */
+#tajuk .plat{
+  background:var(--white);
+  border-radius:6px;
+  padding:9px 16px;
+  display:inline-flex;align-items:center;
+}
+#tajuk img{height:46px;width:auto;display:block}
+
+/* Only visible while muted, so he can tell at a glance on air. */
+#bisu{
+  margin-left:auto;font-size:16px;font-weight:700;color:#ffd9d6;
+  background:rgba(179,38,30,.55);border-radius:5px;padding:5px 12px;
+  letter-spacing:.06em;
+}
+#bisu + .sesi{margin-left:18px}
+
+#tajuk .sesi{
+  margin-left:auto;text-align:right;
+  font-size:14px;color:#9fb3d1;letter-spacing:.1em;
+  text-transform:uppercase;line-height:1.3;
+  display:flex;flex-direction:column;align-items:flex-end;gap:5px;
+}
+#tajuk .sesi span{display:block}
+/* Live deadline countdown - urgency where the eye lands first.
+   One line, showing the NEAREST deadline only: simpler to say out
+   loud than two. It rolls over to 16 Nov by itself once 6 Nov has
+   passed, so nothing needs touching mid-campaign. */
+#kiraHari{
+  background:var(--error);color:#fff;border-radius:6px;
+  padding:6px 14px;
+  font-size:28px;font-weight:700;line-height:1.2;
+  letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;
+}
+#kiraHari.tutup{background:#5b6779}
+#tajuk h1{
+  font-size:42px;font-weight:700;color:#fff;
+  letter-spacing:.03em;text-transform:uppercase;line-height:1;
+}
+
+/* ======================== QUEUE STRIP ===========================
+   Gives an arriving viewer a concrete reason to stay: "mine is
+   next". Sits directly under the hook so it is visible in BOTH
+   states - most of the session is spent on the results screen, so
+   a queue only shown on the form would be missed. */
+#giliran{
+  flex:0 0 62px;
+  background:var(--jalur);
+  display:flex;align-items:center;gap:14px;
+  padding:0 22px;overflow:hidden;
+}
+#giliran .tajukG{
+  flex:0 0 auto;font-size:15px;font-weight:700;color:var(--gold);
+  letter-spacing:.16em;text-transform:uppercase;
+}
+#giliran .senaraiG{
+  flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:9px;
+  overflow:hidden;
+}
+#giliran .cip{
+  flex:0 0 auto;font-size:24px;font-weight:700;color:#cfe0f5;
+  background:rgba(255,255,255,.1);border-radius:5px;padding:4px 13px;
+  white-space:nowrap;
+}
+#giliran .cip.kini{background:var(--gold);color:#2a1c00}
+#giliran .kosongG{
+  font-size:19px;color:#7d93b4;font-style:italic;letter-spacing:.02em;
+}
+#giliran .kiraG{
+  flex:0 0 auto;font-size:17px;font-weight:700;color:#9fb3d1;
+  letter-spacing:.06em;text-transform:uppercase;
+}
+
+/* ---------- queue controls, operator side ---------- */
+#gilBaris{display:flex;align-items:center;gap:9px;margin-bottom:12px;flex:0 0 auto}
+#gilInput{
+  flex:1 1 auto;min-width:0;height:46px;
+  font-family:inherit;font-size:19px;font-weight:600;
+  padding:0 13px;color:var(--navy-600);
+  border:1.5px solid var(--line-kuat);border-radius:6px;background:var(--surface);
+}
+#gilInput::placeholder{color:var(--ink-lembut);font-weight:400}
+#gilInput:focus{outline:none;border-color:var(--gold)}
+#gilSeterus{
+  flex:0 0 auto;height:46px;padding:0 16px;
+  font-family:inherit;font-size:16px;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;
+  color:#fff;background:var(--gold);cursor:pointer;
+  border:none;border-radius:6px;
+}
+#gilSeterus:disabled{background:var(--line-kuat);cursor:default}
+
+/* ===================== PERMANENT HOOK STRIP =====================
+   The one instruction a cold viewer needs, in the one place it is
+   always visible. It never changes between states, because 80-90%
+   of LIVE viewers land at a random second with no context. It sits
+   directly under the header, well clear of TikTok's comment zone -
+   the footer is NOT a safe place for it. */
+#hook{
+  flex:0 0 96px;
+  background:var(--gold);
+  display:flex;align-items:center;justify-content:center;gap:18px;
+  padding:0 28px;
+}
+#hook .teks{
+  font-size:35px;font-weight:700;color:#2a1c00;
+  letter-spacing:.01em;text-transform:uppercase;text-align:center;
+  line-height:1.1;
+}
+#hook .panah{font-size:30px;color:#2a1c00;opacity:.65}
+#hook .kedip{animation:kedip 1.8s ease-in-out infinite}
+@keyframes kedip{0%,100%{opacity:1}50%{opacity:.45}}
+
+/* ============================= MAIN ============================= */
+#utama{
+  flex:1 1 auto;display:flex;flex-direction:column;gap:16px;
+  padding:16px 20px 12px;min-height:0;position:relative;
+}
+/* Everything keeps clear of TikTok's right-hand action rail. */
+#utama > section, #utama > a{margin-right:calc(var(--rail) - 20px)}
+
+/* ---------- SPM entry ---------- */
+/* State A: the input is the whole screen - nothing else is shown
+   until the candidate has entered a result and pressed Semak. */
+#input{
+  flex:0 0 604px;display:flex;flex-direction:column;
+  background:var(--surface);border:1px solid var(--navy-100);
+  border-radius:var(--radius);padding:18px 22px;min-height:0;
+}
+/* State B: the form goes away entirely. The result is the whole
+   screen; Kembali brings the form back to edit the grades. */
+#stage.ada-hasil #input{flex:0 0 604px;display:none}
+#stage.ada-hasil #teaser{display:none}
+
+/* Viewer name - the single biggest retention mechanic on LIVE.
+   People stay to see their own name on screen. */
+#namaBaris{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:12px;flex:0 0 auto;
+}
+#namaBaris label{
+  flex:0 0 auto;font-size:17px;font-weight:700;color:var(--text-muted);
+  letter-spacing:.07em;text-transform:uppercase;
+}
+#namaPenonton{
+  flex:1 1 auto;min-width:0;height:52px;
+  font-family:inherit;font-size:24px;font-weight:700;
+  padding:0 14px;color:var(--navy-600);
+  border:2px solid var(--line-kuat);border-radius:6px;background:var(--surface);
+}
+#namaPenonton::placeholder{color:var(--ink-lembut);font-weight:400}
+#namaPenonton:focus{outline:none;border-color:var(--gold)}
+
+/* ---------- attract panel (state A) ----------
+   Filling eight dropdowns takes 20-40 s. That is the longest and
+   least stimulating state, and it falls right inside the 37 s
+   average watch time - so the screen must never be a bare form.
+   This panel carries the message while he types. */
+#teaser{
+  flex:1 1 auto;min-height:0;
+  background:var(--navy-900);border-radius:var(--radius);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:14px;padding:22px;text-align:center;overflow:hidden;
+}
+#teaser .kecil{
+  font-size:22px;font-weight:700;color:var(--gold);
+  letter-spacing:.2em;text-transform:uppercase;
+}
+#teaser .besar{
+  font-size:44px;font-weight:700;color:#fff;line-height:1.14;
+  max-width:800px;
+}
+#teaser .sokong{font-size:25px;color:#9fb3d1;line-height:1.38;max-width:740px}
+#teaser .tukar{animation:masuk .5s cubic-bezier(.17,.84,.44,1) both}
+
+/* Last viewer's result, kept on screen while the next is typed. */
+#teaser.lepas .besar{color:var(--gold)}
+
+#input h2{
+  font-size:24px;font-weight:700;color:var(--navy-600);
+  text-transform:uppercase;letter-spacing:.08em;
+  padding-bottom:10px;margin-bottom:12px;
+  border-bottom:2px solid var(--navy-100);
+}
+/* minmax(0,1fr), not 1fr: grid items default to min-width:auto,
+   and a <select> reports a min-content width based on its
+   longest option, which blows the columns past the panel. */
+#baris{
+  flex:1 1 auto;display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:9px 14px;align-content:start;
+  /* Sized for 8 subjects; scrolls for the rare 9th and 10th rather
+     than silently hiding them, which is what overflow:hidden did. */
+  overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:thin;scrollbar-color:var(--line-kuat) transparent;
+}
+.baris{display:flex;gap:8px;align-items:center}
+.baris select{
+  font-family:inherit;font-size:23px;font-weight:600;
+  padding:7px 9px;border:1.5px solid var(--line-kuat);
+  border-radius:6px;background:var(--surface);color:var(--text-dark);
+  height:54px;
+}
+/* The closed control and its open list are seen by different
+   people: the closed box is on camera for viewers and stays large,
+   while the popup is only ever read by the operator and has to fit
+   36 subjects, so it is set small. Chrome styles them separately. */
+.baris select option,
+.baris select optgroup{
+  font-size:15px;font-weight:400;
+}
+.baris select optgroup{font-weight:700}
+
+.baris .sub{flex:1 1 auto;min-width:0}
+.baris .gred{flex:0 0 104px;text-align:center;font-weight:700}
+.baris .gred option{font-size:15px;font-weight:700;text-align:center}
+
+/* The six core subjects are fixed labels, not dropdowns. Every
+   candidate sits them, so making them selectable only created a
+   way to knock one out by accident mid-broadcast. */
+.baris .tetap{
+  flex:1 1 auto;min-width:0;height:54px;
+  display:flex;align-items:center;padding:0 11px;
+  font-size:23px;font-weight:700;color:var(--text-dark);
+  background:var(--navy-100);border-radius:6px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.baris .kosong{flex:0 0 34px}   /* keeps locked rows aligned with removable ones */
+.baris .buang{
+  flex:0 0 34px;height:34px;border:none;background:transparent;
+  color:var(--text-muted);font-size:26px;line-height:1;cursor:pointer;
+  border-radius:6px;
+}
+.baris .buang:hover{background:var(--error-bg);color:var(--error)}
+
+#tambah{
+  width:100%;height:46px;margin-top:10px;flex:0 0 auto;
+  font-family:inherit;font-size:19px;font-weight:700;
+  color:var(--navy-600);background:var(--surface);cursor:pointer;
+  border:1.5px dashed var(--line-kuat);border-radius:6px;
+}
+#tambah:hover{background:var(--navy-100)}
+
+#butang{display:flex;gap:12px;margin-top:12px;flex:0 0 auto}
+#semak{
+  flex:1 1 auto;height:74px;
+  font-family:inherit;font-size:30px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:#fff;background:var(--isi-utama);cursor:pointer;
+  border:none;border-radius:6px;
+}
+#semak:hover{filter:brightness(1.15)}
+#reset{
+  flex:0 0 150px;height:74px;
+  font-family:inherit;font-size:18px;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;
+  color:var(--text-muted);background:var(--surface);cursor:pointer;
+  border:1.5px solid var(--line-kuat);border-radius:6px;
+}
+#reset:hover{border-color:var(--error);color:var(--error)}
+
+/* ---------- results: ONE list, no separate Masjid Tanah box ---------- */
+#hasil{
+  flex:1 1 auto;display:flex;flex-direction:column;min-height:0;
+  background:var(--surface);border:1px solid var(--navy-100);
+  border-radius:var(--radius);padding:14px 8px 10px 16px;
+}
+#hasil .kepala{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:10px;padding-right:8px;flex:0 0 auto;
+}
+#hasil .kepala h3{
+  font-size:21px;font-weight:700;color:var(--navy-600);
+  letter-spacing:.06em;text-transform:uppercase;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+/* When a name was entered it takes the prominent slot. */
+#hasil .kepala h3{flex:1 1 auto;min-width:0}
+#hasil .kepala h3.ada-nama{
+  font-size:32px;color:var(--navy-900);text-transform:none;
+  letter-spacing:0;
+}
+/* Safety net for an unusually long name - it shrinks rather than
+   truncating, since it is the one thing here that must always be
+   fully readable. */
+#hasil .kepala h3.ada-nama.panjang{font-size:26px}
+#hasil .kepala h3.ada-nama b{color:#8a6410}
+#kembali{
+  flex:0 0 auto;height:46px;padding:0 20px;
+  font-family:inherit;font-size:18px;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;
+  color:var(--navy-600);background:var(--surface);cursor:pointer;
+  border:1.5px solid var(--line-kuat);border-radius:6px;
+}
+#kembali:hover{background:var(--navy-100);border-color:var(--navy-600)}
+
+/* Shown when nothing at all came back, so the panel is never a
+   blank white box on air. */
+#kosong{
+  flex:1 1 auto;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;
+  text-align:center;padding:30px;
+}
+#kosong .besar{font-size:38px;font-weight:700;color:var(--navy-600);line-height:1.25}
+#kosong .kecil{font-size:23px;color:var(--text-muted);line-height:1.5;max-width:620px}
+/* Stays big after the reveal, so the number is still the loudest
+   thing in the panel while he talks through the list. Stacked on
+   two lines: as one line it was 390px wide and squeezed the name,
+   which matters more. */
+#hasil .kira{
+  display:flex;flex-direction:column;align-items:center;
+  color:#fff;background:var(--success);border-radius:6px;
+  padding:5px 16px;line-height:1.1;
+  box-shadow:0 0 0 3px var(--success-bg);
+}
+#hasil .kira small{
+  font-size:14px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;opacity:.85;
+}
+#hasil .kira b{font-size:28px;font-weight:700;letter-spacing:.01em}
+/* The count badge is pushed right; the name keeps the slack, so a
+   long name never truncates in favour of a hint. */
+#hasil .kira{margin-left:auto}
+/* The scroller. Everything the candidate qualifies for is here,
+   top to bottom, no paging. */
+#senarai{
+  flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;
+  display:flex;flex-direction:column;gap:9px;
+  padding-right:8px;
+  scrollbar-width:thin;scrollbar-color:var(--line-kuat) transparent;
+}
+#senarai::-webkit-scrollbar{width:10px}
+#senarai::-webkit-scrollbar-thumb{background:var(--line-kuat);border-radius:5px}
+#senarai::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- a program card ---------- */
+.kad{
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:14px;
+  padding:12px 16px;border-radius:6px;
+  border:1px solid var(--navy-100);background:var(--surface-2);
+}
+.kad .kod{
+  flex:0 0 auto;font-size:21px;font-weight:700;
+  letter-spacing:.06em;color:var(--navy-600);
+  background:var(--navy-100);border-radius:5px;
+  padding:6px 12px;min-width:74px;text-align:center;
+}
+.kad .teks{flex:1 1 auto;min-width:0}
+/* Sized for a phone, not a monitor: the 1080-wide stage renders
+   at roughly 0.36x on a handset, so 15px landed at ~5pt and was
+   simply unreadable after TikTok's compression. */
+.kad .nama{
+  font-size:28px;font-weight:700;line-height:1.16;color:var(--text-dark);
+  overflow:hidden;display:-webkit-box;
+  -webkit-line-clamp:2;-webkit-box-orient:vertical;
+}
+.kad .meta{font-size:21px;color:var(--text-muted);margin-top:4px}
+.kad .cop{
+  flex:0 0 auto;text-align:center;border-radius:5px;
+  /* Capped: IAC's three gate conditions made the stamp so wide
+     that the programme name had nowhere left to wrap. */
+  padding:8px 12px;min-width:150px;max-width:250px;
+}
+.kad .cop b{display:block;font-size:24px;font-weight:700;letter-spacing:.05em}
+.kad .cop span{display:block;font-size:17px;margin-top:3px;line-height:1.28}
+
+/* The Masjid Tanah programmes sit at the top of the same list,
+   marked rather than separated. */
+.kad.utama{
+  border-left:7px solid var(--gold);
+  padding:15px 16px;
+}
+.kad.utama .nama{font-size:32px;-webkit-line-clamp:3}
+.kad.utama .kod{font-size:28px;min-width:94px}
+.tanda{
+  display:inline-block;font-size:17px;font-weight:700;
+  letter-spacing:.11em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:3px;
+}
+
+/* status colouring */
+.layak    {border-color:var(--s-layak-line);background:var(--s-layak-bg)}
+.layak    .cop{background:var(--s-layak);color:var(--cop-teks-layak)}
+.remedial {border-color:var(--s-remedial-line);background:var(--s-remedial-bg)}
+.remedial .cop{background:var(--s-remedial);color:var(--cop-teks)}
+.syarat   {border-color:var(--s-syarat-line);background:var(--s-syarat-bg)}
+.syarat   .cop{background:var(--s-syarat);color:var(--cop-teks)}
+.hampir   {border-color:var(--s-hampir-line);background:var(--s-hampir-bg)}
+.hampir   .cop{background:var(--s-hampir);color:var(--cop-teks)}
+.hampir   .nama{opacity:.78}
+.lanjutan {border-color:var(--s-lanjut-line);background:var(--s-lanjut-bg);opacity:.72}
+.lanjutan .cop{background:var(--s-lanjut);color:var(--cop-teks)}
+.tidak    {border-color:var(--error);background:var(--error-bg)}
+.tidak    .cop{background:var(--error);color:var(--cop-teks)}
+.tidak    .nama{opacity:.78}
+
+/* ====================== BOTTOM ROW ======================
+   Face-cam well on the left, the two calls to action on the
+   right. This row ends at y1500, which is where TikTok starts
+   drawing comments - so the face and the CTAs are the last
+   things that stay clear of the overlay. */
+/* No rail reserve here: the face circle sits in the bottom RIGHT
+   of the frame, which is exactly where that reserve was, so the
+   camera well uses it instead. */
+#bawah{
+  flex:0 0 300px;display:flex;gap:18px;
+}
+
+/* Reserved hole for the picture-in-picture camera. Nothing is
+   ever drawn here; the dashed ring only appears with the safe
+   guides (S) so he can line the circle up before going live. */
+#muka{
+  order:2;                   /* bottom right, matching the PiP */
+  flex:0 0 300px;height:300px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:26px;
+}
+#stage.panduan #muka{
+  border:3px dashed rgba(200,150,42,.9);
+  background:rgba(200,150,42,.1);
+}
+#muka span{display:none;font-size:19px;font-weight:700;color:#8a6410;
+  letter-spacing:.08em;text-transform:uppercase;line-height:1.3}
+#stage.panduan #muka span{display:block}
+
+#aksi{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
+  justify-content:center;gap:13px}
+
+/* ---------- apply bar ---------- */
+#mohon{
+  flex:0 0 134px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;
+  background:var(--error);border-radius:var(--radius);
+  color:#fff;text-decoration:none;
+}
+#mohon .label{
+  font-size:22px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;opacity:.92;
+}
+#mohon .url{font-size:44px;font-weight:700;letter-spacing:.005em;line-height:1.05}
+
+/* ---------- countdown ---------- */
+/* Covers the whole working area, input included: the number is
+   the only thing on screen for those five seconds. */
+#kira{
+  position:absolute;inset:0;z-index:20;
+  background:var(--ground);
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;gap:14px;
+}
+#kira.on{display:flex}
+#kira .angka{
+  font-size:460px;font-weight:700;color:var(--navy-600);
+  line-height:1;animation:denyut 1s ease-out;
+}
+#kira .kata{
+  font-size:34px;font-weight:700;color:var(--text-muted);
+  letter-spacing:.3em;text-transform:uppercase;
+}
+@keyframes denyut{
+  0%  {transform:scale(.45);opacity:0}
+  18% {transform:scale(1.06);opacity:1}
+  30% {transform:scale(1)}
+  100%{transform:scale(1);opacity:.92}
+}
+
+/* ---------- the number reveal ----------
+   The beat the whole broadcast is built around: after the
+   countdown, the eligible-programme count counts up from zero to
+   its final value, then punches with a gold ring. Only then does
+   the list appear. */
+#wow{
+  position:absolute;inset:0;z-index:25;
+  background:var(--ground);
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;
+}
+#wow.on{display:flex}
+/* The viewer's own name, biggest reason they stayed this long. */
+#wow .nama{
+  font-size:56px;font-weight:700;color:var(--gold);
+  letter-spacing:.02em;line-height:1.1;margin-bottom:6px;
+  max-width:860px;text-align:center;
+  animation:wowTeks .45s both;
+}
+#wow .label{
+  font-size:44px;font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--navy-600);
+  animation:wowTeks .45s .05s both;
+}
+#wow .angka{
+  font-size:380px;font-weight:700;line-height:.95;
+  color:var(--success);letter-spacing:-.03em;
+  position:relative;z-index:2;
+  font-variant-numeric:tabular-nums;
+}
+#wow .unit{
+  font-size:50px;font-weight:700;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--navy-600);
+  animation:wowTeks .45s .14s both;
+}
+#wow .cincin{
+  position:absolute;width:600px;height:600px;border-radius:50%;
+  border:12px solid var(--gold);opacity:0;z-index:1;
+}
+#wow.pop .cincin{animation:cincin 1s cubic-bezier(.16,.9,.3,1) both}
+#wow.pop .angka{animation:angkaPop .6s cubic-bezier(.2,1.7,.4,1) both}
+
+@keyframes wowTeks{
+  from{opacity:0;transform:translateY(16px)}
+  to  {opacity:1;transform:none}
+}
+@keyframes cincin{
+  0%  {transform:scale(.35);opacity:.95}
+  70% {opacity:.35}
+  100%{transform:scale(1.5);opacity:0}
+}
+@keyframes angkaPop{
+  0%  {transform:scale(1)}
+  40% {transform:scale(1.22)}
+  100%{transform:scale(1)}
+}
+
+/* ---------- reveal animation ---------- */
+.masuk{animation:masuk .42s cubic-bezier(.17,.84,.44,1) both}
+@keyframes masuk{
+  from{opacity:0;transform:translateY(18px) scale(.97)}
+  to  {opacity:1;transform:none}
+}
+.naik{animation:naik .4s cubic-bezier(.17,.84,.44,1) both}
+@keyframes naik{
+  from{opacity:0;transform:translateY(28px)}
+  to  {opacity:1;transform:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .masuk,.naik,#kira .angka{animation:none}
+}
+
+/* ============================= FOOTER ============================= */
+/* Lives in TikTok's comment zone, so everything here is
+   expendable if the overlay covers it. */
+#kaki{
+  flex:0 0 360px;background:var(--navy-900);color:#fff;
+  padding:16px 22px;display:flex;flex-direction:column;gap:12px;
+}
+#kaki .komen{
+  font-size:28px;font-weight:700;color:var(--page-bg);
+  background:rgba(255,255,255,.1);border-radius:6px;
+  padding:11px 18px;text-align:center;letter-spacing:.02em;
+}
+/* Three officers side by side, equal width. Lives in the bottom
+   row, not the footer - the footer sits under TikTok's comments. */
+#wa{display:flex;align-items:stretch;gap:10px;flex:0 0 auto}
+.wa{
+  flex:1 1 0;min-width:0;
+  display:flex;align-items:center;gap:9px;
+  background:#25D366;color:#06301a;text-decoration:none;
+  border-radius:7px;padding:8px 11px;
+}
+.wa svg{width:30px;height:30px;flex:0 0 auto;display:block}
+.wa .teks{display:flex;flex-direction:column;line-height:1.14;min-width:0}
+.wa b{font-size:21px;font-weight:700;letter-spacing:.01em;white-space:nowrap}
+.wa i{
+  font-style:normal;font-size:11px;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;opacity:.74;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+#kaki .nota{font-size:17px;color:#8ba3c2;line-height:1.5}
+#kaki .nota b{color:#cfe0f5;font-size:18px;letter-spacing:.04em;text-transform:uppercase}
+#kaki .ajak{
+  font-size:30px;font-weight:700;color:var(--page-bg);
+  background:rgba(255,255,255,.1);border-radius:7px;
+  padding:13px 20px;text-align:center;letter-spacing:.01em;
+}
+
+/* ---------- TikTok safe-area guides (press S) ---------- */
+#safe{position:absolute;inset:0;z-index:40;display:none;pointer-events:none}
+#safe.on{display:block}
+#safe div{position:absolute;border:2px dashed rgba(230,30,60,.75);
+  background:rgba(230,30,60,.09);
+  font:700 17px/1.3 "Segoe UI",Arial,sans-serif;color:#b3261e;
+  padding:6px 9px;letter-spacing:.06em;text-transform:uppercase}
+#safe .atas  {top:0;left:0;right:0;height:170px}
+#safe .kanan {top:0;right:0;bottom:0;width:150px;text-align:right}
+#safe .bawah {left:0;right:0;bottom:0;height:420px}
+</style>
+</head>
+
+<body>
+<!-- Light is the default. Tested through the actual phone camera on
+     2026-10-24: the stage is FILMED, not screen-shared, and a bright
+     screen gives the camera a clean exposure. The dark theme came
+     back washed out and blue. Press T for the dark variant. -->
+<div id="stage">
+
+  <header id="tajuk">
+    <div class="atas">
+      <span class="plat"><img src="__LOGO__" alt="TVETMARA Masjid Tanah"></span>
+      <span id="bisu" hidden>&#128263; Senyap</span>
+      <div class="sesi">
+        <span>Pengambilan Januari 2027</span>
+        <b id="kiraHari"></b>
+      </div>
+    </div>
+    <h1>Semakan Kelayakan Lepasan SPM</h1>
+  </header>
+
+  <!-- The one instruction a cold viewer needs. Never changes state,
+       never moves, never covered by TikTok's comment overlay. -->
+  <div id="hook">
+    <span class="teks">Taip nama &amp; gred SPM anda di komen</span>
+    <span class="panah kedip">&#10148;</span>
+    <span class="teks">Kami semak terus</span>
+  </div>
+
+  <!-- Who is waiting. Visible in both states, so a viewer who
+       just arrived can see their turn is coming. -->
+  <div id="giliran">
+    <span class="tajukG">Giliran</span>
+    <span class="senaraiG" id="senaraiGiliran"></span>
+    <span class="kiraG" id="kiraGiliran"></span>
+  </div>
+
+  <main id="utama">
+
+    <!-- ===== SPM entry ===== -->
+    <section id="input">
+      <h2>Masukkan Keputusan SPM</h2>
+      <div id="gilBaris">
+        <input id="gilInput" type="text" maxlength="28" autocomplete="off"
+               placeholder="Tambah nama ke giliran &mdash; tekan Enter">
+        <button id="gilSeterus" type="button">Seterusnya &#8594;</button>
+      </div>
+      <div id="namaBaris">
+        <label for="namaPenonton">Nama</label>
+        <input id="namaPenonton" type="text" maxlength="28" autocomplete="off"
+               placeholder="Nama penonton dari komen&hellip;">
+      </div>
+      <div id="baris"></div>
+      <button id="tambah" type="button">+ Tambah Subjek</button>
+      <div id="butang">
+        <button id="semak" type="button">Semak Kelayakan</button>
+        <button id="reset" type="button">Set Semula</button>
+      </div>
+    </section>
+
+    <!-- Carries the message while he types the next viewer's grades,
+         so the screen is never a bare form. -->
+    <section id="teaser">
+      <div class="kecil" id="teaserKecil">TVETMARA Masjid Tanah</div>
+      <div class="besar" id="teaserBesar"></div>
+      <div class="sokong" id="teaserSokong"></div>
+    </section>
+
+    <!-- ===== results: one list, scrollable ===== -->
+    <section id="hasil" hidden>
+      <div class="kepala">
+        <button id="kembali" type="button">&#8592; Kembali</button>
+        <h3 id="tajukHasil">Keputusan Kelayakan</h3>
+        <span class="kira" id="kira-layak"></span>
+      </div>
+      <div id="senarai"></div>
+      <div id="kosong" hidden>
+        <div class="besar">Tiada program yang layak dipohon buat masa ini</div>
+        <div class="kecil">Anda masih boleh mengambil Sijil Kemahiran Malaysia (SKM)
+          atau mengulang SPM. Hubungi kami di <b>06-385 1104</b> untuk nasihat.</div>
+      </div>
+    </section>
+
+    <!-- Face-cam well + the two CTAs. Last band before TikTok's
+         comment overlay begins. -->
+    <div id="bawah">
+      <div id="muka"><span>Letak<br>kamera<br>muka<br>di sini</span></div>
+      <div id="aksi">
+        <!-- Always on screen, not just after a check: the apply URL
+             is useful to every viewer at every moment, and hiding it
+             left the whole bottom row empty on the form screen. -->
+        <a id="mohon" href="https://mohon.tvet.gov.my" target="_blank" rel="noopener">
+          <span class="label">Mohon Sekarang Di</span>
+          <span class="url">mohon.tvet.gov.my</span>
+        </a>
+        <div id="wa" hidden></div>
+      </div>
+    </div>
+
+    <!-- countdown overlay, covers the whole working area -->
+    <div id="kira">
+      <div class="angka" id="kiraAngka">5</div>
+      <div class="kata">Keputusan anda&hellip;</div>
+    </div>
+
+    <!-- the number reveal, between the countdown and the list -->
+    <div id="wow">
+      <div class="cincin"></div>
+      <div class="nama" id="wowNama" hidden></div>
+      <div class="label">Anda Layak</div>
+      <div class="angka" id="wowAngka">0</div>
+      <div class="unit">Program</div>
+    </div>
+
+  </main>
+
+  <!-- Everything here sits under TikTok's comment overlay, so it is
+       all expendable: useful if uncovered, no loss if not. -->
+  <footer id="kaki">
+    <div class="ajak">Taip nama &amp; gred SPM anda di komen!</div>
+    <div class="nota">
+      <b>Hotline Perunding Pendidikan</b> &nbsp;&middot;&nbsp; &#9742; 06-385 1104
+      &nbsp;&middot;&nbsp; www.tvetmara.edu.my<br>
+      Panduan tidak rasmi &mdash; sila rujuk Brosur Rasmi TVETMARA Edisi BKT 1.1 / 2026 untuk
+      syarat penuh. Syarat tambahan seperti temuduga, ujian kecenderungan dan saringan
+      perubatan tidak dinilai oleh alat ini.
+    </div>
+  </footer>
+
+  <!-- TikTok overlay guides, hidden until S is pressed -->
+  <div id="safe">
+    <div class="atas">Zon nama / kapsyen</div>
+    <div class="kanan">Zon hadiah</div>
+    <div class="bawah">Zon komen</div>
+  </div>
+
+</div>
+
+<script>
+/*__DATA__*/
+
+/* ============================================================
+   HOTLINE PERUNDING PENDIDIKAN
+   ------------------------------------------------------------
+   Ts. Mohd Fadli bin Hassan, Pegawai Promosi & Pengambilan.
+   Status DISAHKAN in context/institution-profile.md of the TikTok
+   workspace - he is the officer the official answer bank routes
+   every application and eligibility question to.
+
+   wasap.my with a prefilled message is the institution's own link
+   convention, so it is used here rather than plain wa.me.
+
+   Shown ONLY when the candidate qualifies for a Masjid Tanah
+   programme - see paparWA().
+   ============================================================ */
+const PESAN_WA = "TVETMARA+MASJID+TANAH";
+
+/* Three of the four officers - the ones a school leaver actually
+   needs. Timbalan Pengarah (Khidmat Pengurusan) is left out: that
+   is a management line, not an admissions one.
+   Roles only, no names, as asked. */
+const PERUNDING = [
+  { no:"012-564 7916", peranan:"Promosi & Pengambilan" },
+  { no:"017-935 6689", peranan:"Kaunselor" },
+  { no:"018-315 7669", peranan:"Perhubungan Industri" },
+];
+
+const IKON_WA =
+  'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966' +
+  '-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761' +
+  '-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497' +
+  '.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173' +
+  '-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065' +
+  ' 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.693.625.712.227 1.36' +
+  '.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272' +
+  '-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648' +
+  '-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03' +
+  ' 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815' +
+  ' 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305' +
+  '-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821' +
+  ' 0 0 0 20.465 3.488';
+
+(function pasangWA(){
+  document.getElementById("wa").innerHTML = PERUNDING.map(function(p){
+    const digit = p.no.replace(/\D/g, "").replace(/^0/, "60");
+    return '<a class="wa" href="https://wasap.my/' + digit + '/' + PESAN_WA +
+           '" target="_blank" rel="noopener">' +
+           '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+             '<path fill="currentColor" d="' + IKON_WA + '"/></svg>' +
+           '<span class="teks"><b>' + p.no + '</b><i>' + p.peranan + '</i></span>' +
+           '</a>';
+  }).join("");
+})();
+
+/* The officer's number is not a general footer item: it appears
+   only once the result shows a Masjid Tanah programme the
+   candidate can actually apply for. */
+function paparWA(tunjuk){
+  document.getElementById("wa").hidden = !tunjuk;
+}
+paparWA(false);
+
+/* ============================================================
+   STAGE SCALING
+   ============================================================ */
+const stage = document.getElementById("stage");
+let ketengah = false;          /* L toggles left-edge vs centred */
+
+function fitStage(){
+  const s = Math.min(window.innerWidth/1080, window.innerHeight/1920);
+  if (ketengah){
+    stage.style.left = "50%";
+    stage.style.transformOrigin = "center center";
+    stage.style.transform = "translate(-50%,-50%) scale(" + s + ")";
+  } else {
+    stage.style.left = "0";
+    stage.style.transformOrigin = "0 50%";
+    stage.style.transform = "translateY(-50%) scale(" + s + ")";
+  }
+}
+window.addEventListener("resize", fitStage);
+fitStage();
+
+/* ============================================================
+   GRADE HELPERS  (mirrors admin.js:525-555)
+   ============================================================ */
+const KREDIT_IDX = SPM_GRADES.indexOf(CREDIT_GRADE);
+function idx(g){ return SPM_GRADES.indexOf(g); }
+function adaKredit(g){ const i = idx(g); return i !== -1 && i <= KREDIT_IDX; }
+function adaLulus(g){ const i = idx(g); return i !== -1 && g !== "G"; }
+
+/* ============================================================
+   THE ELIGIBILITY ENGINE
+   ------------------------------------------------------------
+   Returns { status, sebab } where status is one of
+   "layak" | "remedial" | "syarat" | "hampir" | "tidak" | "lanjutan".
+   "hampir" means it missed by EXACTLY ONE requirement, and
+   sebab names that requirement.
+   ============================================================ */
+function nilai(prog, keputusan){
+  const rule = (typeof prog.rule === "string") ? RULES[prog.rule] : prog.rule;
+
+  if (rule.lanjutan){
+    return { status:"lanjutan", sebab:"Perlu SKM / Diploma sedia ada" };
+  }
+
+  /* Best grade per subject, in case a subject is entered twice. */
+  const gred = {};
+  keputusan.forEach(function(r){
+    if (!r.subjek || !r.gred) return;
+    if (!(r.subjek in gred) || idx(r.gred) < idx(gred[r.subjek])) gred[r.subjek] = r.gred;
+  });
+
+  const semua = Object.keys(gred);
+  const jumlahKredit = semua.filter(function(s){ return adaKredit(gred[s]); }).length;
+
+  const gagal = [];
+  const nota  = [];
+
+  if (rule.lulusSPM){
+    const adaSatu = semua.some(function(s){ return adaLulus(gred[s]); });
+    if (!adaSatu) gagal.push("Perlu lulus sekurang-kurangnya satu subjek");
+  }
+
+  (rule.kreditWajib || []).forEach(function(s){
+    if (adaKredit(gred[s])) return;
+
+    /* Local concession: a near-miss on this subject is accepted on
+       condition of a remedial class, rather than failing outright. */
+    const pem = rule.pemulihan;
+    if (pem && pem.subjek === s && gred[s] === pem.gred){ nota.push(pem.nota); return; }
+
+    gagal.push("Perlu kredit " + s);
+  });
+
+  (rule.kreditDari || []).forEach(function(grp){
+    const ada = grp.subjek.some(function(s){ return adaKredit(gred[s]); });
+    if (!ada) gagal.push("Perlu kredit " + grp.nama);
+  });
+
+  if (rule.kredit && jumlahKredit < rule.kredit){
+    gagal.push("Perlu " + rule.kredit + " kredit (ada " + jumlahKredit + ")");
+  }
+
+  (rule.lulusWajib || []).forEach(function(s){
+    if (!adaLulus(gred[s])) gagal.push("Perlu lulus " + s);
+  });
+
+  if (gagal.length === 0){
+    const syarat = (prog.gates || []).map(function(g){ return GATES[g]; });
+    const semuaNota = nota.concat(syarat);
+
+    if (nota.length)   return { status:"remedial", sebab:semuaNota.join(" · ") };
+    if (syarat.length) return { status:"syarat",   sebab:syarat.join(" · ") };
+    return { status:"layak", sebab:"" };
+  }
+  if (gagal.length === 1) return { status:"hampir", sebab:gagal[0] };
+
+  /* Two reasons, not one: the Masjid Tanah programmes are shown
+     even when they are missed, so the student needs the whole gap
+     named, not just the first thing that failed. */
+  return { status:"tidak", sebab:gagal.slice(0,2).join(" · ") };
+}
+
+const COP = {
+  layak:    { b:"LAYAK",       s:"" },
+  /* Reads LAYAK like any other accepted programme - the candidate
+     IS in. The condition goes in the note underneath, the same way
+     "syarat" already works. Only the colour stays distinct. */
+  remedial: { b:"LAYAK",       s:"" },
+  syarat:   { b:"LAYAK",       s:"ada syarat" },
+  hampir:   { b:"HAMPIR",      s:"" },
+  lanjutan: { b:"LANJUTAN",    s:"" },
+  /* Never rendered - "tidak" programmes are filtered out of the
+     list entirely. Kept so COP[status] is always defined. */
+  tidak:    { b:"BELUM LAYAK", s:"" },
+};
+
+/* ============================================================
+   SPM ENTRY ROWS
+   ============================================================ */
+const barisWrap = document.getElementById("baris");
+
+/* The six subjects virtually every SPM candidate sits, pre-seeded
+   so he can go straight to typing grades on air. Science-stream and
+   technical subjects are one click away under "+ Tambah Subjek" -
+   they are not defaults because most candidates will not have them. */
+const AWAL = [
+  "Bahasa Melayu", "Bahasa Inggeris", "Matematik",
+  "Sains", "Sejarah", "Pendidikan Islam",
+];
+const MAKS_BARIS = 10;
+
+function buatSelect(cls, pilihan, placeholder){
+  const sel = document.createElement("select");
+  sel.className = cls;
+  const p = document.createElement("option");
+  p.value = ""; p.textContent = placeholder; p.disabled = true; p.selected = true;
+  sel.appendChild(p);
+
+  /* The subject list is grouped (Teras, Sains, Teknikal, …) so the
+     right line is findable in one glance while he is talking. The
+     grade list is flat and passed through as-is. */
+  const berkumpulan = (pilihan === SPM_SUBJECTS);
+  if (berkumpulan){
+    SPM_KUMPULAN.forEach(function(k){
+      const g = document.createElement("optgroup");
+      g.label = k.nama;
+      k.subjek.forEach(function(t){
+        const o = document.createElement("option");
+        o.value = t; o.textContent = t;
+        g.appendChild(o);
+      });
+      sel.appendChild(g);
+    });
+    return sel;
+  }
+
+  pilihan.forEach(function(t){
+    const o = document.createElement("option");
+    o.value = t; o.textContent = t;
+    sel.appendChild(o);
+  });
+  return sel;
+}
+
+/* kunci = a core subject: fixed label, no dropdown, no remove. */
+function tambahBaris(subjek, gred, kunci){
+  if (barisWrap.children.length >= MAKS_BARIS) return null;
+  const row = document.createElement("div");
+  row.className = "baris";
+
+  const g = buatSelect("gred", SPM_GRADES, "Gred");
+  if (gred) g.value = gred;
+
+  if (kunci){
+    const tetap = document.createElement("span");
+    tetap.className = "tetap";
+    tetap.textContent = subjek;
+    tetap.title = subjek;
+    row.dataset.subjek = subjek;       /* read by bacaKeputusan() */
+
+    const ruang = document.createElement("span");
+    ruang.className = "kosong";
+
+    row.appendChild(tetap); row.appendChild(g); row.appendChild(ruang);
+    barisWrap.appendChild(row);
+    return row;
+  }
+
+  const s = buatSelect("sub", SPM_SUBJECTS, "Pilih subjek");
+  if (subjek) s.value = subjek;
+
+  const x = document.createElement("button");
+  x.type = "button"; x.className = "buang"; x.textContent = "×";
+  x.setAttribute("aria-label","Buang baris ini");
+  x.addEventListener("click", function(){ row.remove(); });
+
+  row.appendChild(s); row.appendChild(g); row.appendChild(x);
+  barisWrap.appendChild(row);
+  return row;
+}
+
+function bacaKeputusan(){
+  return Array.from(barisWrap.querySelectorAll(".baris")).map(function(r){
+    /* Locked rows carry the subject on the row; the rest have a select. */
+    const sel = r.querySelector(".sub");
+    return {
+      subjek: r.dataset.subjek || (sel ? sel.value : ""),
+      gred:   r.querySelector(".gred").value
+    };
+  }).filter(function(r){ return r.subjek && r.gred; });
+}
+
+/* The six core rows are always rebuilt and always locked.
+     gred      optional {subjek: gred} to pre-fill those six
+     tambahan  optional [[subjek, gred], …] added as editable rows */
+function semulaBaris(gred, tambahan){
+  barisWrap.innerHTML = "";
+  AWAL.forEach(function(s){
+    tambahBaris(s, (gred && gred[s]) || "", true);
+  });
+  (tambahan || []).forEach(function(p){ tambahBaris(p[0], p[1], false); });
+}
+semulaBaris();
+
+/* ============================================================
+   ATTRACT PANEL
+   ------------------------------------------------------------
+   Rotates while he types, so the longest state on screen is never
+   dead. Wording is restricted to facts printed in the brochure or
+   marked DISAHKAN - no "percuma", no allowance figures, no job
+   guarantees.
+   ============================================================ */
+const TEASER = [
+  { kecil:"Syarat Kemasukan",
+    besar:"Matematik D pun boleh mohon",
+    sokong:"Polimer Komposit, Seramik dan Plastik menerima calon Matematik D dengan kelas remedial." },
+  { kecil:"Yuran Pengajian",
+    besar:"Yuran pengajian ditanggung MARA",
+    sokong:"Elaun sara hidup dan asrama disediakan." },
+  { kecil:"Diploma Industri",
+    besar:"2 kredit sahaja untuk Diploma Industri",
+    sokong:"Diploma Industri Pembuatan Komposit Aeroangkasa (IAC) di Masjid Tanah." },
+  { kecil:"3SURE",
+    besar:"Sure Kerja &middot; Sure Sambung Belajar &middot; Sure Usahawan",
+    sokong:"Lima program di TVETMARA Masjid Tanah." },
+  { kecil:"Cara Mohon",
+    besar:"Mohon di mohon.tvet.gov.my",
+    sokong:"Pengambilan Januari 2027. Taip nama dan gred anda di komen untuk semakan percuma." },
+];
+
+const elTeaser = document.getElementById("teaser");
+let teaserIdx = 0, teaserJam = null, hasilLepas = null;
+
+function lukisTeaser(){
+  /* The previous viewer's result gets the first slot, so the
+     screen still rewards anyone who just arrived. */
+  const guna = (hasilLepas && teaserIdx === 0)
+    ? hasilLepas
+    : TEASER[teaserIdx % TEASER.length];
+
+  elTeaser.classList.toggle("lepas", guna === hasilLepas);
+  document.getElementById("teaserKecil").innerHTML  = guna.kecil;
+  document.getElementById("teaserBesar").innerHTML  = guna.besar;
+  document.getElementById("teaserSokong").innerHTML = guna.sokong;
+
+  [ "teaserBesar", "teaserSokong" ].forEach(function(id){
+    const e = document.getElementById(id);
+    e.classList.remove("tukar"); void e.offsetWidth; e.classList.add("tukar");
+  });
+}
+
+function mulaTeaser(){
+  if (teaserJam) return;
+  lukisTeaser();
+  teaserJam = setInterval(function(){
+    teaserIdx++;
+    lukisTeaser();
+  }, 4500);
+}
+function hentiTeaser(){
+  if (teaserJam){ clearInterval(teaserJam); teaserJam = null; }
+}
+mulaTeaser();
+
+/* ============================================================
+   VIEWER NAME
+   ============================================================ */
+const elNama = document.getElementById("namaPenonton");
+function namaPenonton(){ return elNama.value.trim(); }
+
+/* The name is typed live from a public comment thread, so it is
+   escaped before it ever reaches innerHTML. */
+function selamat(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
+  });
+}
+
+/* ============================================================
+   DEADLINE COUNTDOWN
+   ------------------------------------------------------------
+   UP_TVET Siri 1/2027: 6 Nov for courses with an interview,
+   16 Nov without. Computed live from the date so it can never go
+   stale on air, and it falls back cleanly once both have passed.
+   ============================================================ */
+/* Verified against mohon.tvet.gov.my/awam-kursus/tarikh-ambilan
+   on 2026-10-25 (Siri 1/2027). */
+const TARIKH_TUTUP = [
+  { iso:"2026-11-06", label:"6 Nov",  jenis:"Kursus temuduga" },
+  { iso:"2026-11-16", label:"16 Nov", jenis:"Kursus lain"     },
+];
+
+function lukisKiraHari(){
+  const el = document.getElementById("kiraHari");
+  const kini = new Date(); kini.setHours(0,0,0,0);
+
+  const akan = TARIKH_TUTUP
+    .map(function(t){
+      const d = new Date(t.iso + "T00:00:00");
+      return { jenis:t.jenis, label:t.label, d:d,
+               hari:Math.round((d - kini) / 86400000) };
+    })
+    .filter(function(t){ return t.hari >= 0; });
+
+  if (!akan.length){
+    el.classList.add("tutup");
+    el.textContent = "Permohonan ditutup";
+    return;
+  }
+
+  const t = akan[0];
+  el.classList.remove("tutup");
+  el.textContent = (t.hari === 0)
+    ? "Tutup hari ini — " + t.label
+    : "Tutup " + t.label + " · " + t.hari + " hari lagi";
+}
+lukisKiraHari();
+setInterval(lukisKiraHari, 3600000);   /* a LIVE can cross midnight */
+
+/* ============================================================
+   QUEUE
+   ============================================================ */
+let giliran = [];
+const MAKS_CIP = 5;
+
+function lukisGiliran(){
+  const wrap = document.getElementById("senaraiGiliran");
+  const kira = document.getElementById("kiraGiliran");
+  const semasa = namaPenonton();
+
+  const cip = [];
+  if (semasa) cip.push('<span class="cip kini">' + selamat(semasa) + '</span>');
+  giliran.slice(0, MAKS_CIP).forEach(function(n){
+    cip.push('<span class="cip">' + selamat(n) + '</span>');
+  });
+
+  wrap.innerHTML = cip.length ? cip.join("")
+    : '<span class="kosongG">Taip nama anda di komen untuk masuk giliran</span>';
+
+  const baki = giliran.length - MAKS_CIP;
+  kira.textContent = giliran.length
+    ? giliran.length + " menunggu" + (baki > 0 ? " (+" + baki + ")" : "")
+    : "";
+  document.getElementById("gilSeterus").disabled = giliran.length === 0;
+}
+
+function tambahGiliran(n){
+  n = String(n).trim();
+  if (!n || giliran.length >= 20) return;
+  giliran.push(n);
+  lukisGiliran();
+}
+
+/* Pull the next viewer in and go back to the form ready to type. */
+function seterusnya(){
+  if (!giliran.length) return;
+  elNama.value = giliran.shift();
+  lukisGiliran();
+  kembaliKeBorang();
+}
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+function kadHTML(prog, hasil, utama){
+  const cop = COP[hasil.status];
+  const nota = hasil.status === "layak" ? "" : hasil.sebab;
+  return '<div class="kad ' + hasil.status + (utama ? ' utama' : '') + '">' +
+    '<span class="kod">' + prog.kod + '</span>' +
+    '<span class="teks">' +
+      (utama ? '<span class="tanda">TVETMARA Masjid Tanah</span>' : '') +
+      '<span class="nama">' + prog.nama + '</span>' +
+      '<span class="meta">' + prog.inst.join(" · ") + " — " +
+        prog.t + " tahun · " + prog.kelas + '</span>' +
+    '</span>' +
+    '<span class="cop"><b>' + cop.b + '</b>' +
+      (nota ? '<span>' + nota + '</span>' : (cop.s ? '<span>' + cop.s + '</span>' : '')) +
+    '</span>' +
+  '</div>';
+}
+
+const URUT = { layak:0, remedial:1, syarat:2, hampir:3, lanjutan:4, tidak:5 };
+
+/* Programmes the candidate has actually missed are not shown at
+   all - not even the pinned Masjid Tanah ones. */
+function nampak(x){ return x.hasil.status !== "tidak"; }
+
+function papar(){
+  const keputusan = bacaKeputusan();
+  const dinilai = PROGRAMS.map(function(p){ return { prog:p, hasil:nilai(p, keputusan) }; });
+  const cari = function(kod){ return dinilai.find(function(x){ return x.prog.kod === kod; }); };
+
+  /* One list. The Masjid Tanah programmes are pinned to the top of
+     it in a fixed order and marked, not split into their own
+     section - but they drop out like any other if missed. */
+  const atas = UTAMA.map(function(k){ return cari(k); }).filter(Boolean).filter(nampak);
+
+  const bawah = dinilai
+    .filter(function(x){ return UTAMA.indexOf(x.prog.kod) === -1 && nampak(x); })
+    .sort(function(a,b){
+      if (URUT[a.hasil.status] !== URUT[b.hasil.status]) return URUT[a.hasil.status] - URUT[b.hasil.status];
+      if (a.prog.p !== b.prog.p) return a.prog.p === "D" ? -1 : 1;
+      if (a.prog.kluster !== b.prog.kluster) return a.prog.kluster < b.prog.kluster ? -1 : 1;
+      return a.prog.nama < b.prog.nama ? -1 : 1;
+    });
+
+  const senarai = document.getElementById("senarai");
+  senarai.innerHTML =
+    atas.map(function(x){ return kadHTML(x.prog, x.hasil, true); }).join("") +
+    bawah.map(function(x){ return kadHTML(x.prog, x.hasil, false); }).join("");
+  senarai.scrollTop = 0;
+
+  /* Never leave a blank white panel on air. */
+  const adaApa = atas.length + bawah.length > 0;
+  senarai.hidden = !adaApa;
+  document.getElementById("kosong").hidden = adaApa;
+
+  /* Put the viewer's name in the most prominent slot of the panel. */
+  const nama = namaPenonton();
+  const tajuk = document.getElementById("tajukHasil");
+  if (nama){
+    /* Name only, no "Keputusan" prefix - the panel context is
+       obvious, and the prefix is what pushed long names into
+       being truncated. */
+    tajuk.innerHTML = "<b>" + selamat(nama) + "</b>";
+    tajuk.classList.add("ada-nama");
+    tajuk.classList.toggle("panjang", nama.length > 18);
+  } else {
+    tajuk.textContent = "Keputusan Kelayakan";
+    tajuk.classList.remove("ada-nama", "panjang");
+  }
+
+  const boleh = ["layak","remedial","syarat"];
+  const bolehPohon = dinilai.filter(function(x){ return boleh.indexOf(x.hasil.status) !== -1; }).length;
+  document.getElementById("kira-layak").innerHTML =
+    "<small>Anda Layak</small><b>" + bolehPohon + " Program</b>";
+
+  /* Keep this result on screen as the first attract slide once he
+     goes back to type the next viewer in. */
+  hasilLepas = {
+    kecil: "Keputusan sebelum ini",
+    besar: (nama ? selamat(nama) + " &mdash; " : "") + "layak " + bolehPohon + " program",
+    sokong: "Taip nama dan gred SPM anda di komen untuk semakan anda pula."
+  };
+
+  /* The counselling officer's WhatsApp is only offered to someone
+     who actually qualifies for Masjid Tanah - any of its
+     programmes, DAF included, not just the pinned ones. */
+  const layakMT = dinilai.some(function(x){
+    return x.prog.inst.indexOf("Masjid Tanah") !== -1 &&
+           boleh.indexOf(x.hasil.status) !== -1;
+  });
+  paparWA(layakMT);
+
+  return bolehPohon;
+}
+
+/* ============================================================
+   SOUND
+   ------------------------------------------------------------
+   Synthesised with Web Audio rather than loaded from files, so
+   the page stays a single self-contained document. Browsers
+   block audio until a user gesture, so the context is created
+   on the first Semak click - which is always a real click or
+   keypress, so it is never blocked.
+
+   Press M to mute, for when the live already has its own audio.
+   ============================================================ */
+let ac = null, bas = null;
+let senyap = false;
+
+function audioCtx(){
+  if (!ac){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    ac = new AC();
+
+    /* One master bus for everything: a gentle lowpass takes the
+       digital edge off, and the master gain keeps the whole palette
+       sitting under a speaking voice rather than competing with it. */
+    const lpf = ac.createBiquadFilter();
+    lpf.type = "lowpass";
+    lpf.frequency.value = 5200;
+    lpf.Q.value = 0.4;
+
+    bas = ac.createGain();
+    bas.gain.value = 0.55;
+
+    bas.connect(lpf); lpf.connect(ac.destination);
+  }
+  if (ac.state === "suspended") ac.resume();
+  return ac;
+}
+
+/* One shaped voice.
+     f     frequency, or [from, to] to glide
+     dur   total length in seconds
+     type  oscillator shape
+     vol   peak gain
+     when  offset from now
+     cut   per-voice lowpass corner
+     atk   attack time - longer = softer onset, no click      */
+function suara(o){
+  if (senyap) return;
+  const c = audioCtx();
+  if (!c) return;
+  const t = c.currentTime + (o.when || 0);
+  const dur = o.dur || 0.3;
+  const atk = o.atk || 0.015;
+
+  const osc = c.createOscillator();
+  osc.type = o.type || "sine";
+
+  if (Array.isArray(o.f)){
+    osc.frequency.setValueAtTime(o.f[0], t);
+    osc.frequency.exponentialRampToValueAtTime(o.f[1], t + dur * 0.8);
+  } else {
+    osc.frequency.setValueAtTime(o.f, t);
+  }
+
+  const amp = c.createGain();
+  amp.gain.setValueAtTime(0.0001, t);
+  amp.gain.exponentialRampToValueAtTime(o.vol || 0.18, t + atk);
+  amp.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+
+  let tail = amp;
+  if (o.cut){
+    const f = c.createBiquadFilter();
+    f.type = "lowpass"; f.frequency.value = o.cut; f.Q.value = 0.5;
+    amp.connect(f); tail = f;
+  }
+  osc.connect(amp); tail.connect(bas);
+  osc.start(t); osc.stop(t + dur + 0.05);
+}
+
+/* Countdown: a soft woodblock tock, pitch easing up as the number
+   falls. Dry and quiet - it marks time without drawing attention. */
+function bunyiTik(n){
+  const naik = (panjangKira - n);
+  suara({ f:[620 + naik*55, 430 + naik*40], dur:0.085, type:"triangle",
+          vol:0.11, cut:2400, atk:0.004 });
+}
+
+/* Each card landing: a low, damped thud with a quiet transient on
+   top, in the register of a broadcast lower-third hit. */
+function bunyiCop(i){
+  const w = i * 0.22;
+  suara({ f:[132, 74], dur:0.26, type:"sine",     vol:0.26, cut:520, when:w, atk:0.006 });
+  suara({ f:[540, 380], dur:0.07, type:"triangle", vol:0.06, cut:1800, when:w, atk:0.003 });
+}
+
+/* Verdict: a warm bell built from three consonant partials with a
+   long release - a premium notification chime, not a game fanfare. */
+function bunyiJaya(bila){
+  const w = bila || 0;
+  const nada = [
+    { f:587.33, v:0.16, d:1.05, o:0.00 },   /* D5  */
+    { f:880.00, v:0.11, d:0.95, o:0.07 },   /* A5  */
+    { f:1174.7, v:0.07, d:0.85, o:0.14 },   /* D6  */
+  ];
+  nada.forEach(function(x){
+    suara({ f:x.f, dur:x.d, type:"sine", vol:x.v, cut:4200,
+            when:w + x.o, atk:0.03 });
+  });
+  /* A touch of body underneath so it does not sound thin on phone
+     speakers. */
+  suara({ f:146.83, dur:0.7, type:"sine", vol:0.10, cut:420, when:w, atk:0.04 });
+}
+
+/* Nothing matched: one soft, neutral low tone. Deliberately not a
+   buzzer and not a sad cadence - this goes out to a teenager. */
+function bunyiKosong(bila){
+  const w = bila || 0;
+  suara({ f:293.66, dur:0.75, type:"sine", vol:0.15, cut:1400, when:w, atk:0.05 });
+  suara({ f:440.00, dur:0.55, type:"sine", vol:0.07, cut:1800, when:w + 0.04, atk:0.05 });
+}
+
+/* ============================================================
+   COUNTDOWN + STAGED REVEAL
+   ============================================================ */
+const elKira   = document.getElementById("kira");
+const elAngka  = document.getElementById("kiraAngka");
+const elWow    = document.getElementById("wow");
+const elWowNum = document.getElementById("wowAngka");
+const elHasil  = document.getElementById("hasil");
+const elMohon  = document.getElementById("mohon");
+
+let panjangKira = 5;
+let jam = null, sedangKira = false;
+let rafWow = null, masaWow = null;
+let jumlahLayak = 0;          /* set by papar(), drives the reveal */
+
+/* Quiet odometer tick while the number climbs. */
+function bunyiDetik(){
+  suara({ f:[1150, 860], dur:0.034, type:"sine", vol:0.045, cut:3200, atk:0.002 });
+}
+
+/* Count the number up from zero, then punch it with the gold ring
+   and the chime. Calls "selesai" when it is time for the list. */
+function dedahAngka(n, selesai){
+  elWow.classList.remove("pop");
+  elWow.classList.add("on");
+  elWowNum.textContent = "0";
+
+  const nama = namaPenonton();
+  const elWowNama = document.getElementById("wowNama");
+  elWowNama.hidden = !nama;
+  if (nama) elWowNama.textContent = nama;
+
+  const mula = performance.now();
+  const TEMPOH = 1150;
+  let tikAkhir = 0;
+
+  function langkah(t){
+    const p = Math.min(1, (t - mula) / TEMPOH);
+    const e = 1 - Math.pow(1 - p, 3);              /* easeOutCubic */
+    elWowNum.textContent = Math.round(e * n);
+
+    if (t - tikAkhir > 55 && p < 1){ bunyiDetik(); tikAkhir = t; }
+
+    if (p < 1){ rafWow = requestAnimationFrame(langkah); return; }
+
+    elWowNum.textContent = n;
+    elWow.classList.add("pop");
+    bunyiJaya(0);
+    rafWow = null;
+    masaWow = setTimeout(function(){ tutupAngka(); selesai(); }, 1300);
+  }
+  rafWow = requestAnimationFrame(langkah);
+}
+
+function tutupAngka(){
+  if (rafWow){ cancelAnimationFrame(rafWow); rafWow = null; }
+  if (masaWow){ clearTimeout(masaWow); masaWow = null; }
+  elWow.classList.remove("on","pop");
+}
+
+function dedah(dengarVerdict){
+  /* Switch to state B: the input shrinks, the list appears, the
+     apply bar slides up last. */
+  stage.classList.add("ada-hasil");
+  hentiTeaser();
+  elHasil.hidden = false;   /* #mohon is always visible now */
+
+  elHasil.classList.remove("masuk"); void elHasil.offsetWidth;
+  elHasil.classList.add("masuk");
+
+  const utama = Array.from(document.querySelectorAll("#senarai .kad.utama"));
+  utama.forEach(function(k,i){
+    k.classList.remove("masuk"); void k.offsetWidth;
+    k.style.animationDelay = (0.15 + i*0.22) + "s";
+    k.classList.add("masuk");
+    bunyiCop(i);
+  });
+
+  /* The verdict chime normally belongs to the number reveal. It is
+     only played here when that reveal was skipped. */
+  if (dengarVerdict){
+    const selepas = 0.15 + utama.length * 0.22;
+    if (jumlahLayak > 0) bunyiJaya(selepas); else bunyiKosong(selepas);
+  }
+
+  elMohon.classList.remove("naik"); void elMohon.offsetWidth;
+  elMohon.style.animationDelay = "1.1s";
+  elMohon.classList.add("naik");
+}
+
+function hentiKira(){
+  if (jam){ clearInterval(jam); jam = null; }
+  sedangKira = false;
+  elKira.classList.remove("on");
+}
+
+/* Jump straight to the finished result, abandoning whatever part
+   of the sequence is mid-flight. */
+function langkauSemua(){
+  hentiKira();
+  tutupAngka();
+  dedah(true);
+}
+
+/* Countdown has finished - now the number, then the list. */
+function selepasKira(){
+  hentiKira();
+  if (jumlahLayak > 0){
+    dedahAngka(jumlahLayak, function(){ dedah(false); });
+  } else {
+    bunyiKosong(0);
+    dedah(false);
+  }
+}
+
+function jalankan(){
+  /* Pressing Semak again mid-sequence snaps straight to the
+     final state rather than queueing another run. */
+  if (sedangKira || rafWow || masaWow){ langkauSemua(); return; }
+
+  if (bacaKeputusan().length === 0) return;
+  jumlahLayak = papar();
+
+  audioCtx();   /* unlock audio on this click, before any sound is needed */
+
+  const kurang = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (kurang){ dedah(true); return; }
+
+  let n = panjangKira;
+  sedangKira = true;
+  elKira.classList.add("on");
+  elAngka.textContent = n;
+  elAngka.style.animation = "none"; void elAngka.offsetWidth; elAngka.style.animation = "";
+  bunyiTik(n);
+
+  jam = setInterval(function(){
+    n--;
+    if (n <= 0){ selepasKira(); return; }
+    elAngka.textContent = n;
+    elAngka.style.animation = "none"; void elAngka.offsetWidth; elAngka.style.animation = "";
+    bunyiTik(n);
+  }, 1000);
+}
+
+/* ============================================================
+   CONTROLS
+   ============================================================ */
+/* Back to state A. The grades are left as they were, so he can
+   correct one subject rather than retyping the lot; Set Semula is
+   what clears them for the next candidate. */
+function kembaliKeBorang(){
+  hentiKira();
+  tutupAngka();
+  stage.classList.remove("ada-hasil");
+  elHasil.hidden = true;
+  paparWA(false);
+  teaserIdx = 0;          /* lead with the last result */
+  mulaTeaser();
+  lukisGiliran();
+}
+
+document.getElementById("semak").addEventListener("click", jalankan);
+document.getElementById("tambah").addEventListener("click", function(){ tambahBaris(); });
+document.getElementById("kembali").addEventListener("click", kembaliKeBorang);
+document.getElementById("gilSeterus").addEventListener("click", seterusnya);
+
+/* Enter in the queue box adds a name - it must NOT run the check,
+   which is what the global Enter handler does. */
+const elGil = document.getElementById("gilInput");
+elGil.addEventListener("keydown", function(e){
+  if (e.key !== "Enter") return;
+  e.preventDefault(); e.stopPropagation();
+  tambahGiliran(elGil.value);
+  elGil.value = "";
+});
+
+/* Keep the "sekarang" chip in step with the name field. */
+elNama.addEventListener("input", lukisGiliran);
+lukisGiliran();
+document.getElementById("reset").addEventListener("click", function(){
+  semulaBaris();
+  elNama.value = "";
+  kembaliKeBorang();
+  elNama.focus();          /* next viewer's name is the first thing typed */
+});
+
+/* Demo profile for rehearsing / filling dead air. Matematik D on
+   purpose, so pressing C demonstrates the REMEDIAL case. */
+const CONTOH_GRED = {
+  "Bahasa Melayu":"B", "Bahasa Inggeris":"C", "Matematik":"D",
+  "Sains":"C", "Sejarah":"B+", "Pendidikan Islam":"B"
+};
+const CONTOH_TAMBAHAN = [["Fizik","C"]];
+
+document.addEventListener("keydown", function(e){
+  /* INPUT as well as SELECT: without this, typing a name containing
+     r/f/s/c/m would fire the shortcuts. */
+  const tag = e.target.tagName;
+  const dalamMedan = tag === "SELECT" || tag === "INPUT" || tag === "TEXTAREA";
+
+  if (e.key === "Enter"){
+    if (e.target.id === "gilInput") return;   /* its own handler adds to the queue */
+    e.preventDefault();
+    jalankan();              /* jalankan() itself skips if mid-sequence */
+    return;
+  }
+  if (e.code === "Space" && tag !== "INPUT" && (sedangKira || rafWow || masaWow)){
+    e.preventDefault(); langkauSemua(); return;
+  }
+  if (e.key === "Escape"){
+    e.preventDefault(); kembaliKeBorang(); return;
+  }
+  if (dalamMedan) return;   /* let the name field and dropdowns keep their keys */
+
+  const k = e.key.toLowerCase();
+  if (k === "r"){ document.getElementById("reset").click(); }
+  if (k === "f"){
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+  }
+  if (k === "s"){
+    /* One key shows every setup guide: the TikTok overlay zones
+       and the face-cam ring. */
+    const on = document.getElementById("safe").classList.toggle("on");
+    stage.classList.toggle("panduan", on);
+  }
+  /* Light / dark. Switch it mid-LIVE and watch the viewer count:
+     that comparison is the only test that settles the question. */
+  if (k === "t"){ stage.classList.toggle("gelap"); }
+  if (k === "l"){ ketengah = !ketengah; fitStage(); }
+  if (k === "c"){ semulaBaris(CONTOH_GRED, CONTOH_TAMBAHAN); }
+  if (k === "3"){ panjangKira = 3; }
+  if (k === "5"){ panjangKira = 5; }
+  if (k === "n"){ seterusnya(); }
+  if (k === "m"){
+    senyap = !senyap;
+    document.getElementById("bisu").hidden = !senyap;
+  }
+});
+</script>
+</body>
+</html>
