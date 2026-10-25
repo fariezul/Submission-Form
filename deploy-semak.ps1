@@ -55,12 +55,13 @@ if (-not $berubah) {
 git status --short
 
 # The host guide must never reach this repo - it is the public site.
-$bocor = git status --porcelain | Where-Object { $_ -match "Panduan_Host|panduan-host" }
+$bocor = git status --porcelain |
+         Where-Object { $_ -match "Panduan_Host|panduan-host|Rundown_LIVE|skrip-live" }
 if ($bocor) {
     Write-Host ""
-    Write-Host "GAGAL: fail panduan host akan di-commit ke laman AWAM:" -ForegroundColor Red
+    Write-Host "GAGAL: bahan host dalaman akan di-commit ke laman AWAM:" -ForegroundColor Red
     $bocor | ForEach-Object { Write-Host "   $_" }
-    throw "Semak .gitignore. Panduan host tinggal di folder Drive sahaja."
+    throw "Semak .gitignore. Bahan host tinggal di folder Drive sahaja."
 }
 
 # ---------------------------------------------------------------

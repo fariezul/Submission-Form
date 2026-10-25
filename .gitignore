@@ -19,8 +19,11 @@ fishbone-diagram.jpg
 histogram-petal-length.png
 control-chart-xbar.png
 
-# Internal host guide for the LIVE tool. NOT for the public site:
-# it carries internal performance figures and notes on content that
-# TikTok removed. Hosts get it from the Drive workspace instead.
+# Internal host material for the LIVE tool. NOT for the public site:
+# it carries internal performance figures (watch time, concurrents)
+# and notes on content TikTok removed. Hosts get these from the Drive
+# workspace instead.
 Panduan_Host_Semakan_Kelayakan_LIVE.pdf
 panduan-host-cetak.src.html
+Rundown_LIVE_Semakan_Kelayakan.pdf
+skrip-live-cetak.src.html
