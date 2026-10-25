@@ -83,7 +83,10 @@ Write-Host "   Dihantar." -ForegroundColor Green
 
 # ---------------------------------------------------------------
 Tajuk "5/5  Sahkan laman sebenar"
-$url = "https://farizuljaafar.com/semak"
+# The canonical host, with www. The apex redirects there with a 308,
+# and Invoke-WebRequest on PowerShell 5.1 does not follow 308 - it
+# throws, which made a perfectly healthy site look dead.
+$url = "https://www.farizuljaafar.com/semak"
 $cap = ""
 for ($i = 1; $i -le 10; $i++) {
     Start-Sleep -Seconds 6
