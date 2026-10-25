@@ -645,7 +645,7 @@ html,body{
 
 /* ---------- apply bar ---------- */
 #mohon{
-  flex:0 0 134px;display:flex;flex-direction:column;
+  flex:0 0 108px;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:4px;
   background:var(--error);border-radius:var(--radius);
   color:#fff;text-decoration:none;
@@ -765,22 +765,28 @@ html,body{
   background:rgba(255,255,255,.1);border-radius:6px;
   padding:11px 18px;text-align:center;letter-spacing:.02em;
 }
-/* Three officers side by side, equal width. Lives in the bottom
-   row, not the footer - the footer sits under TikTok's comments. */
-#wa{display:flex;align-items:stretch;gap:10px;flex:0 0 auto}
+/* Three officers stacked, each using the full width of the action
+   column. Side by side they were capped at ~234px each, which held
+   the number down to 21px; stacked they get 722px and can be read
+   off a compressed phone stream. Lives in the bottom row, not the
+   footer - the footer sits under TikTok's comments. */
+#wa{display:flex;flex-direction:column;gap:8px;flex:0 0 auto}
 .wa{
-  flex:1 1 0;min-width:0;
-  display:flex;align-items:center;gap:9px;
+  flex:0 0 54px;
+  display:flex;align-items:center;gap:14px;
   background:#25D366;color:#06301a;text-decoration:none;
-  border-radius:7px;padding:8px 11px;
+  border-radius:8px;padding:0 18px;
 }
-.wa svg{width:30px;height:30px;flex:0 0 auto;display:block}
-.wa .teks{display:flex;flex-direction:column;line-height:1.14;min-width:0}
-.wa b{font-size:21px;font-weight:700;letter-spacing:.01em;white-space:nowrap}
+.wa svg{width:38px;height:38px;flex:0 0 auto;display:block}
+.wa b{
+  font-size:34px;font-weight:700;letter-spacing:.01em;
+  white-space:nowrap;flex:0 0 auto;
+}
 .wa i{
-  font-style:normal;font-size:11px;font-weight:700;
-  letter-spacing:.05em;text-transform:uppercase;opacity:.74;
+  font-style:normal;font-size:17px;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;opacity:.72;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-left:auto;
 }
 
 #kaki .nota{font-size:17px;color:#8ba3c2;line-height:1.5}
@@ -1512,7 +1518,7 @@ const IKON_WA =
            '" target="_blank" rel="noopener">' +
            '<svg viewBox="0 0 24 24" aria-hidden="true">' +
              '<path fill="currentColor" d="' + IKON_WA + '"/></svg>' +
-           '<span class="teks"><b>' + p.no + '</b><i>' + p.peranan + '</i></span>' +
+           '<b>' + p.no + '</b><i>' + p.peranan + '</i>' +
            '</a>';
   }).join("");
 })();
