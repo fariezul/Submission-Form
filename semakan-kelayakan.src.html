@@ -781,9 +781,9 @@ html,body{
   background:#25D366;color:#06301a;text-decoration:none;
   border-radius:9px;padding:10px 12px;
 }
-.wa svg{width:46px;height:46px;flex:0 0 auto;display:block}
+.wa svg{width:38px;height:38px;flex:0 0 auto;display:block;margin-top:2px}
 .wa b{
-  font-size:31px;font-weight:700;letter-spacing:.005em;
+  font-size:34px;font-weight:700;letter-spacing:.005em;
   white-space:nowrap;line-height:1.1;
 }
 /* Wraps to two lines rather than truncating: "Promosi &
@@ -1016,11 +1016,13 @@ const IKON_WA =
 (function pasangWA(){
   document.getElementById("wa").innerHTML = PERUNDING.map(function(p){
     const digit = p.no.replace(/\D/g, "").replace(/^0/, "60");
+    /* Number first: it is the thing a viewer has to read and save.
+       The WhatsApp mark goes underneath as the channel marker. */
     return '<a class="wa" href="https://wasap.my/' + digit + '/' + PESAN_WA +
            '" target="_blank" rel="noopener">' +
+           '<b>' + p.no + '</b><i>' + p.peranan + '</i>' +
            '<svg viewBox="0 0 24 24" aria-hidden="true">' +
              '<path fill="currentColor" d="' + IKON_WA + '"/></svg>' +
-           '<b>' + p.no + '</b><i>' + p.peranan + '</i>' +
            '</a>';
   }).join("");
 })();
