@@ -765,28 +765,34 @@ html,body{
   background:rgba(255,255,255,.1);border-radius:6px;
   padding:11px 18px;text-align:center;letter-spacing:.02em;
 }
-/* Three officers stacked, each using the full width of the action
-   column. Side by side they were capped at ~234px each, which held
-   the number down to 21px; stacked they get 722px and can be read
-   off a compressed phone stream. Lives in the bottom row, not the
+/* Three officers side by side, each box filling the full height
+   left under the apply bar. Stacking the contents inside the box -
+   icon, number, role - rather than putting them on one line is what
+   lets the number reach 31px: on a single line the icon ate the
+   width and capped it at 21px. Lives in the bottom row, not the
    footer - the footer sits under TikTok's comments. */
-#wa{display:flex;flex-direction:column;gap:8px;flex:0 0 auto}
+#wa{display:flex;align-items:stretch;gap:12px;flex:1 1 auto;min-height:0}
 .wa{
-  flex:0 0 54px;
-  display:flex;align-items:center;gap:14px;
+  flex:1 1 0;min-width:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;
   background:#25D366;color:#06301a;text-decoration:none;
-  border-radius:8px;padding:0 18px;
+  border-radius:9px;padding:10px 12px;
 }
-.wa svg{width:38px;height:38px;flex:0 0 auto;display:block}
+.wa svg{width:46px;height:46px;flex:0 0 auto;display:block}
 .wa b{
-  font-size:34px;font-weight:700;letter-spacing:.01em;
-  white-space:nowrap;flex:0 0 auto;
+  font-size:31px;font-weight:700;letter-spacing:.005em;
+  white-space:nowrap;line-height:1.1;
 }
+/* Wraps to two lines rather than truncating: "Promosi &
+   Pengambilan" does not fit a 233px box on one line, and the box
+   has the vertical room to spare. */
 .wa i{
-  font-style:normal;font-size:17px;font-weight:700;
-  letter-spacing:.05em;text-transform:uppercase;opacity:.72;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  margin-left:auto;
+  font-style:normal;font-size:15px;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;opacity:.74;
+  max-width:100%;text-align:center;line-height:1.18;
+  overflow:hidden;display:-webkit-box;
+  -webkit-line-clamp:2;-webkit-box-orient:vertical;
 }
 
 #kaki .nota{font-size:17px;color:#8ba3c2;line-height:1.5}
