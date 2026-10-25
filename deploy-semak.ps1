@@ -95,11 +95,17 @@ for ($i = 1; $i -le 10; $i++) {
         $r = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 20
         $bil = ([regex]::Matches($r.Content, '\{\s*kod:"')).Count
 
-        # Compare the served bytes with what we just built. A programme
+        # Compare the served page with what we just built. A programme
         # count alone cannot tell a new build from a cached old one -
         # it is identical whenever the change was not to the programme
         # list, which is most of the time.
-        $samaDenganBina = ($r.Content.Length -eq $html.Length)
+        #
+        # Line endings MUST be normalised first: Git converts LF to
+        # CRLF on checkout, so the served file is ~500 bytes longer
+        # than the local one and a raw comparison never matches.
+        $disaji  = $r.Content -replace "`r`n", "`n"
+        $dibina  = $html      -replace "`r`n", "`n"
+        $samaDenganBina = ($disaji -eq $dibina)
         $cap = "   Cubaan $i : HTTP $($r.StatusCode), $bil program, " +
                $(if ($samaDenganBina) { "padan dengan binaan" } else { "masih versi lama" })
         Write-Host $cap -ForegroundColor DarkGray
