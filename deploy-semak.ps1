@@ -93,12 +93,18 @@ for ($i = 1; $i -le 10; $i++) {
     Start-Sleep -Seconds 6
     try {
         $r = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 20
-        # The page carries its own programme count; use it as the signal
-        # that Vercel is serving the NEW build and not a cached one.
         $bil = ([regex]::Matches($r.Content, '\{\s*kod:"')).Count
-        $cap = "   Cubaan $i : HTTP $($r.StatusCode), $bil program"
+
+        # Compare the served bytes with what we just built. A programme
+        # count alone cannot tell a new build from a cached old one -
+        # it is identical whenever the change was not to the programme
+        # list, which is most of the time.
+        $samaDenganBina = ($r.Content.Length -eq $html.Length)
+        $cap = "   Cubaan $i : HTTP $($r.StatusCode), $bil program, " +
+               $(if ($samaDenganBina) { "padan dengan binaan" } else { "masih versi lama" })
         Write-Host $cap -ForegroundColor DarkGray
-        if ($r.StatusCode -eq 200 -and $bil -gt 0) {
+
+        if ($r.StatusCode -eq 200 -and $bil -gt 0 -and $samaDenganBina) {
             Write-Host ""
             Write-Host "SIARAN LANGSUNG : $url  ($bil program)" -ForegroundColor Green
             return

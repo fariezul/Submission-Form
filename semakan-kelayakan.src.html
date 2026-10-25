@@ -67,7 +67,9 @@
      colour once TikTok had compressed the stream. */
   /* Tints deep enough to read as distinct blocks after compression. */
   --s-layak:#1e6f4c;    --s-layak-bg:#cdebd9;    --s-layak-line:#1e6f4c;
-  --s-remedial:#b07400; --s-remedial-bg:#fbe7bd; --s-remedial-line:#c98f22;
+  /* Same green as LAYAK - the candidate is accepted; the condition
+     is carried by the note, not by a different colour. */
+  --s-remedial:#1e6f4c; --s-remedial-bg:#cdebd9; --s-remedial-line:#1e6f4c;
   --s-syarat:#1c5f91;   --s-syarat-bg:#d2e4f2;   --s-syarat-line:#5f94bc;
   --s-hampir:#6c7a8d;   --s-hampir-bg:#e6eaf1;   --s-hampir-line:#b6c0cd;
   --s-lanjut:#9aa6b5;   --s-lanjut-bg:#eef1f5;   --s-lanjut-line:#ccd4de;
@@ -107,7 +109,7 @@
      equal luminance they rely on chroma alone, and 4:2:0 chroma
      subsampling is exactly what a compressed stream throws away. */
   --s-layak:#34c184;    --s-layak-bg:#15523a;    --s-layak-line:#35c489;
-  --s-remedial:#8f6200; --s-remedial-bg:#51390a; --s-remedial-line:#e0a93d;
+  --s-remedial:#34c184; --s-remedial-bg:#15523a; --s-remedial-line:#35c489;
   --s-syarat:#2b7cb8;   --s-syarat-bg:#164163;   --s-syarat-line:#4a9ad1;
   --s-hampir:#7e90a8;   --s-hampir-bg:#2b3e55;   --s-hampir-line:#46607e;
   --s-lanjut:#5b6d84;   --s-lanjut-bg:#1d2d40;   --s-lanjut-line:#32475f;
@@ -597,7 +599,7 @@ html,body{
 .layak    {border-color:var(--s-layak-line);background:var(--s-layak-bg)}
 .layak    .cop{background:var(--s-layak);color:var(--cop-teks-layak)}
 .remedial {border-color:var(--s-remedial-line);background:var(--s-remedial-bg)}
-.remedial .cop{background:var(--s-remedial);color:var(--cop-teks)}
+.remedial .cop{background:var(--s-remedial);color:var(--cop-teks-layak)}
 .syarat   {border-color:var(--s-syarat-line);background:var(--s-syarat-bg)}
 .syarat   .cop{background:var(--s-syarat);color:var(--cop-teks)}
 .hampir   {border-color:var(--s-hampir-line);background:var(--s-hampir-bg)}
