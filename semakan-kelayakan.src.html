@@ -483,6 +483,30 @@ html,body{
   text-align:center;padding:30px;
 }
 #kosong .besar{font-size:38px;font-weight:700;color:var(--navy-600);line-height:1.25}
+
+/* ---------- no SPM certificate ---------- */
+#gagalSpm{
+  flex:1 1 auto;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;
+  text-align:center;padding:28px;
+}
+#gagalSpm .tanda-g{
+  font-size:46px;font-weight:700;color:#fff;background:var(--error);
+  border-radius:8px;padding:10px 28px;letter-spacing:.03em;
+  text-transform:uppercase;
+}
+#gagalSpm .sebab{font-size:30px;font-weight:700;color:var(--text-dark)}
+#gagalSpm .terang{font-size:24px;color:var(--text-muted);line-height:1.45;max-width:720px}
+#gagalSpm .jalan{display:flex;flex-direction:column;gap:9px;margin-top:4px;width:100%;max-width:700px}
+#gagalSpm .jalan span{
+  font-size:23px;color:var(--text-dark);
+  background:var(--surface-2);border:1px solid var(--line-kuat);
+  border-radius:7px;padding:11px 18px;
+}
+#gagalSpm .jalan b{color:var(--navy-600)}
+
+/* count badge turns red when there is no SPM */
+#hasil .kira.merah{background:var(--error);box-shadow:0 0 0 3px var(--error-bg)}
 #kosong .kecil{font-size:23px;color:var(--text-muted);line-height:1.5;max-width:620px}
 /* Stays big after the reveal, so the number is still the loudest
    thing in the panel while he talks through the list. Stacked on
@@ -537,6 +561,15 @@ html,body{
   -webkit-line-clamp:2;-webkit-box-orient:vertical;
 }
 .kad .meta{font-size:21px;color:var(--text-muted);margin-top:4px}
+/* The UPTVET code is what the viewer types into the portal, so it
+   gets its own chip instead of being buried in the meta line. */
+.kad .meta .up{
+  display:inline-block;margin-left:10px;
+  font-size:19px;font-weight:700;letter-spacing:.02em;
+  color:#6b4d05;background:#f6dfa4;
+  border-radius:5px;padding:2px 10px;
+}
+#stage.gelap .kad .meta .up{color:#ffe9b5;background:#6b4d05}
 .kad .cop{
   flex:0 0 auto;text-align:center;border-radius:5px;
   /* Capped: IAC's three gate conditions made the stamp so wide
@@ -843,6 +876,21 @@ html,body{
         <span class="kira" id="kira-layak"></span>
       </div>
       <div id="senarai"></div>
+      <!-- No SPM certificate: Bahasa Melayu and Sejarah are
+           compulsory passes. Framed as a next step, not a dead end -
+           this goes out to a teenager on a live broadcast. -->
+      <div id="gagalSpm" hidden>
+        <div class="tanda-g">Tidak Lulus SPM</div>
+        <div class="sebab" id="gagalSebab"></div>
+        <div class="terang">Bahasa Melayu dan Sejarah <b>wajib lulus</b> untuk
+          mendapat sijil SPM.</div>
+        <div class="jalan">
+          <span><b>Ulang SPM</b> sebagai calon persendirian</span>
+          <span><b>Ambil SKM</b> &mdash; Sijil Kemahiran Malaysia</span>
+          <span><b>Hubungi perunding</b> kami di bawah</span>
+        </div>
+      </div>
+
       <div id="kosong" hidden>
         <div class="besar">Tiada program yang layak dipohon buat masa ini</div>
         <div class="kecil">Anda masih boleh mengambil Sijil Kemahiran Malaysia (SKM)
@@ -1362,7 +1410,12 @@ function kadHTML(prog, hasil, utama){
       (utama ? '<span class="tanda">TVETMARA Masjid Tanah</span>' : '') +
       '<span class="nama">' + prog.nama + '</span>' +
       '<span class="meta">' + prog.inst.join(" · ") + " — " +
-        prog.t + " tahun · " + prog.kelas + '</span>' +
+        prog.t + " tahun · " + prog.kelas +
+        /* The UPTVET code is what the viewer actually types into the
+           portal, so it gets its own highlighted chip rather than
+           being buried in the meta line. */
+        (prog.uptvet ? '<b class="up">Kod UPTVET ' + prog.uptvet + '</b>' : '') +
+      '</span>' +
     '</span>' +
     '<span class="cop"><b>' + cop.b + '</b>' +
       (nota ? '<span>' + nota + '</span>' : (cop.s ? '<span>' + cop.s + '</span>' : '')) +
@@ -1376,8 +1429,58 @@ const URUT = { layak:0, remedial:1, syarat:2, hampir:3, lanjutan:4, tidak:5 };
    all - not even the pinned Masjid Tanah ones. */
 function nampak(x){ return x.hasil.status !== "tidak"; }
 
+/* Bahasa Melayu and Sejarah are compulsory passes for the SPM
+   certificate itself. A G in either means there is no SPM to apply
+   with, so every SPM-based programme is out regardless of how good
+   the other grades are - checking them one by one would give a
+   misleading answer. */
+const WAJIB_LULUS = ["Bahasa Melayu", "Sejarah"];
+
+function gagalSPM(keputusan){
+  const gagal = [];
+  WAJIB_LULUS.forEach(function(s){
+    const baris = keputusan.find(function(r){ return r.subjek === s; });
+    if (baris && baris.gred === "G") gagal.push(s);
+  });
+  return gagal;
+}
+
 function papar(){
   const keputusan = bacaKeputusan();
+
+  /* No SPM certificate at all - show why, not a list of programmes
+     the candidate cannot have. */
+  const gagalWajib = gagalSPM(keputusan);
+  const elGagal = document.getElementById("gagalSpm");
+  if (gagalWajib.length){
+    document.getElementById("senarai").hidden = true;
+    document.getElementById("kosong").hidden = true;
+    elGagal.hidden = false;
+    document.getElementById("gagalSebab").innerHTML =
+      "Gred <b>G</b> dalam <b>" + gagalWajib.join("</b> dan <b>") + "</b>.";
+
+    const tajuk = document.getElementById("tajukHasil");
+    const nama = namaPenonton();
+    tajuk.innerHTML = nama ? "<b>" + selamat(nama) + "</b>" : "Keputusan Kelayakan";
+    tajuk.classList.toggle("ada-nama", !!nama);
+    tajuk.classList.toggle("panjang", !!nama && nama.length > 18);
+
+    document.getElementById("kira-layak").innerHTML =
+      "<small>Tidak</small><b>Lulus SPM</b>";
+    document.getElementById("kira-layak").classList.add("merah");
+
+    /* They need advice more than anyone, so the counsellors show. */
+    paparWA(true);
+    hasilLepas = {
+      kecil: "Keputusan sebelum ini",
+      besar: (nama ? selamat(nama) + " &mdash; " : "") + "tidak lulus SPM",
+      sokong: "Bahasa Melayu dan Sejarah wajib lulus. Hubungi perunding kami."
+    };
+    return 0;
+  }
+  elGagal.hidden = true;
+  document.getElementById("kira-layak").classList.remove("merah");
+
   const dinilai = PROGRAMS.map(function(p){ return { prog:p, hasil:nilai(p, keputusan) }; });
   const cari = function(kod){ return dinilai.find(function(x){ return x.prog.kod === kod; }); };
 
@@ -1467,17 +1570,29 @@ function audioCtx(){
     ac = new AC();
 
     /* One master bus for everything: a gentle lowpass takes the
-       digital edge off, and the master gain keeps the whole palette
-       sitting under a speaking voice rather than competing with it. */
+       digital edge off. Gain is now at full, with a compressor after
+       it so the loudest moment - the bell, four partials at once -
+       is held back instead of clipping into distortion. */
     const lpf = ac.createBiquadFilter();
     lpf.type = "lowpass";
-    lpf.frequency.value = 5200;
+    lpf.frequency.value = 5600;
     lpf.Q.value = 0.4;
 
-    bas = ac.createGain();
-    bas.gain.value = 0.55;
+    const had = ac.createDynamicsCompressor();
+    had.threshold.value = -6;
+    had.knee.value = 6;
+    had.ratio.value = 12;
+    had.attack.value = 0.003;
+    had.release.value = 0.18;
 
-    bas.connect(lpf); lpf.connect(ac.destination);
+    /* 2.2, not 1.0: the bell's partials are staggered by 70-140ms so
+       they never sum to a peak, which left the bus sitting at 0.38
+       with the headroom unused. The compressor above catches whatever
+       this overdrives. */
+    bas = ac.createGain();
+    bas.gain.value = 2.2;
+
+    bas.connect(lpf); lpf.connect(had); had.connect(ac.destination);
   }
   if (ac.state === "suspended") ac.resume();
   return ac;
@@ -1529,15 +1644,15 @@ function suara(o){
 function bunyiTik(n){
   const naik = (panjangKira - n);
   suara({ f:[620 + naik*55, 430 + naik*40], dur:0.085, type:"triangle",
-          vol:0.11, cut:2400, atk:0.004 });
+          vol:0.26, cut:2400, atk:0.004 });
 }
 
 /* Each card landing: a low, damped thud with a quiet transient on
    top, in the register of a broadcast lower-third hit. */
 function bunyiCop(i){
   const w = i * 0.22;
-  suara({ f:[132, 74], dur:0.26, type:"sine",     vol:0.26, cut:520, when:w, atk:0.006 });
-  suara({ f:[540, 380], dur:0.07, type:"triangle", vol:0.06, cut:1800, when:w, atk:0.003 });
+  suara({ f:[132, 74], dur:0.26, type:"sine",     vol:0.60, cut:520, when:w, atk:0.006 });
+  suara({ f:[540, 380], dur:0.07, type:"triangle", vol:0.14, cut:1800, when:w, atk:0.003 });
 }
 
 /* Verdict: a warm bell built from three consonant partials with a
@@ -1545,9 +1660,9 @@ function bunyiCop(i){
 function bunyiJaya(bila){
   const w = bila || 0;
   const nada = [
-    { f:587.33, v:0.16, d:1.05, o:0.00 },   /* D5  */
-    { f:880.00, v:0.11, d:0.95, o:0.07 },   /* A5  */
-    { f:1174.7, v:0.07, d:0.85, o:0.14 },   /* D6  */
+    { f:587.33, v:0.38, d:1.05, o:0.00 },   /* D5  */
+    { f:880.00, v:0.26, d:0.95, o:0.07 },   /* A5  */
+    { f:1174.7, v:0.17, d:0.85, o:0.14 },   /* D6  */
   ];
   nada.forEach(function(x){
     suara({ f:x.f, dur:x.d, type:"sine", vol:x.v, cut:4200,
@@ -1555,15 +1670,15 @@ function bunyiJaya(bila){
   });
   /* A touch of body underneath so it does not sound thin on phone
      speakers. */
-  suara({ f:146.83, dur:0.7, type:"sine", vol:0.10, cut:420, when:w, atk:0.04 });
+  suara({ f:146.83, dur:0.7, type:"sine", vol:0.24, cut:420, when:w, atk:0.04 });
 }
 
 /* Nothing matched: one soft, neutral low tone. Deliberately not a
    buzzer and not a sad cadence - this goes out to a teenager. */
 function bunyiKosong(bila){
   const w = bila || 0;
-  suara({ f:293.66, dur:0.75, type:"sine", vol:0.15, cut:1400, when:w, atk:0.05 });
-  suara({ f:440.00, dur:0.55, type:"sine", vol:0.07, cut:1800, when:w + 0.04, atk:0.05 });
+  suara({ f:293.66, dur:0.75, type:"sine", vol:0.34, cut:1400, when:w, atk:0.05 });
+  suara({ f:440.00, dur:0.55, type:"sine", vol:0.16, cut:1800, when:w + 0.04, atk:0.05 });
 }
 
 /* ============================================================
@@ -1583,7 +1698,7 @@ let jumlahLayak = 0;          /* set by papar(), drives the reveal */
 
 /* Quiet odometer tick while the number climbs. */
 function bunyiDetik(){
-  suara({ f:[1150, 860], dur:0.034, type:"sine", vol:0.045, cut:3200, atk:0.002 });
+  suara({ f:[1150, 860], dur:0.034, type:"sine", vol:0.11, cut:3200, atk:0.002 });
 }
 
 /* Count the number up from zero, then punch it with the gold ring

@@ -223,13 +223,13 @@ const PROGRAMS = [
 
   /* ===== PEMPROSESAN BAHAN - MASJID TANAH (brochure p.19-20) ===== */
   { kod:"DTP", nama:"Diploma Teknologi Kejuruteraan Pemprosesan Polimer Komposit", en:"Polymer Composite Processing Engineering Technology",
-    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:3, kelas:"MQA", p:"D", rule:"T_MQA_BAHAN", gates:[] },
+    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:3, kelas:"MQA", p:"D", rule:"T_MQA_BAHAN", gates:[], uptvet:"Q41" },
   { kod:"DTS", nama:"Diploma Teknologi Kejuruteraan Pemprosesan Seramik", en:"Ceramic Processing Engineering Technology",
-    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:3, kelas:"MQA", p:"D", rule:"T_MQA_BAHAN", gates:[] },
+    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:3, kelas:"MQA", p:"D", rule:"T_MQA_BAHAN", gates:[], uptvet:"Q42" },
   { kod:"DTL", nama:"Diploma Teknologi Kejuruteraan Pemprosesan Plastik", en:"Plastic Processing Engineering Technology",
-    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:3, kelas:"MQA", p:"D", rule:"T_MQA_BAHAN", gates:[] },
+    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:3, kelas:"MQA", p:"D", rule:"T_MQA_BAHAN", gates:[], uptvet:"Q43" },
   { kod:"IAC", nama:"Diploma Industri Pembuatan Komposit Aeroangkasa", en:"Industry in Aerospace Composite Manufacturing",
-    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:2, kelas:"JPK", p:"D", rule:"T_JPK2", gates:["rabunWarna","temuduga","medikal"] },
+    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:2, kelas:"JPK", p:"D", rule:"T_JPK2", gates:["rabunWarna","temuduga","medikal"], uptvet:"I01" },
   /* DIC (Diploma Industri Pengeluaran Seramik Termaju) is not
      offered this intake - removed deliberately, not an omission. */
 

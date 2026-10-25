@@ -60,26 +60,47 @@ Write-Host "Kanan  : ${kananW}px - Chrome untuk anda" -ForegroundColor Cyan
 Write-Host ""
 if ($kananW -lt 400) { Write-Warning "Ruang kanan hanya ${kananW}px. Cuba -Lebar lebih kecil." }
 
-function Cari-Tetingkap([string] $corak, [bool] $bukanCorak = $false) {
+# Match on the PROFILE, not the window title. Both windows can end up
+# titled "Semakan Kelayakan" if the tool is also open in an ordinary
+# tab, and matching by title then grabs the wrong one - a normal Chrome
+# window cannot go narrower than ~515px, so the left panel silently
+# came out too wide.
+$PROFIL_ALAT = "ChromeLiveAlat"
+
+function Tetingkap-Chrome {
+    $arahan = @{}
+    Get-CimInstance Win32_Process -Filter "Name='chrome.exe'" -ErrorAction SilentlyContinue |
+        ForEach-Object { $arahan[[int]$_.ProcessId] = [string]$_.CommandLine }
+
     Get-Process chrome -ErrorAction SilentlyContinue |
-      Where-Object {
-          $_.MainWindowHandle -ne 0 -and
-          [Tkp]::IsWindowVisible($_.MainWindowHandle) -and
-          $_.MainWindowTitle -and
-          ( ($bukanCorak -and $_.MainWindowTitle -notlike $corak) -or
-            ((-not $bukanCorak) -and $_.MainWindowTitle -like $corak) )
-      } | Select-Object -First 1
+      Where-Object { $_.MainWindowHandle -ne 0 -and [Tkp]::IsWindowVisible($_.MainWindowHandle) } |
+      ForEach-Object {
+          $cl = $arahan[[int]$_.Id]
+          [pscustomobject]@{
+              Proses  = $_
+              Handle  = $_.MainWindowHandle
+              Tajuk   = $_.MainWindowTitle
+              IsAlat  = ($cl -and $cl -like "*$PROFIL_ALAT*")
+          }
+      }
 }
 
-function Letak($proses, $x, $y, $w, $h, $nama) {
-    if (-not $proses) { Write-Warning "$nama tidak dijumpai."; return $false }
-    [void][Tkp]::ShowWindow($proses.MainWindowHandle, 9)   # SW_RESTORE
+function Cari-Alat    { Tetingkap-Chrome | Where-Object {      $_.IsAlat } | Select-Object -First 1 }
+function Cari-Browser { Tetingkap-Chrome | Where-Object { -not $_.IsAlat } | Select-Object -First 1 }
+
+function Letak($tkp, $x, $y, $w, $h, $nama) {
+    if (-not $tkp) { Write-Warning "$nama tidak dijumpai."; return $false }
+    [void][Tkp]::ShowWindow($tkp.Handle, 9)   # SW_RESTORE
     Start-Sleep -Milliseconds 250
-    [void][Tkp]::MoveWindow($proses.MainWindowHandle, $x, $y, $w, $h, $true)
+    [void][Tkp]::MoveWindow($tkp.Handle, $x, $y, $w, $h, $true)
     Start-Sleep -Milliseconds 250
     $r = New-Object Tkp+R
-    [void][Tkp]::GetWindowRect($proses.MainWindowHandle, [ref]$r)
-    Write-Host ("   {0,-14} x={1} y={2} {3}x{4}" -f $nama, $r.L, $r.T, ($r.Rt-$r.L), ($r.B-$r.T)) -ForegroundColor DarkGray
+    [void][Tkp]::GetWindowRect($tkp.Handle, [ref]$r)
+    $lebarSebenar = $r.Rt - $r.L
+    Write-Host ("   {0,-9} x={1} y={2} {3}x{4}" -f $nama, $r.L, $r.T, $lebarSebenar, ($r.B-$r.T)) -ForegroundColor DarkGray
+    if ([math]::Abs($lebarSebenar - $w) -gt 4) {
+        Write-Warning "$nama minta ${w}px tetapi dapat ${lebarSebenar}px - Chrome ada lebar minimum."
+    }
     return $true
 }
 
@@ -95,7 +116,7 @@ if (-not $SusunSahaja) {
     $alat = Join-Path $here "semakan-kelayakan.html"
     if (-not (Test-Path $alat)) { throw "Tiada $alat - jalankan build-semakan.ps1 dahulu." }
 
-    if (-not (Cari-Tetingkap "*Semakan Kelayakan*")) {
+    if (-not (Cari-Alat)) {
         # Profil berasingan supaya tetingkap ini jadi proses sendiri dan
         # tidak bergabung dengan tetingkap kerja anda.
         & $chrome "--app=$(([uri]$alat).AbsoluteUri)" `
@@ -103,7 +124,7 @@ if (-not $SusunSahaja) {
                   "--no-first-run" "--no-default-browser-check"
         Start-Sleep -Seconds 2
     }
-    if (-not (Cari-Tetingkap "*Semakan Kelayakan*" $true)) {
+    if (-not (Cari-Browser)) {
         & $chrome "--new-window" $Laman
         Start-Sleep -Seconds 3
     }
@@ -115,8 +136,8 @@ if (-not $SusunSahaja) {
 # geometri tersimpannya sendiri. Jadi kedudukan ditetapkan melalui Win32
 # selepas tetingkap wujud - itu yang betul-betul berkesan.
 Write-Host "Menyusun:" -ForegroundColor Cyan
-$okKiri  = Letak (Cari-Tetingkap "*Semakan Kelayakan*")       0       0 $Lebar  $H "Alat"
-$okKanan = Letak (Cari-Tetingkap "*Semakan Kelayakan*" $true) $kananX 0 $kananW $H "Browser"
+$okKiri  = Letak (Cari-Alat)    0       0 $Lebar  $H "Alat"
+$okKanan = Letak (Cari-Browser) $kananX 0 $kananW $H "Browser"
 
 Write-Host ""
 if ($okKiri -and $okKanan) {
