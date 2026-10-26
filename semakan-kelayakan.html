@@ -314,6 +314,12 @@ html,body{
 #stage.ada-hasil #input{flex:0 0 648px;display:none}
 #stage.ada-hasil #teaser{display:none}
 
+/* A programme panel takes the whole column while it is open, the same
+   way the result does. Without this the 648px form stays in the flow
+   and the fixed-height panel gets clipped. */
+#stage.panel-buka #input{display:none}
+#stage.panel-buka #teaser{display:none}
+
 /* Viewer name - the single biggest retention mechanic on LIVE.
    People stay to see their own name on screen. */
 #namaBaris{
@@ -625,7 +631,7 @@ html,body{
    of the frame, which is exactly where that reserve was, so the
    camera well uses it instead. */
 #bawah{
-  flex:0 0 300px;display:flex;gap:18px;
+  flex:0 0 340px;display:flex;gap:18px;
 }
 
 /* Reserved hole for the picture-in-picture camera. Nothing is
@@ -648,11 +654,37 @@ html,body{
 #aksi{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
   justify-content:center;gap:13px}
 
+/* ---------- programme tabs ----------
+   Sit under the apply bar and swap the big panel above between the
+   three Masjid Tanah materials programmes. Pressing one again
+   returns to whatever was showing before. */
+#tab{display:flex;gap:10px;flex:0 0 auto}
+#tab button{
+  flex:1 1 0;min-width:0;height:62px;
+  font-family:inherit;font-size:22px;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;
+  color:var(--navy-600);background:var(--surface);cursor:pointer;
+  border:2px solid var(--line-kuat);border-radius:7px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+#tab button:hover{border-color:var(--gold)}
+#tab button.pilih{
+  background:var(--gold);border-color:var(--gold);color:#2a1c00;
+}
+
+/* ---------- programme panel ---------- */
+#info{
+  flex:1 1 auto;min-height:0;overflow:hidden;
+  background:var(--surface);border:1px solid var(--navy-100);
+  border-radius:var(--radius);padding:20px 24px;
+}
+#info .panel{height:100%;display:flex;flex-direction:column}
+
 /* ---------- apply bar ---------- */
 /* 130, not 108: the height given back here comes straight off the
    counsellor boxes below, and MOHON is the primary call to action. */
 #mohon{
-  flex:0 0 130px;display:flex;flex-direction:column;
+  flex:0 0 110px;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:4px;
   background:var(--error);border-radius:var(--radius);
   color:#fff;text-decoration:none;
@@ -894,6 +926,460 @@ html,body{
     </section>
 
     <!-- ===== results: one list, scrollable ===== -->
+    <!-- Programme panels, injected at build time from panel-dtp.html,
+         panel-dts.html and panel-dtl.html. A sibling of #hasil, not a
+         child of it: tunjukPanel() hides #hasil, which would hide the
+         panel with it. -->
+    <div id="info" hidden>
+<!-- Panel siaran: Diploma Teknologi Kejuruteraan Pemprosesan Polimer Komposit (DTP / Q41) -->
+<!-- Serpihan HTML sahaja. Bekas sasaran: 1040px x 880px. Tiada skrip, tiada imej, tiada fon luar. -->
+<div class="panel" id="panel-dtp" hidden style="box-sizing:border-box;width:1040px;height:880px;padding:16px 22px;background:var(--surface);border:1px solid var(--navy-100);border-radius:var(--radius);color:var(--text-dark);display:flex;flex-direction:column;gap:10px;overflow:hidden">
+
+  <!-- 1. TAJUK + KOD UPTVET Q41 -->
+  <div style="flex:0 0 auto;display:flex;align-items:center;gap:16px;min-width:0">
+    <div style="flex:1 1 auto;min-width:0">
+      <h2 style="margin:0;font-size:44px;line-height:1.0;font-weight:800;color:var(--navy-900);letter-spacing:-0.5px">
+        Diploma Teknologi Kejuruteraan<br>Pemprosesan Polimer Komposit
+      </h2>
+      <div style="margin-top:5px;font-size:20px;font-weight:700;color:var(--text-muted);letter-spacing:0.3px">
+        Kod DTP &nbsp;·&nbsp; 3 Tahun &nbsp;·&nbsp; Akreditasi MQA &nbsp;·&nbsp; TVETMARA Masjid Tanah, Melaka
+      </div>
+    </div>
+    <div style="flex:0 0 auto;text-align:center;background:var(--navy-900);border-radius:var(--radius);padding:6px 20px 8px">
+      <div style="font-size:19px;font-weight:700;letter-spacing:1.4px;color:#ffffff;opacity:0.82">UPTVET</div>
+      <div style="font-size:46px;line-height:1;font-weight:800;color:var(--gold)">Q41</div>
+    </div>
+  </div>
+
+  <!-- 2. RINGKASAN -->
+  <p style="flex:0 0 auto;margin:0;font-size:24px;line-height:1.3;color:var(--text-dark)">
+    Polimer komposit ialah gabungan gentian dan resin: <strong>ringan tetapi kuat</strong>. Ia tulang belakang industri
+    <strong>aeroangkasa</strong>, <strong>automotif</strong> dan <strong>marin</strong>, dan perlu juruteknik mahir.
+  </p>
+
+  <!-- 3. RAJAH SVG: ALIRAN PROSES LAMINATION / LAYUP KOMPOSIT -->
+  <div style="flex:0 0 auto;border:1px solid var(--line-kuat);border-radius:var(--radius);background:var(--surface-2);padding:8px 14px 6px">
+    <div style="font-size:19px;font-weight:800;color:var(--navy-600);letter-spacing:0.5px">
+      ALIRAN PROSES LAMINATION / LAYUP KOMPOSIT
+    </div>
+    <svg viewBox="0 0 1000 158" width="100%" role="img" aria-labelledby="dtp-svg-tajuk"
+         style="display:block;color:var(--navy-600)">
+      <title id="dtp-svg-tajuk">Aliran proses lamination komposit: gentian, resin, acuan, curing, produk akhir</title>
+      <defs>
+        <marker id="dtp-mata-anak-panah" viewBox="0 0 10 10" refX="8" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--gold)"></path>
+        </marker>
+      </defs>
+
+      <!-- Peringkat 1: GENTIAN -->
+      <g>
+        <rect x="2" y="4" width="164" height="92" rx="8"
+              fill="var(--surface)" stroke="var(--line-kuat)" stroke-width="2"></rect>
+        <circle cx="21" cy="23" r="13" fill="var(--navy-900)"></circle>
+        <text x="21" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">1</text>
+        <g stroke="var(--gold)" stroke-width="5" stroke-linecap="round" fill="none">
+          <path d="M66 36 H126"></path><path d="M66 54 H126"></path><path d="M66 72 H126"></path>
+        </g>
+        <g stroke="var(--navy-600)" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7">
+          <path d="M78 30 V80"></path><path d="M96 30 V80"></path><path d="M114 30 V80"></path>
+        </g>
+        <text x="84" y="124" text-anchor="middle" font-size="23" font-weight="800" fill="var(--navy-900)">GENTIAN</text>
+        <text x="84" y="149" text-anchor="middle" font-size="20" fill="var(--text-muted)">Kaca / karbon</text>
+      </g>
+      <path d="M172 50 H203" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"
+            marker-end="url(#dtp-mata-anak-panah)"></path>
+
+      <!-- Peringkat 2: RESIN -->
+      <g>
+        <rect x="211" y="4" width="164" height="92" rx="8"
+              fill="var(--surface)" stroke="var(--line-kuat)" stroke-width="2"></rect>
+        <circle cx="230" cy="23" r="13" fill="var(--navy-900)"></circle>
+        <text x="230" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">2</text>
+        <path d="M288 28 C288 28 305 48 305 61 a17 17 0 0 1 -34 0 C271 48 288 28 288 28 z"
+              fill="var(--gold)" opacity="0.85"></path>
+        <path d="M266 80 H316" stroke="var(--navy-600)" stroke-width="5" stroke-linecap="round"></path>
+        <circle cx="328" cy="40" r="8" fill="var(--navy-600)" opacity="0.7"></circle>
+        <circle cx="328" cy="60" r="5" fill="var(--navy-600)" opacity="0.5"></circle>
+        <text x="293" y="124" text-anchor="middle" font-size="23" font-weight="800" fill="var(--navy-900)">RESIN</text>
+        <text x="293" y="149" text-anchor="middle" font-size="20" fill="var(--text-muted)">Ditimbang tepat</text>
+      </g>
+      <path d="M381 50 H412" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"
+            marker-end="url(#dtp-mata-anak-panah)"></path>
+
+      <!-- Peringkat 3: ACUAN -->
+      <g>
+        <rect x="420" y="4" width="164" height="92" rx="8"
+              fill="var(--surface)" stroke="var(--line-kuat)" stroke-width="2"></rect>
+        <circle cx="439" cy="23" r="13" fill="var(--navy-900)"></circle>
+        <text x="439" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">3</text>
+        <path d="M466 34 V74 a10 10 0 0 0 10 10 H528 a10 10 0 0 0 10 -10 V34"
+              fill="none" stroke="var(--navy-600)" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M472 76 H532" stroke="var(--gold)" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M472 65 H532" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" opacity="0.7"></path>
+        <path d="M472 54 H532" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" opacity="0.45"></path>
+        <path d="M502 24 V42" stroke="var(--navy-900)" stroke-width="5" stroke-linecap="round"
+              marker-end="url(#dtp-mata-anak-panah)"></path>
+        <text x="502" y="124" text-anchor="middle" font-size="23" font-weight="800" fill="var(--navy-900)">ACUAN</text>
+        <text x="502" y="149" text-anchor="middle" font-size="20" fill="var(--text-muted)">Layup berlapis</text>
+      </g>
+      <path d="M590 50 H621" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"
+            marker-end="url(#dtp-mata-anak-panah)"></path>
+
+      <!-- Peringkat 4: CURING -->
+      <g>
+        <rect x="629" y="4" width="164" height="92" rx="8"
+              fill="var(--surface)" stroke="var(--line-kuat)" stroke-width="2"></rect>
+        <circle cx="648" cy="23" r="13" fill="var(--navy-900)"></circle>
+        <text x="648" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">4</text>
+        <path d="M684 82 H758" stroke="var(--navy-600)" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M692 72 C692 59 707 59 707 46 C707 37 701 33 701 33"
+              fill="none" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"></path>
+        <path d="M717 72 C717 57 732 57 732 42 C732 33 726 29 726 29"
+              fill="none" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"></path>
+        <path d="M742 72 C742 59 757 59 757 46 C757 37 751 33 751 33"
+              fill="none" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"></path>
+        <text x="711" y="124" text-anchor="middle" font-size="23" font-weight="800" fill="var(--navy-900)">CURING</text>
+        <text x="711" y="149" text-anchor="middle" font-size="20" fill="var(--text-muted)">Suhu dikawal</text>
+      </g>
+      <path d="M799 50 H830" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"
+            marker-end="url(#dtp-mata-anak-panah)"></path>
+
+      <!-- Peringkat 5: PRODUK -->
+      <g>
+        <rect x="836" y="4" width="162" height="92" rx="8"
+              fill="var(--navy-100)" stroke="var(--navy-600)" stroke-width="2.5"></rect>
+        <circle cx="855" cy="23" r="13" fill="var(--success)"></circle>
+        <text x="855" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">5</text>
+        <path d="M884 70 C904 40 944 34 964 40 C954 70 924 82 884 70 z"
+              fill="var(--navy-600)" opacity="0.85"></path>
+        <path d="M884 82 H962" stroke="var(--navy-900)" stroke-width="5" stroke-linecap="round"></path>
+        <path d="M896 52 L906 62 L926 42" fill="none" stroke="var(--gold)"
+              stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+        <text x="917" y="124" text-anchor="middle" font-size="23" font-weight="800" fill="var(--navy-900)">PRODUK</text>
+        <text x="917" y="149" text-anchor="middle" font-size="20" fill="var(--text-muted)">Diuji &amp; dikemas</text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 4 + 5. KEMAHIRAN & LALUAN KERJAYA -->
+  <div style="flex:0 0 auto;display:flex;gap:14px;align-items:stretch;min-width:0">
+
+    <div style="flex:1 1 0;min-width:0;box-sizing:border-box;border:1px solid var(--line-kuat);border-left:7px solid var(--gold);border-radius:var(--radius);background:var(--surface-2);padding:8px 14px 10px">
+      <div style="font-size:20px;font-weight:800;color:var(--navy-600);letter-spacing:0.5px;margin-bottom:4px">
+        KEMAHIRAN YANG DIPELAJARI
+      </div>
+      <ul style="margin:0;padding-left:24px;font-size:23px;line-height:1.26;color:var(--text-dark)">
+        <li>Lamination hand lay-up</li>
+        <li>Penyediaan acuan &amp; pelepas</li>
+        <li>Campuran resin &amp; pengeras</li>
+        <li>Ujian bahan &amp; kecacatan</li>
+        <li>Pembaikan struktur komposit</li>
+        <li>Keselamatan kimia &amp; PPE</li>
+      </ul>
+    </div>
+
+    <div style="flex:1 1 0;min-width:0;box-sizing:border-box;border:1px solid var(--line-kuat);border-left:7px solid var(--navy-600);border-radius:var(--radius);background:var(--surface-2);padding:8px 14px 10px">
+      <div style="font-size:20px;font-weight:800;color:var(--navy-600);letter-spacing:0.5px;margin-bottom:4px">
+        LALUAN KERJAYA
+      </div>
+      <ul style="margin:0;padding-left:24px;font-size:23px;line-height:1.26;color:var(--text-dark)">
+        <li>Penolong Jurutera Komposit</li>
+        <li>Juruteknik Pengeluaran</li>
+        <li>Penyelia Pengeluaran Polimer</li>
+        <li>Pemeriksa Kualiti (QC) Laminat</li>
+        <li>Juruteknik Pembaikan Komposit</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 6. SYARAT KEMASUKAN -->
+  <div style="flex:0 0 auto;margin-top:auto;box-sizing:border-box;border:2px solid var(--navy-600);border-radius:var(--radius);background:var(--surface);padding:8px 16px 10px">
+    <div style="font-size:20px;font-weight:800;color:var(--navy-900);letter-spacing:0.5px;margin-bottom:3px">
+      SYARAT KEMASUKAN
+    </div>
+    <div style="font-size:22px;line-height:1.3;color:var(--text-dark)">
+      Lulus <strong>SPM</strong> dengan <strong>3 kepujian</strong> termasuk <strong>Matematik</strong>,
+      satu mata pelajaran <strong>Kumpulan Sains / Vokasional &amp; Teknologi</strong>, dan satu mata pelajaran lain
+      &mdash; <strong>serta lulus Bahasa Inggeris</strong>.
+    </div>
+    <div style="margin-top:6px;display:flex;align-items:baseline;gap:10px;background:var(--navy-100);border-radius:6px;padding:6px 12px">
+      <span style="flex:0 0 auto;font-size:19px;font-weight:800;color:var(--success);letter-spacing:0.5px">KELONGGARAN</span>
+      <span style="flex:1 1 auto;min-width:0;font-size:21px;line-height:1.28;color:var(--text-dark)">
+        Calon <strong>Matematik gred D</strong> masih diterima, dengan syarat mengikuti
+        <strong>kelas remedial Matematik</strong>.
+      </span>
+    </div>
+  </div>
+
+</div>
+
+<div class="panel" id="panel-dts" hidden style="box-sizing:border-box;width:1040px;height:880px;padding:14px 28px;background:var(--surface);color:var(--text-dark);border-radius:var(--radius);font-size:24px;line-height:1.3;overflow:hidden">
+
+  <div class="dts-head" style="box-sizing:border-box;display:flex;align-items:stretch;gap:18px;border-bottom:4px solid var(--line-kuat);padding-bottom:12px">
+    <div class="dts-head-text" style="flex:1 1 auto;min-width:0">
+      <h2 class="dts-title" style="margin:0;font-size:44px;line-height:1.04;color:var(--navy-900);letter-spacing:-0.5px">Diploma Teknologi Kejuruteraan Pemprosesan Seramik</h2>
+      <p class="dts-sub" style="margin:8px 0 0;font-size:23px;font-weight:600;color:var(--text-muted)">Kod DTS &middot; 3 Tahun &middot; MQA &middot; TVETMARA Masjid Tanah</p>
+    </div>
+    <div class="dts-code" style="box-sizing:border-box;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 20px;background:var(--navy-900);color:var(--surface);border-radius:var(--radius);border-bottom:6px solid var(--gold)">
+      <span class="dts-code-label" style="font-size:19px;font-weight:700;letter-spacing:2px;color:var(--gold)">KOD UPTVET</span>
+      <span class="dts-code-value" style="font-size:52px;line-height:1.05;font-weight:800">Q42</span>
+    </div>
+  </div>
+
+  <p class="dts-intro" style="margin:10px 0 0;font-size:25px;line-height:1.32">Seramik termaju dibentuk lalu dibakar pada suhu tinggi sehingga keras dan tahan haba. Ia dipakai dalam <strong style="color:var(--navy-600)">jubin</strong>, <strong style="color:var(--navy-600)">refraktori</strong>, <strong style="color:var(--navy-600)">seramik elektronik</strong> dan <strong style="color:var(--navy-600)">bio-seramik</strong>.</p>
+
+  <div class="dts-flow" style="box-sizing:border-box;margin-top:14px;padding:10px 14px 4px;background:var(--surface-2);border:2px solid var(--navy-100);border-radius:var(--radius);color:var(--navy-600)">
+    <span class="dts-flow-cap" style="display:block;margin-bottom:2px;font-size:19px;font-weight:800;letter-spacing:2px;color:var(--navy-900)">KITARAN PEMBUATAN SERAMIK</span>
+    <svg class="dts-flow-svg" viewBox="0 0 980 124" role="img" aria-label="Rajah proses pembuatan seramik: bahan mentah, pengisaran, forming, drying, firing kiln, glazing dan kemasan" style="display:block;width:100%;height:auto">
+      <defs>
+        <marker id="dtsArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path>
+        </marker>
+      </defs>
+      <g fill="none" stroke="currentColor" stroke-width="3" marker-end="url(#dtsArrow)" opacity="0.7">
+        <line x1="152" y1="62" x2="184" y2="62"></line>
+        <line x1="304" y1="62" x2="336" y2="62"></line>
+        <line x1="456" y1="62" x2="488" y2="62"></line>
+        <line x1="608" y1="62" x2="640" y2="62"></line>
+        <line x1="760" y1="62" x2="792" y2="62"></line>
+      </g>
+
+      <g class="dts-node">
+        <rect x="6" y="22" width="146" height="80" rx="12" fill="var(--surface)" stroke="var(--navy-600)" stroke-width="3"></rect>
+        <text x="79" y="55" font-size="21" font-weight="700" text-anchor="middle" fill="var(--navy-900)">Bahan</text>
+        <text x="79" y="81" font-size="21" font-weight="700" text-anchor="middle" fill="var(--navy-900)">Mentah</text>
+      </g>
+      <g class="dts-node">
+        <rect x="184" y="22" width="120" height="80" rx="12" fill="var(--surface)" stroke="var(--navy-600)" stroke-width="3"></rect>
+        <text x="244" y="69" font-size="21" font-weight="700" text-anchor="middle" fill="var(--navy-900)">Pengisaran</text>
+      </g>
+      <g class="dts-node">
+        <rect x="336" y="22" width="120" height="80" rx="12" fill="var(--surface)" stroke="var(--navy-600)" stroke-width="3"></rect>
+        <text x="396" y="69" font-size="21" font-weight="700" text-anchor="middle" fill="var(--navy-900)">Forming</text>
+      </g>
+      <g class="dts-node">
+        <rect x="488" y="22" width="120" height="80" rx="12" fill="var(--surface)" stroke="var(--navy-600)" stroke-width="3"></rect>
+        <text x="548" y="69" font-size="21" font-weight="700" text-anchor="middle" fill="var(--navy-900)">Drying</text>
+      </g>
+      <g class="dts-node dts-node-hot">
+        <rect x="640" y="22" width="120" height="80" rx="12" fill="var(--navy-900)" stroke="var(--gold)" stroke-width="4"></rect>
+        <text x="700" y="55" font-size="21" font-weight="700" text-anchor="middle" fill="var(--surface)">Firing</text>
+        <text x="700" y="81" font-size="21" font-weight="700" text-anchor="middle" fill="var(--gold)">(Kiln)</text>
+      </g>
+      <g class="dts-node">
+        <rect x="792" y="22" width="182" height="80" rx="12" fill="var(--surface)" stroke="var(--navy-600)" stroke-width="3"></rect>
+        <text x="883" y="55" font-size="21" font-weight="700" text-anchor="middle" fill="var(--navy-900)">Glazing /</text>
+        <text x="883" y="81" font-size="21" font-weight="700" text-anchor="middle" fill="var(--navy-900)">Kemasan</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="dts-cols" style="display:flex;gap:18px;margin-top:14px">
+    <section class="dts-card" style="box-sizing:border-box;flex:1 1 50%;min-width:0;padding:10px 16px 12px;background:var(--surface-2);border-left:8px solid var(--navy-600);border-radius:var(--radius)">
+      <h3 class="dts-card-title" style="margin:0 0 6px;font-size:26px;letter-spacing:1px;color:var(--navy-900)">KEMAHIRAN DIPELAJARI</h3>
+      <ul class="dts-list" style="margin:0;padding-left:26px;font-size:23px;line-height:1.2">
+        <li style="margin-bottom:4px">Ujian bahan mentah seramik</li>
+        <li style="margin-bottom:4px">Forming &amp; casting</li>
+        <li style="margin-bottom:4px">Operasi kiln &amp; firing</li>
+        <li style="margin-bottom:4px">Penyediaan glaze &amp; kemasan</li>
+        <li style="margin-bottom:0">Kawalan mutu &amp; keselamatan</li>
+      </ul>
+    </section>
+    <section class="dts-card" style="box-sizing:border-box;flex:1 1 50%;min-width:0;padding:10px 16px 12px;background:var(--surface-2);border-left:8px solid var(--success);border-radius:var(--radius)">
+      <h3 class="dts-card-title" style="margin:0 0 6px;font-size:26px;letter-spacing:1px;color:var(--navy-900)">LALUAN KERJAYA</h3>
+      <ul class="dts-list" style="margin:0;padding-left:26px;font-size:23px;line-height:1.2">
+        <li style="margin-bottom:4px">Penolong Jurutera Seramik</li>
+        <li style="margin-bottom:4px">Juruteknik Pengeluaran Seramik</li>
+        <li style="margin-bottom:4px">Juruteknik Kawalan Mutu</li>
+        <li style="margin-bottom:4px">Penyelia Operasi Kiln</li>
+        <li style="margin-bottom:0">Juruteknik Makmal Bahan</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="dts-syarat" style="box-sizing:border-box;margin-top:14px;padding:10px 18px 12px;background:var(--navy-100);border:3px solid var(--navy-600);border-radius:var(--radius)">
+    <h3 class="dts-syarat-title" style="margin:0 0 4px;font-size:26px;letter-spacing:1px;color:var(--navy-900)">SYARAT KEMASUKAN</h3>
+    <p class="dts-syarat-main" style="margin:0;font-size:24px;line-height:1.28">Lulus SPM dengan <strong>3 kepujian</strong> termasuk Matematik, satu mata pelajaran Kumpulan Sains/Vokasional &amp; Teknologi dan satu lagi &mdash; serta <strong>lulus Bahasa Inggeris</strong>.</p>
+    <p class="dts-syarat-note" style="margin:8px 0 0;font-size:23px;line-height:1.28"><span class="dts-tag" style="display:inline-block;margin-right:8px;padding:1px 10px;background:var(--gold);color:var(--navy-900);font-size:19px;font-weight:800;letter-spacing:1px;border-radius:6px;vertical-align:2px">KELONGGARAN</span>Calon dengan Matematik gred <strong>D</strong> masih diterima, dengan syarat mengikuti <strong>kelas remedial Matematik</strong>.</p>
+  </section>
+
+</div>
+
+<div class="panel" id="panel-dtl" hidden style="box-sizing:border-box;width:1040px;height:880px;padding:20px 30px;background:var(--surface,#ffffff);border:2px solid var(--line-kuat,#1b3a6b);border-radius:var(--radius,6px);color:var(--text-dark,#1a2233);font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;overflow:hidden;">
+
+  <!-- 1. TAJUK + KOD UPTVET -->
+  <div class="dtl-head" style="display:flex;align-items:flex-start;justify-content:space-between;gap:22px;">
+    <div style="flex:1 1 auto;min-width:0;">
+      <h2 class="dtl-title" style="margin:0;font-size:44px;line-height:1.06;font-weight:800;color:var(--navy-900,#0b1f3a);letter-spacing:-0.4px;">Diploma Teknologi Kejuruteraan Pemprosesan Plastik</h2>
+      <p class="dtl-meta" style="margin:8px 0 0;font-size:21px;line-height:1.25;font-weight:600;color:var(--text-muted,#5b6779);">Kod DTL &nbsp;&middot;&nbsp; 3 tahun &nbsp;&middot;&nbsp; Akreditasi MQA &nbsp;&middot;&nbsp; TVETMARA Masjid Tanah, Melaka</p>
+    </div>
+    <div class="dtl-code" style="flex:0 0 auto;text-align:center;background:var(--navy-900,#0b1f3a);color:var(--surface,#ffffff);border-radius:var(--radius,6px);padding:8px 20px 12px;">
+      <div style="font-size:19px;font-weight:700;letter-spacing:1.2px;">UPTVET</div>
+      <div style="font-size:50px;font-weight:800;line-height:1;letter-spacing:1px;">Q43</div>
+    </div>
+  </div>
+
+  <!-- 2. RINGKASAN -->
+  <p class="dtl-lead" style="margin:9px 0 0;font-size:24px;line-height:1.4;color:var(--text-dark,#1a2233);">
+    Pemprosesan plastik membentuk bahan polimer menjadi produk siap melalui mesin pengacuan suntikan &mdash; untuk <strong style="color:var(--navy-600,#1b3a6b);">pembungkusan</strong>, <strong style="color:var(--navy-600,#1b3a6b);">perubatan</strong>, <strong style="color:var(--navy-600,#1b3a6b);">elektronik</strong> dan <strong style="color:var(--navy-600,#1b3a6b);">automotif</strong>.
+  </p>
+
+  <!-- 3. RAJAH PROSES PENGACUAN SUNTIKAN -->
+  <div class="dtl-figure" style="margin:9px 0 0;padding:8px 12px 4px;background:var(--surface-2,#f4f6fa);border:1px solid var(--navy-100,#e8edf5);border-radius:var(--radius,6px);">
+    <div class="dtl-figure-cap" style="font-size:19px;line-height:1.2;font-weight:700;color:var(--navy-900,#0b1f3a);margin:0 0 2px;">Proses pengacuan suntikan (injection moulding)</div>
+    <svg viewBox="0 0 980 178" width="100%" role="img" aria-label="Rajah proses pengacuan suntikan: pelet masuk ke hopper, dilebur oleh skru pemanas, disuntik ke dalam acuan, disejukkan, kemudian produk dilepaskan." style="display:block;width:100%;height:auto;color:var(--navy-600,#1b3a6b);">
+      <defs>
+        <marker id="dtl-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 Z" fill="currentColor"></path>
+        </marker>
+        <marker id="dtl-arrow-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 Z" fill="var(--navy-900,#0b1f3a)"></path>
+        </marker>
+      </defs>
+
+      <!-- 1. pelet plastik -->
+      <g fill="var(--gold,#c8922a)" stroke="var(--navy-900,#0b1f3a)" stroke-width="1.5">
+        <circle cx="30" cy="68" r="7"></circle>
+        <circle cx="48" cy="56" r="7"></circle>
+        <circle cx="62" cy="70" r="7"></circle>
+        <circle cx="42" cy="82" r="7"></circle>
+        <circle cx="64" cy="48" r="7"></circle>
+      </g>
+      <path d="M80 62 L 114 48" stroke="currentColor" stroke-width="3" fill="none" marker-end="url(#dtl-arrow)"></path>
+
+      <!-- 2. hopper -->
+      <polygon points="118,22 204,22 178,76 146,76" fill="var(--surface,#ffffff)" stroke="currentColor" stroke-width="3"></polygon>
+      <g fill="var(--gold,#c8922a)" stroke="var(--navy-900,#0b1f3a)" stroke-width="1.2">
+        <circle cx="140" cy="35" r="6"></circle>
+        <circle cx="158" cy="31" r="6"></circle>
+        <circle cx="176" cy="36" r="6"></circle>
+        <circle cx="150" cy="49" r="6"></circle>
+        <circle cx="168" cy="51" r="6"></circle>
+        <circle cx="159" cy="65" r="6"></circle>
+      </g>
+
+      <!-- 3. silinder + skru pemanas -->
+      <rect x="140" y="76" width="382" height="52" rx="8" fill="var(--surface,#ffffff)" stroke="currentColor" stroke-width="3"></rect>
+      <g stroke="currentColor" stroke-width="3" fill="none">
+        <path d="M196 80 L 214 124"></path>
+        <path d="M232 80 L 250 124"></path>
+        <path d="M268 80 L 286 124"></path>
+        <path d="M304 80 L 322 124"></path>
+        <path d="M340 80 L 358 124"></path>
+        <path d="M376 80 L 394 124"></path>
+        <path d="M412 80 L 430 124"></path>
+        <path d="M448 80 L 466 124"></path>
+      </g>
+      <path d="M150 102 L 500 102" stroke="var(--navy-900,#0b1f3a)" stroke-width="4"></path>
+      <!-- jalur pemanas -->
+      <g fill="var(--gold,#c8922a)" stroke="var(--navy-900,#0b1f3a)" stroke-width="1.5">
+        <rect x="266" y="64" width="30" height="13" rx="3"></rect>
+        <rect x="346" y="64" width="30" height="13" rx="3"></rect>
+        <rect x="426" y="64" width="30" height="13" rx="3"></rect>
+      </g>
+      <g stroke="var(--gold,#c8922a)" stroke-width="3" fill="none">
+        <path d="M276 60 q 5 -9 10 0"></path>
+        <path d="M356 60 q 5 -9 10 0"></path>
+        <path d="M436 60 q 5 -9 10 0"></path>
+      </g>
+
+      <!-- 4. muncung + suntikan ke acuan -->
+      <polygon points="522,90 558,100 558,112 522,122" fill="currentColor"></polygon>
+      <path d="M558 106 L 586 106" stroke="var(--gold,#c8922a)" stroke-width="7"></path>
+
+      <!-- acuan: dua belah platen + kaviti -->
+      <rect x="586" y="40" width="46" height="112" fill="var(--surface-2,#f4f6fa)" stroke="currentColor" stroke-width="3"></rect>
+      <rect x="632" y="40" width="68" height="112" fill="var(--surface,#ffffff)" stroke="var(--line-kuat,#1b3a6b)" stroke-width="2"></rect>
+      <rect x="700" y="40" width="46" height="112" fill="var(--surface-2,#f4f6fa)" stroke="currentColor" stroke-width="3"></rect>
+      <path d="M642 126 L 648 80 L 684 80 L 690 126 Z" fill="var(--gold,#c8922a)" stroke="var(--navy-900,#0b1f3a)" stroke-width="2"></path>
+      <!-- pin pelepas -->
+      <g stroke="var(--navy-900,#0b1f3a)" stroke-width="3">
+        <path d="M700 92 L 686 92"></path>
+        <path d="M700 116 L 686 116"></path>
+      </g>
+
+      <!-- 5. penyejukan: aliran sejuk ke acuan -->
+      <g stroke="currentColor" stroke-width="3" fill="none" marker-end="url(#dtl-arrow)">
+        <path d="M604 4 L 604 34"></path>
+        <path d="M666 4 L 666 34"></path>
+        <path d="M728 4 L 728 34"></path>
+      </g>
+
+      <!-- 6. ejection produk -->
+      <path d="M752 106 L 812 106" stroke="var(--navy-900,#0b1f3a)" stroke-width="4" fill="none" marker-end="url(#dtl-arrow-dark)"></path>
+      <path d="M826 128 L 834 84 L 892 84 L 900 128 Z" fill="var(--surface,#ffffff)" stroke="var(--navy-900,#0b1f3a)" stroke-width="3"></path>
+      <path d="M835 96 L 891 96" stroke="var(--navy-900,#0b1f3a)" stroke-width="2"></path>
+
+      <!-- label bernombor -->
+      <g font-size="19" font-weight="700" font-family="'Segoe UI',system-ui,Arial,sans-serif">
+        <g fill="var(--navy-600,#1b3a6b)">
+          <circle cx="22" cy="162" r="14"></circle>
+          <circle cx="144" cy="162" r="14"></circle>
+          <circle cx="294" cy="162" r="14"></circle>
+          <circle cx="484" cy="162" r="14"></circle>
+          <circle cx="698" cy="162" r="14"></circle>
+          <circle cx="848" cy="162" r="14"></circle>
+        </g>
+        <g fill="var(--surface,#ffffff)" text-anchor="middle">
+          <text x="22" y="169">1</text>
+          <text x="144" y="169">2</text>
+          <text x="294" y="169">3</text>
+          <text x="484" y="169">4</text>
+          <text x="698" y="169">5</text>
+          <text x="848" y="169">6</text>
+        </g>
+        <g fill="var(--text-dark,#1a2233)">
+          <text x="42" y="169">Pelet</text>
+          <text x="164" y="169">Hopper</text>
+          <text x="314" y="169">Skru pemanas</text>
+          <text x="504" y="169">Injection</text>
+          <text x="718" y="169">Penyejukan</text>
+          <text x="868" y="169">Ejection</text>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 4 + 5. KEMAHIRAN &amp; LALUAN KERJAYA -->
+  <div class="dtl-cols" style="display:flex;gap:24px;margin:9px 0 0;">
+    <div class="dtl-col" style="flex:1 1 0;min-width:0;">
+      <h3 class="dtl-h3" style="margin:0 0 6px;font-size:25px;line-height:1.2;font-weight:800;color:var(--navy-900,#0b1f3a);">Kemahiran yang dipelajari</h3>
+      <ul class="dtl-list" style="margin:0;padding:0;list-style:none;font-size:24px;line-height:1.25;color:var(--text-dark,#1a2233);">
+        <li class="dtl-item" style="padding:0 0 3px 26px;position:relative;"><span class="dtl-bullet" style="position:absolute;left:0;top:0;color:var(--gold,#c8922a);font-weight:800;">&#9656;</span>Mengendali mesin pengacuan suntikan</li>
+        <li class="dtl-item" style="padding:0 0 3px 26px;position:relative;"><span class="dtl-bullet" style="position:absolute;left:0;top:0;color:var(--gold,#c8922a);font-weight:800;">&#9656;</span>Menyedia dan menala parameter proses</li>
+        <li class="dtl-item" style="padding:0 0 3px 26px;position:relative;"><span class="dtl-bullet" style="position:absolute;left:0;top:0;color:var(--gold,#c8922a);font-weight:800;">&#9656;</span>Pemasangan dan penyelenggaraan acuan</li>
+        <li class="dtl-item" style="padding:0 0 3px 26px;position:relative;"><span class="dtl-bullet" style="position:absolute;left:0;top:0;color:var(--gold,#c8922a);font-weight:800;">&#9656;</span>Ujian bahan polimer dan kawalan kualiti</li>
+        <li class="dtl-item" style="padding:0 0 0 26px;position:relative;"><span class="dtl-bullet" style="position:absolute;left:0;top:0;color:var(--gold,#c8922a);font-weight:800;">&#9656;</span>Lukisan teknik dan CAD komponen plastik</li>
+      </ul>
+    </div>
+    <div class="dtl-col" style="flex:0 0 370px;">
+      <h3 class="dtl-h3" style="margin:0 0 6px;font-size:25px;line-height:1.2;font-weight:800;color:var(--navy-900,#0b1f3a);">Laluan kerjaya</h3>
+      <ul class="dtl-list" style="margin:0;padding:0;list-style:none;font-size:24px;line-height:1.25;color:var(--text-dark,#1a2233);">
+        <li class="dtl-item" style="padding:0 0 3px 26px;position:relative;"><span class="dtl-bullet" style="position:absolute;left:0;top:0;color:var(--navy-600,#1b3a6b);font-weight:800;">&#9656;</span>Penolong Jurutera Pengeluaran</li>
+        <li class="dtl-item" style="padding:0 0 3px 26px;position:relative;"><span class="dtl-bullet" style="position:absolute;left:0;top:0;color:var(--navy-600,#1b3a6b);font-weight:800;">&#9656;</span>Juruteknik Pengacuan / Proses</li>
+        <li class="dtl-item" style="padding:0 0 3px 26px;position:relative;"><span class="dtl-bullet" style="position:absolute;left:0;top:0;color:var(--navy-600,#1b3a6b);font-weight:800;">&#9656;</span>Juruteknik Kawalan Kualiti</li>
+        <li class="dtl-item" style="padding:0 0 0 26px;position:relative;"><span class="dtl-bullet" style="position:absolute;left:0;top:0;color:var(--navy-600,#1b3a6b);font-weight:800;">&#9656;</span>Juruteknik Penyelenggaraan Acuan</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 6. SYARAT KEMASUKAN -->
+  <div class="dtl-syarat" style="margin:9px 0 0;padding:12px 18px;background:var(--surface-2,#f4f6fa);border-left:8px solid var(--navy-600,#1b3a6b);border-radius:var(--radius,6px);">
+    <div class="dtl-h3" style="font-size:25px;line-height:1.2;font-weight:800;color:var(--navy-900,#0b1f3a);margin:0 0 4px;">Syarat kemasukan</div>
+    <p style="margin:0;font-size:24px;line-height:1.3;color:var(--text-dark,#1a2233);">
+      Lulus SPM dengan <strong>3 kepujian</strong>: Matematik, satu mata pelajaran Kumpulan Sains/Vokasional &amp; Teknologi, dan satu lagi &mdash; serta <strong>lulus Bahasa Inggeris</strong>.
+    </p>
+    <p class="dtl-syarat-note" style="margin:6px 0 0;font-size:21px;line-height:1.25;font-weight:600;color:var(--navy-900,#0b1f3a);">
+      Kelonggaran: <strong>Matematik gred D</strong> masih diterima, dengan syarat mengikuti <strong>kelas remedial Matematik</strong>.
+    </p>
+  </div>
+
+</div>
+
+
+    </div>
+
     <section id="hasil" hidden>
       <div class="kepala">
         <button id="kembali" type="button">&#8592; Kembali</button>
@@ -936,6 +1422,11 @@ html,body{
           <span class="url">mohon.tvet.gov.my</span>
         </a>
         <div id="wa" hidden></div>
+        <div id="tab">
+          <button type="button" data-panel="dtp">Polymer Composite</button>
+          <button type="button" data-panel="dts">Ceramic</button>
+          <button type="button" data-panel="dtl">Plastic</button>
+        </div>
       </div>
     </div>
 
@@ -1112,6 +1603,15 @@ const RULES = {
   /* 2 kepujian dalam mana-mana mata pelajaran. Most JPK diplomas. */
   T_JPK2: { kredit: 2 },
 
+  /* IAC (Diploma Industri Pembuatan Komposit Aeroangkasa). The two
+     credits of T_JPK2, plus a pass in both Bahasa Inggeris and
+     Matematik - confirmed by the institution 2026-10-26, and not
+     stated in the brochure. */
+  T_IAC: {
+    kredit: 2,
+    lulusWajib: ["Bahasa Inggeris", "Matematik"],
+  },
+
   /* 3 kepujian + lulus BI + lulus Matematik. MBOT computer
      diplomas and DTJ. */
   T_MBOT_KOMP: {
@@ -1210,7 +1710,7 @@ const PROGRAMS = [
   { kod:"DTL", nama:"Diploma Teknologi Kejuruteraan Pemprosesan Plastik", en:"Plastic Processing Engineering Technology",
     inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:3, kelas:"MQA", p:"D", rule:"T_MQA_BAHAN", gates:[], uptvet:"Q43" },
   { kod:"IAC", nama:"Diploma Industri Pembuatan Komposit Aeroangkasa", en:"Industry in Aerospace Composite Manufacturing",
-    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:2, kelas:"JPK", p:"D", rule:"T_JPK2", gates:["rabunWarna","temuduga","medikal"], uptvet:"I01" },
+    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:2, kelas:"JPK", p:"D", rule:"T_IAC", gates:["rabunWarna","temuduga","medikal"], uptvet:"I01" },
   /* DIC (Diploma Industri Pengeluaran Seramik Termaju) is not
      offered this intake - removed deliberately, not an omission. */
 
@@ -2285,6 +2785,7 @@ function dedah(dengarVerdict){
      apply bar slides up last. */
   stage.classList.add("ada-hasil");
   hentiTeaser();
+  panelOff();
   elHasil.hidden = false;   /* #mohon is always visible now */
 
   elHasil.classList.remove("masuk"); void elHasil.offsetWidth;
@@ -2341,6 +2842,11 @@ function jalankan(){
   if (sedangKira || rafWow || masaWow){ langkauSemua(); return; }
 
   if (bacaKeputusan().length === 0) return;
+
+  /* Close any open programme panel first, or the countdown plays
+     behind it and the host sees nothing happen. */
+  panelOff();
+
   jumlahLayak = papar();
 
   audioCtx();   /* unlock audio on this click, before any sound is needed */
@@ -2365,6 +2871,69 @@ function jalankan(){
 }
 
 /* ============================================================
+   PROGRAMME PANELS
+   ------------------------------------------------------------
+   The three tabs under the apply bar swap the big panel between
+   the Masjid Tanah materials programmes. Pressing the active tab
+   again returns to whatever was showing before, so he can dip
+   into a programme mid-session without losing a result.
+   ============================================================ */
+const elInfo = document.getElementById("info");
+let panelAktif = null;
+
+function tunjukPanel(kod){
+  /* Same tab again - go back. */
+  if (panelAktif === kod){ tutupPanel(); return; }
+
+  panelAktif = kod;
+  elInfo.hidden = false;
+  stage.classList.add("panel-buka");
+  Array.from(elInfo.querySelectorAll(".panel")).forEach(function(p){
+    p.hidden = (p.id !== "panel-" + kod);
+  });
+  /* Whatever else was in the results column steps aside. The
+     empty-state message lives inside #hasil, so one line covers it. */
+  elHasil.hidden = true;
+  document.getElementById("teaser").hidden = true;
+  hentiTeaser();
+
+  Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
+    b.classList.toggle("pilih", b.dataset.panel === kod);
+  });
+}
+
+/* Hide only - used by Semak and Kembali, which set their own state. */
+function panelOff(){
+  panelAktif = null;
+  elInfo.hidden = true;
+  stage.classList.remove("panel-buka");
+  Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
+    b.classList.remove("pilih");
+  });
+}
+
+function tutupPanel(){
+  if (!panelAktif) return;
+  panelAktif = null;
+  elInfo.hidden = true;
+  stage.classList.remove("panel-buka");
+  Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
+    b.classList.remove("pilih");
+  });
+  /* Restore the state the tool was in before the panel opened. */
+  if (stage.classList.contains("ada-hasil")){
+    elHasil.hidden = false;
+  } else {
+    document.getElementById("teaser").hidden = false;
+    mulaTeaser();
+  }
+}
+
+Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
+  b.addEventListener("click", function(){ tunjukPanel(b.dataset.panel); });
+});
+
+/* ============================================================
    CONTROLS
    ============================================================ */
 /* Back to state A. The grades are left as they were, so he can
@@ -2374,6 +2943,7 @@ function kembaliKeBorang(){
   hentiKira();
   tutupAngka();
   stage.classList.remove("ada-hasil");
+  panelOff();
   elHasil.hidden = true;
   paparWA(false);
   teaserIdx = 0;          /* lead with the last result */

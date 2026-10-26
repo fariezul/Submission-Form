@@ -131,6 +131,15 @@ const RULES = {
   /* 2 kepujian dalam mana-mana mata pelajaran. Most JPK diplomas. */
   T_JPK2: { kredit: 2 },
 
+  /* IAC (Diploma Industri Pembuatan Komposit Aeroangkasa). The two
+     credits of T_JPK2, plus a pass in both Bahasa Inggeris and
+     Matematik - confirmed by the institution 2026-10-26, and not
+     stated in the brochure. */
+  T_IAC: {
+    kredit: 2,
+    lulusWajib: ["Bahasa Inggeris", "Matematik"],
+  },
+
   /* 3 kepujian + lulus BI + lulus Matematik. MBOT computer
      diplomas and DTJ. */
   T_MBOT_KOMP: {
@@ -229,7 +238,7 @@ const PROGRAMS = [
   { kod:"DTL", nama:"Diploma Teknologi Kejuruteraan Pemprosesan Plastik", en:"Plastic Processing Engineering Technology",
     inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:3, kelas:"MQA", p:"D", rule:"T_MQA_BAHAN", gates:[], uptvet:"Q43" },
   { kod:"IAC", nama:"Diploma Industri Pembuatan Komposit Aeroangkasa", en:"Industry in Aerospace Composite Manufacturing",
-    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:2, kelas:"JPK", p:"D", rule:"T_JPK2", gates:["rabunWarna","temuduga","medikal"], uptvet:"I01" },
+    inst:["Masjid Tanah"], kluster:"Pemprosesan Bahan", t:2, kelas:"JPK", p:"D", rule:"T_IAC", gates:["rabunWarna","temuduga","medikal"], uptvet:"I01" },
   /* DIC (Diploma Industri Pengeluaran Seramik Termaju) is not
      offered this intake - removed deliberately, not an omission. */
 

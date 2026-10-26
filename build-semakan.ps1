@@ -28,13 +28,28 @@ $uri = "data:image/png;base64,$b64"
 $html = [IO.File]::ReadAllText($template)
 $js   = [IO.File]::ReadAllText($data)
 
+# --- programme panels --------------------------------------------------
+# Each panel is written as its own fragment file so the three can be
+# edited independently; they are stitched in here.
+$panel = ""
+foreach ($kod in @("dtp", "dts", "dtl")) {
+    $f = Join-Path $here "panel-$kod.html"
+    if (Test-Path $f) {
+        $panel += [IO.File]::ReadAllText($f) + "`n"
+    } else {
+        Write-Warning "panel-$kod.html tiada - tab itu akan kosong."
+    }
+}
+
 # --- substitute --------------------------------------------------------
 # Plain .Replace(), not -replace: the base64 and the JS both contain
 # characters that the regex engine would treat as metacharacters.
 $html = $html.Replace("__LOGO__", $uri)
 $html = $html.Replace("/*__DATA__*/", $js)
+$html = $html.Replace("/*__PANEL__*/", $panel)
 
-if ($html.Contains("__LOGO__") -or $html.Contains("/*__DATA__*/")) {
+if ($html.Contains("__LOGO__") -or $html.Contains("/*__DATA__*/") -or
+    $html.Contains("/*__PANEL__*/")) {
     throw "A placeholder was not substituted - check the template."
 }
 

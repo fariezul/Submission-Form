@@ -314,6 +314,12 @@ html,body{
 #stage.ada-hasil #input{flex:0 0 648px;display:none}
 #stage.ada-hasil #teaser{display:none}
 
+/* A programme panel takes the whole column while it is open, the same
+   way the result does. Without this the 648px form stays in the flow
+   and the fixed-height panel gets clipped. */
+#stage.panel-buka #input{display:none}
+#stage.panel-buka #teaser{display:none}
+
 /* Viewer name - the single biggest retention mechanic on LIVE.
    People stay to see their own name on screen. */
 #namaBaris{
@@ -625,7 +631,7 @@ html,body{
    of the frame, which is exactly where that reserve was, so the
    camera well uses it instead. */
 #bawah{
-  flex:0 0 300px;display:flex;gap:18px;
+  flex:0 0 340px;display:flex;gap:18px;
 }
 
 /* Reserved hole for the picture-in-picture camera. Nothing is
@@ -648,11 +654,37 @@ html,body{
 #aksi{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
   justify-content:center;gap:13px}
 
+/* ---------- programme tabs ----------
+   Sit under the apply bar and swap the big panel above between the
+   three Masjid Tanah materials programmes. Pressing one again
+   returns to whatever was showing before. */
+#tab{display:flex;gap:10px;flex:0 0 auto}
+#tab button{
+  flex:1 1 0;min-width:0;height:62px;
+  font-family:inherit;font-size:22px;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;
+  color:var(--navy-600);background:var(--surface);cursor:pointer;
+  border:2px solid var(--line-kuat);border-radius:7px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+#tab button:hover{border-color:var(--gold)}
+#tab button.pilih{
+  background:var(--gold);border-color:var(--gold);color:#2a1c00;
+}
+
+/* ---------- programme panel ---------- */
+#info{
+  flex:1 1 auto;min-height:0;overflow:hidden;
+  background:var(--surface);border:1px solid var(--navy-100);
+  border-radius:var(--radius);padding:20px 24px;
+}
+#info .panel{height:100%;display:flex;flex-direction:column}
+
 /* ---------- apply bar ---------- */
 /* 130, not 108: the height given back here comes straight off the
    counsellor boxes below, and MOHON is the primary call to action. */
 #mohon{
-  flex:0 0 130px;display:flex;flex-direction:column;
+  flex:0 0 110px;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:4px;
   background:var(--error);border-radius:var(--radius);
   color:#fff;text-decoration:none;
@@ -894,6 +926,14 @@ html,body{
     </section>
 
     <!-- ===== results: one list, scrollable ===== -->
+    <!-- Programme panels, injected at build time from panel-dtp.html,
+         panel-dts.html and panel-dtl.html. A sibling of #hasil, not a
+         child of it: tunjukPanel() hides #hasil, which would hide the
+         panel with it. -->
+    <div id="info" hidden>
+/*__PANEL__*/
+    </div>
+
     <section id="hasil" hidden>
       <div class="kepala">
         <button id="kembali" type="button">&#8592; Kembali</button>
@@ -936,6 +976,11 @@ html,body{
           <span class="url">mohon.tvet.gov.my</span>
         </a>
         <div id="wa" hidden></div>
+        <div id="tab">
+          <button type="button" data-panel="dtp">Polymer Composite</button>
+          <button type="button" data-panel="dts">Ceramic</button>
+          <button type="button" data-panel="dtl">Plastic</button>
+        </div>
       </div>
     </div>
 
@@ -1779,6 +1824,7 @@ function dedah(dengarVerdict){
      apply bar slides up last. */
   stage.classList.add("ada-hasil");
   hentiTeaser();
+  panelOff();
   elHasil.hidden = false;   /* #mohon is always visible now */
 
   elHasil.classList.remove("masuk"); void elHasil.offsetWidth;
@@ -1835,6 +1881,11 @@ function jalankan(){
   if (sedangKira || rafWow || masaWow){ langkauSemua(); return; }
 
   if (bacaKeputusan().length === 0) return;
+
+  /* Close any open programme panel first, or the countdown plays
+     behind it and the host sees nothing happen. */
+  panelOff();
+
   jumlahLayak = papar();
 
   audioCtx();   /* unlock audio on this click, before any sound is needed */
@@ -1859,6 +1910,69 @@ function jalankan(){
 }
 
 /* ============================================================
+   PROGRAMME PANELS
+   ------------------------------------------------------------
+   The three tabs under the apply bar swap the big panel between
+   the Masjid Tanah materials programmes. Pressing the active tab
+   again returns to whatever was showing before, so he can dip
+   into a programme mid-session without losing a result.
+   ============================================================ */
+const elInfo = document.getElementById("info");
+let panelAktif = null;
+
+function tunjukPanel(kod){
+  /* Same tab again - go back. */
+  if (panelAktif === kod){ tutupPanel(); return; }
+
+  panelAktif = kod;
+  elInfo.hidden = false;
+  stage.classList.add("panel-buka");
+  Array.from(elInfo.querySelectorAll(".panel")).forEach(function(p){
+    p.hidden = (p.id !== "panel-" + kod);
+  });
+  /* Whatever else was in the results column steps aside. The
+     empty-state message lives inside #hasil, so one line covers it. */
+  elHasil.hidden = true;
+  document.getElementById("teaser").hidden = true;
+  hentiTeaser();
+
+  Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
+    b.classList.toggle("pilih", b.dataset.panel === kod);
+  });
+}
+
+/* Hide only - used by Semak and Kembali, which set their own state. */
+function panelOff(){
+  panelAktif = null;
+  elInfo.hidden = true;
+  stage.classList.remove("panel-buka");
+  Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
+    b.classList.remove("pilih");
+  });
+}
+
+function tutupPanel(){
+  if (!panelAktif) return;
+  panelAktif = null;
+  elInfo.hidden = true;
+  stage.classList.remove("panel-buka");
+  Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
+    b.classList.remove("pilih");
+  });
+  /* Restore the state the tool was in before the panel opened. */
+  if (stage.classList.contains("ada-hasil")){
+    elHasil.hidden = false;
+  } else {
+    document.getElementById("teaser").hidden = false;
+    mulaTeaser();
+  }
+}
+
+Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
+  b.addEventListener("click", function(){ tunjukPanel(b.dataset.panel); });
+});
+
+/* ============================================================
    CONTROLS
    ============================================================ */
 /* Back to state A. The grades are left as they were, so he can
@@ -1868,6 +1982,7 @@ function kembaliKeBorang(){
   hentiKira();
   tutupAngka();
   stage.classList.remove("ada-hasil");
+  panelOff();
   elHasil.hidden = true;
   paparWA(false);
   teaserIdx = 0;          /* lead with the last result */

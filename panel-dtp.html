@@ -1,0 +1,182 @@
+<!-- Panel siaran: Diploma Teknologi Kejuruteraan Pemprosesan Polimer Komposit (DTP / Q41) -->
+<!-- Serpihan HTML sahaja. Bekas sasaran: 1040px x 880px. Tiada skrip, tiada imej, tiada fon luar. -->
+<div class="panel" id="panel-dtp" hidden style="box-sizing:border-box;width:1040px;height:880px;padding:16px 22px;background:var(--surface);border:1px solid var(--navy-100);border-radius:var(--radius);color:var(--text-dark);display:flex;flex-direction:column;gap:10px;overflow:hidden">
+
+  <!-- 1. TAJUK + KOD UPTVET Q41 -->
+  <div style="flex:0 0 auto;display:flex;align-items:center;gap:16px;min-width:0">
+    <div style="flex:1 1 auto;min-width:0">
+      <h2 style="margin:0;font-size:44px;line-height:1.0;font-weight:800;color:var(--navy-900);letter-spacing:-0.5px">
+        Diploma Teknologi Kejuruteraan<br>Pemprosesan Polimer Komposit
+      </h2>
+      <div style="margin-top:5px;font-size:20px;font-weight:700;color:var(--text-muted);letter-spacing:0.3px">
+        Kod DTP &nbsp;·&nbsp; 3 Tahun &nbsp;·&nbsp; Akreditasi MQA &nbsp;·&nbsp; TVETMARA Masjid Tanah, Melaka
+      </div>
+    </div>
+    <div style="flex:0 0 auto;text-align:center;background:var(--navy-900);border-radius:var(--radius);padding:6px 20px 8px">
+      <div style="font-size:19px;font-weight:700;letter-spacing:1.4px;color:#ffffff;opacity:0.82">UPTVET</div>
+      <div style="font-size:46px;line-height:1;font-weight:800;color:var(--gold)">Q41</div>
+    </div>
+  </div>
+
+  <!-- 2. RINGKASAN -->
+  <p style="flex:0 0 auto;margin:0;font-size:24px;line-height:1.3;color:var(--text-dark)">
+    Polimer komposit ialah gabungan gentian dan resin: <strong>ringan tetapi kuat</strong>. Ia tulang belakang industri
+    <strong>aeroangkasa</strong>, <strong>automotif</strong> dan <strong>marin</strong>, dan perlu juruteknik mahir.
+  </p>
+
+  <!-- 3. RAJAH SVG: ALIRAN PROSES LAMINATION / LAYUP KOMPOSIT -->
+  <div style="flex:0 0 auto;border:1px solid var(--line-kuat);border-radius:var(--radius);background:var(--surface-2);padding:8px 14px 6px">
+    <div style="font-size:19px;font-weight:800;color:var(--navy-600);letter-spacing:0.5px">
+      ALIRAN PROSES LAMINATION / LAYUP KOMPOSIT
+    </div>
+    <svg viewBox="0 0 1000 158" width="100%" role="img" aria-labelledby="dtp-svg-tajuk"
+         style="display:block;color:var(--navy-600)">
+      <title id="dtp-svg-tajuk">Aliran proses lamination komposit: gentian, resin, acuan, curing, produk akhir</title>
+      <defs>
+        <marker id="dtp-mata-anak-panah" viewBox="0 0 10 10" refX="8" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--gold)"></path>
+        </marker>
+      </defs>
+
+      <!-- Peringkat 1: GENTIAN -->
+      <g>
+        <rect x="2" y="4" width="164" height="92" rx="8"
+              fill="var(--surface)" stroke="var(--line-kuat)" stroke-width="2"></rect>
+        <circle cx="21" cy="23" r="13" fill="var(--navy-900)"></circle>
+        <text x="21" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">1</text>
+        <g stroke="var(--gold)" stroke-width="5" stroke-linecap="round" fill="none">
+          <path d="M66 36 H126"></path><path d="M66 54 H126"></path><path d="M66 72 H126"></path>
+        </g>
+        <g stroke="var(--navy-600)" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7">
+          <path d="M78 30 V80"></path><path d="M96 30 V80"></path><path d="M114 30 V80"></path>
+        </g>
+        <text x="84" y="124" text-anchor="middle" font-size="23" font-weight="800" fill="var(--navy-900)">GENTIAN</text>
+        <text x="84" y="149" text-anchor="middle" font-size="20" fill="var(--text-muted)">Kaca / karbon</text>
+      </g>
+      <path d="M172 50 H203" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"
+            marker-end="url(#dtp-mata-anak-panah)"></path>
+
+      <!-- Peringkat 2: RESIN -->
+      <g>
+        <rect x="211" y="4" width="164" height="92" rx="8"
+              fill="var(--surface)" stroke="var(--line-kuat)" stroke-width="2"></rect>
+        <circle cx="230" cy="23" r="13" fill="var(--navy-900)"></circle>
+        <text x="230" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">2</text>
+        <path d="M288 28 C288 28 305 48 305 61 a17 17 0 0 1 -34 0 C271 48 288 28 288 28 z"
+              fill="var(--gold)" opacity="0.85"></path>
+        <path d="M266 80 H316" stroke="var(--navy-600)" stroke-width="5" stroke-linecap="round"></path>
+        <circle cx="328" cy="40" r="8" fill="var(--navy-600)" opacity="0.7"></circle>
+        <circle cx="328" cy="60" r="5" fill="var(--navy-600)" opacity="0.5"></circle>
+        <text x="293" y="124" text-anchor="middle" font-size="23" font-weight="800" fill="var(--navy-900)">RESIN</text>
+        <text x="293" y="149" text-anchor="middle" font-size="20" fill="var(--text-muted)">Ditimbang tepat</text>
+      </g>
+      <path d="M381 50 H412" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"
+            marker-end="url(#dtp-mata-anak-panah)"></path>
+
+      <!-- Peringkat 3: ACUAN -->
+      <g>
+        <rect x="420" y="4" width="164" height="92" rx="8"
+              fill="var(--surface)" stroke="var(--line-kuat)" stroke-width="2"></rect>
+        <circle cx="439" cy="23" r="13" fill="var(--navy-900)"></circle>
+        <text x="439" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">3</text>
+        <path d="M466 34 V74 a10 10 0 0 0 10 10 H528 a10 10 0 0 0 10 -10 V34"
+              fill="none" stroke="var(--navy-600)" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M472 76 H532" stroke="var(--gold)" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M472 65 H532" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" opacity="0.7"></path>
+        <path d="M472 54 H532" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" opacity="0.45"></path>
+        <path d="M502 24 V42" stroke="var(--navy-900)" stroke-width="5" stroke-linecap="round"
+              marker-end="url(#dtp-mata-anak-panah)"></path>
+        <text x="502" y="124" text-anchor="middle" font-size="23" font-weight="800" fill="var(--navy-900)">ACUAN</text>
+        <text x="502" y="149" text-anchor="middle" font-size="20" fill="var(--text-muted)">Layup berlapis</text>
+      </g>
+      <path d="M590 50 H621" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"
+            marker-end="url(#dtp-mata-anak-panah)"></path>
+
+      <!-- Peringkat 4: CURING -->
+      <g>
+        <rect x="629" y="4" width="164" height="92" rx="8"
+              fill="var(--surface)" stroke="var(--line-kuat)" stroke-width="2"></rect>
+        <circle cx="648" cy="23" r="13" fill="var(--navy-900)"></circle>
+        <text x="648" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">4</text>
+        <path d="M684 82 H758" stroke="var(--navy-600)" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M692 72 C692 59 707 59 707 46 C707 37 701 33 701 33"
+              fill="none" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"></path>
+        <path d="M717 72 C717 57 732 57 732 42 C732 33 726 29 726 29"
+              fill="none" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"></path>
+        <path d="M742 72 C742 59 757 59 757 46 C757 37 751 33 751 33"
+              fill="none" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"></path>
+        <text x="711" y="124" text-anchor="middle" font-size="23" font-weight="800" fill="var(--navy-900)">CURING</text>
+        <text x="711" y="149" text-anchor="middle" font-size="20" fill="var(--text-muted)">Suhu dikawal</text>
+      </g>
+      <path d="M799 50 H830" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"
+            marker-end="url(#dtp-mata-anak-panah)"></path>
+
+      <!-- Peringkat 5: PRODUK -->
+      <g>
+        <rect x="836" y="4" width="162" height="92" rx="8"
+              fill="var(--navy-100)" stroke="var(--navy-600)" stroke-width="2.5"></rect>
+        <circle cx="855" cy="23" r="13" fill="var(--success)"></circle>
+        <text x="855" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">5</text>
+        <path d="M884 70 C904 40 944 34 964 40 C954 70 924 82 884 70 z"
+              fill="var(--navy-600)" opacity="0.85"></path>
+        <path d="M884 82 H962" stroke="var(--navy-900)" stroke-width="5" stroke-linecap="round"></path>
+        <path d="M896 52 L906 62 L926 42" fill="none" stroke="var(--gold)"
+              stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+        <text x="917" y="124" text-anchor="middle" font-size="23" font-weight="800" fill="var(--navy-900)">PRODUK</text>
+        <text x="917" y="149" text-anchor="middle" font-size="20" fill="var(--text-muted)">Diuji &amp; dikemas</text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 4 + 5. KEMAHIRAN & LALUAN KERJAYA -->
+  <div style="flex:0 0 auto;display:flex;gap:14px;align-items:stretch;min-width:0">
+
+    <div style="flex:1 1 0;min-width:0;box-sizing:border-box;border:1px solid var(--line-kuat);border-left:7px solid var(--gold);border-radius:var(--radius);background:var(--surface-2);padding:8px 14px 10px">
+      <div style="font-size:20px;font-weight:800;color:var(--navy-600);letter-spacing:0.5px;margin-bottom:4px">
+        KEMAHIRAN YANG DIPELAJARI
+      </div>
+      <ul style="margin:0;padding-left:24px;font-size:23px;line-height:1.26;color:var(--text-dark)">
+        <li>Lamination hand lay-up</li>
+        <li>Penyediaan acuan &amp; pelepas</li>
+        <li>Campuran resin &amp; pengeras</li>
+        <li>Ujian bahan &amp; kecacatan</li>
+        <li>Pembaikan struktur komposit</li>
+        <li>Keselamatan kimia &amp; PPE</li>
+      </ul>
+    </div>
+
+    <div style="flex:1 1 0;min-width:0;box-sizing:border-box;border:1px solid var(--line-kuat);border-left:7px solid var(--navy-600);border-radius:var(--radius);background:var(--surface-2);padding:8px 14px 10px">
+      <div style="font-size:20px;font-weight:800;color:var(--navy-600);letter-spacing:0.5px;margin-bottom:4px">
+        LALUAN KERJAYA
+      </div>
+      <ul style="margin:0;padding-left:24px;font-size:23px;line-height:1.26;color:var(--text-dark)">
+        <li>Penolong Jurutera Komposit</li>
+        <li>Juruteknik Pengeluaran</li>
+        <li>Penyelia Pengeluaran Polimer</li>
+        <li>Pemeriksa Kualiti (QC) Laminat</li>
+        <li>Juruteknik Pembaikan Komposit</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 6. SYARAT KEMASUKAN -->
+  <div style="flex:0 0 auto;margin-top:auto;box-sizing:border-box;border:2px solid var(--navy-600);border-radius:var(--radius);background:var(--surface);padding:8px 16px 10px">
+    <div style="font-size:20px;font-weight:800;color:var(--navy-900);letter-spacing:0.5px;margin-bottom:3px">
+      SYARAT KEMASUKAN
+    </div>
+    <div style="font-size:22px;line-height:1.3;color:var(--text-dark)">
+      Lulus <strong>SPM</strong> dengan <strong>3 kepujian</strong> termasuk <strong>Matematik</strong>,
+      satu mata pelajaran <strong>Kumpulan Sains / Vokasional &amp; Teknologi</strong>, dan satu mata pelajaran lain
+      &mdash; <strong>serta lulus Bahasa Inggeris</strong>.
+    </div>
+    <div style="margin-top:6px;display:flex;align-items:baseline;gap:10px;background:var(--navy-100);border-radius:6px;padding:6px 12px">
+      <span style="flex:0 0 auto;font-size:19px;font-weight:800;color:var(--success);letter-spacing:0.5px">KELONGGARAN</span>
+      <span style="flex:1 1 auto;min-width:0;font-size:21px;line-height:1.28;color:var(--text-dark)">
+        Calon <strong>Matematik gred D</strong> masih diterima, dengan syarat mengikuti
+        <strong>kelas remedial Matematik</strong>.
+      </span>
+    </div>
+  </div>
+
+</div>
