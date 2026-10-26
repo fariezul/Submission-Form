@@ -305,13 +305,13 @@ html,body{
 /* State A: the input is the whole screen - nothing else is shown
    until the candidate has entered a result and pressed Semak. */
 #input{
-  flex:0 0 604px;display:flex;flex-direction:column;
+  flex:0 0 596px;display:flex;flex-direction:column;
   background:var(--surface);border:1px solid var(--navy-100);
   border-radius:var(--radius);padding:18px 22px;min-height:0;
 }
 /* State B: the form goes away entirely. The result is the whole
    screen; Kembali brings the form back to edit the grades. */
-#stage.ada-hasil #input{flex:0 0 604px;display:none}
+#stage.ada-hasil #input{flex:0 0 596px;display:none}
 #stage.ada-hasil #teaser{display:none}
 
 /* Viewer name - the single biggest retention mechanic on LIVE.
@@ -379,10 +379,10 @@ html,body{
 }
 .baris{display:flex;gap:8px;align-items:center}
 .baris select{
-  font-family:inherit;font-size:23px;font-weight:600;
-  padding:7px 9px;border:1.5px solid var(--line-kuat);
-  border-radius:6px;background:var(--surface);color:var(--text-dark);
-  height:54px;
+  font-family:inherit;font-size:28px;font-weight:600;
+  padding:7px 10px;border:2px solid var(--line-kuat);
+  border-radius:7px;background:var(--surface);color:var(--text-dark);
+  height:66px;
 }
 /* The closed control and its open list are seen by different
    people: the closed box is on camera for viewers and stays large,
@@ -395,17 +395,17 @@ html,body{
 .baris select optgroup{font-weight:700}
 
 .baris .sub{flex:1 1 auto;min-width:0}
-.baris .gred{flex:0 0 104px;text-align:center;font-weight:700}
+.baris .gred{flex:0 0 120px;text-align:center;font-weight:700}
 .baris .gred option{font-size:15px;font-weight:700;text-align:center}
 
 /* The six core subjects are fixed labels, not dropdowns. Every
    candidate sits them, so making them selectable only created a
    way to knock one out by accident mid-broadcast. */
 .baris .tetap{
-  flex:1 1 auto;min-width:0;height:54px;
-  display:flex;align-items:center;padding:0 11px;
-  font-size:23px;font-weight:700;color:var(--text-dark);
-  background:var(--navy-100);border-radius:6px;
+  flex:1 1 auto;min-width:0;height:66px;
+  display:flex;align-items:center;padding:0 14px;
+  font-size:28px;font-weight:700;color:var(--text-dark);
+  background:var(--navy-100);border-radius:7px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .baris .kosong{flex:0 0 34px}   /* keeps locked rows aligned with removable ones */
@@ -433,14 +433,19 @@ html,body{
   border:none;border-radius:6px;
 }
 #semak:hover{filter:brightness(1.15)}
+/* Clears every grade and the name. Was a muted 150px button that
+   read as secondary chrome; on a 1080px stage filmed off-screen it
+   has to be findable at a glance. */
 #reset{
-  flex:0 0 150px;height:74px;
-  font-family:inherit;font-size:18px;font-weight:700;
+  flex:0 0 214px;height:74px;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  font-family:inherit;font-size:21px;font-weight:700;
   letter-spacing:.04em;text-transform:uppercase;
-  color:var(--text-muted);background:var(--surface);cursor:pointer;
-  border:1.5px solid var(--line-kuat);border-radius:6px;
+  color:var(--error);background:var(--error-bg);cursor:pointer;
+  border:2px solid var(--error);border-radius:6px;
 }
-#reset:hover{border-color:var(--error);color:var(--error)}
+#reset .pusing{font-size:26px;line-height:1}
+#reset:hover{background:var(--error);color:#fff}
 
 /* ---------- results: ONE list, no separate Masjid Tanah box ---------- */
 #hasil{
@@ -845,9 +850,8 @@ html,body{
     <span class="teks">Kami semak terus</span>
   </div>
 
-  <!-- Who is waiting. Visible in both states, so a viewer who
-       just arrived can see their turn is coming. -->
-  <div id="giliran">
+  <!-- Who is waiting. Hidden by GUNA_GILIRAN for now. -->
+  <div id="giliran" hidden>
     <span class="tajukG">Giliran</span>
     <span class="senaraiG" id="senaraiGiliran"></span>
     <span class="kiraG" id="kiraGiliran"></span>
@@ -858,7 +862,10 @@ html,body{
     <!-- ===== SPM entry ===== -->
     <section id="input">
       <h2>Masukkan Keputusan SPM</h2>
-      <div id="gilBaris">
+      <!-- Queue row, hidden by GUNA_GILIRAN. Kept rather than deleted
+           because the user said "belum diperlukan setakat ini" - one
+           flag brings it back. -->
+      <div id="gilBaris" hidden>
         <input id="gilInput" type="text" maxlength="28" autocomplete="off"
                placeholder="Tambah nama ke giliran &mdash; tekan Enter">
         <button id="gilSeterus" type="button">Seterusnya &#8594;</button>
@@ -872,7 +879,9 @@ html,body{
       <button id="tambah" type="button">+ Tambah Subjek</button>
       <div id="butang">
         <button id="semak" type="button">Semak Kelayakan</button>
-        <button id="reset" type="button">Set Semula</button>
+        <button id="reset" type="button" title="Kosongkan semua gred dan nama">
+          <span class="pusing">&#8635;</span> Set Semula
+        </button>
       </div>
     </section>
 
@@ -1883,10 +1892,16 @@ setInterval(lukisKiraHari, 3600000);   /* a LIVE can cross midnight */
 /* ============================================================
    QUEUE
    ============================================================ */
+/* The queue is parked, not deleted. Set this to true to bring back
+   the "Tambah nama ke giliran" row, the queue strip and the N key -
+   nothing else needs changing. */
+const GUNA_GILIRAN = false;
+
 let giliran = [];
 const MAKS_CIP = 5;
 
 function lukisGiliran(){
+  if (!GUNA_GILIRAN) return;
   const wrap = document.getElementById("senaraiGiliran");
   const kira = document.getElementById("kiraGiliran");
   const semasa = namaPenonton();
@@ -2383,7 +2398,12 @@ elGil.addEventListener("keydown", function(e){
 
 /* Keep the "sekarang" chip in step with the name field. */
 elNama.addEventListener("input", lukisGiliran);
-lukisGiliran();
+
+if (GUNA_GILIRAN){
+  document.getElementById("gilBaris").hidden = false;
+  document.getElementById("giliran").hidden  = false;
+  lukisGiliran();
+}
 document.getElementById("reset").addEventListener("click", function(){
   semulaBaris();
   elNama.value = "";
