@@ -305,13 +305,13 @@ html,body{
 /* State A: the input is the whole screen - nothing else is shown
    until the candidate has entered a result and pressed Semak. */
 #input{
-  flex:0 0 596px;display:flex;flex-direction:column;
+  flex:0 0 624px;display:flex;flex-direction:column;
   background:var(--surface);border:1px solid var(--navy-100);
   border-radius:var(--radius);padding:18px 22px;min-height:0;
 }
 /* State B: the form goes away entirely. The result is the whole
    screen; Kembali brings the form back to edit the grades. */
-#stage.ada-hasil #input{flex:0 0 596px;display:none}
+#stage.ada-hasil #input{flex:0 0 624px;display:none}
 #stage.ada-hasil #teaser{display:none}
 
 /* Viewer name - the single biggest retention mechanic on LIVE.
@@ -379,10 +379,10 @@ html,body{
 }
 .baris{display:flex;gap:8px;align-items:center}
 .baris select{
-  font-family:inherit;font-size:28px;font-weight:600;
+  font-family:inherit;font-size:30px;font-weight:600;
   padding:7px 10px;border:2px solid var(--line-kuat);
   border-radius:7px;background:var(--surface);color:var(--text-dark);
-  height:66px;
+  height:74px;
 }
 /* The closed control and its open list are seen by different
    people: the closed box is on camera for viewers and stays large,
@@ -395,16 +395,16 @@ html,body{
 .baris select optgroup{font-weight:700}
 
 .baris .sub{flex:1 1 auto;min-width:0}
-.baris .gred{flex:0 0 120px;text-align:center;font-weight:700}
+.baris .gred{flex:0 0 112px;text-align:center;font-weight:700}
 .baris .gred option{font-size:15px;font-weight:700;text-align:center}
 
 /* The six core subjects are fixed labels, not dropdowns. Every
    candidate sits them, so making them selectable only created a
    way to knock one out by accident mid-broadcast. */
 .baris .tetap{
-  flex:1 1 auto;min-width:0;height:66px;
-  display:flex;align-items:center;padding:0 14px;
-  font-size:28px;font-weight:700;color:var(--text-dark);
+  flex:1 1 auto;min-width:0;height:74px;
+  display:flex;align-items:center;padding:0 13px;
+  font-size:30px;font-weight:700;color:var(--text-dark);
   background:var(--navy-100);border-radius:7px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
