@@ -660,7 +660,7 @@ html,body{
    returns to whatever was showing before. */
 #tab{display:flex;gap:10px;flex:0 0 auto}
 #tab button{
-  flex:1 1 0;min-width:0;height:62px;
+  flex:1 1 auto;min-width:0;height:62px;padding:0 18px;
   font-family:inherit;font-size:22px;font-weight:700;
   letter-spacing:.04em;text-transform:uppercase;
   color:var(--navy-600);background:var(--surface);cursor:pointer;
@@ -668,6 +668,19 @@ html,body{
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 #tab button:hover{border-color:var(--gold)}
+/* The way out of a panel. It only appears while a panel is open, so the
+   three tabs keep the full row width the rest of the time. Dark, and set
+   apart by a gap, so nobody reads it as a fourth programme. */
+#tab #tutupInfo{
+  flex:0 0 auto;margin-right:6px;padding:0 16px;
+  background:var(--navy-900);border-color:var(--navy-900);color:#fff;
+}
+#tab #tutupInfo:hover{background:var(--navy-600);border-color:var(--gold)}
+/* The row is only 722px and the three full labels already fill it, so the
+   longest one drops to a short form to make room for the way out. */
+#tab .ringkas{display:none}
+#stage.panel-buka #tab .penuh{display:none}
+#stage.panel-buka #tab .ringkas{display:inline}
 #tab button.pilih{
   background:var(--gold);border-color:var(--gold);color:#2a1c00;
 }
@@ -977,9 +990,10 @@ html,body{
         </a>
         <div id="wa" hidden></div>
         <div id="tab">
-          <button type="button" data-panel="dtp">Polymer Composite</button>
-          <button type="button" data-panel="dts">Ceramic</button>
-          <button type="button" data-panel="dtl">Plastic</button>
+          <button type="button" id="tutupInfo" hidden>&#8592; Borang</button>
+          <button type="button" data-panel="dtp"><span class="penuh">Polymer Composite</span><span class="ringkas">Composite</span></button>
+          <button type="button" data-panel="dts"><span class="penuh">Ceramic</span><span class="ringkas">Ceramic</span></button>
+          <button type="button" data-panel="dtl"><span class="penuh">Plastic</span><span class="ringkas">Plastic</span></button>
         </div>
       </div>
     </div>
@@ -1918,6 +1932,7 @@ function jalankan(){
    into a programme mid-session without losing a result.
    ============================================================ */
 const elInfo = document.getElementById("info");
+const elTutupInfo = document.getElementById("tutupInfo");
 let panelAktif = null;
 
 function tunjukPanel(kod){
@@ -1927,6 +1942,7 @@ function tunjukPanel(kod){
   panelAktif = kod;
   elInfo.hidden = false;
   stage.classList.add("panel-buka");
+  elTutupInfo.hidden = false;
   Array.from(elInfo.querySelectorAll(".panel")).forEach(function(p){
     p.hidden = (p.id !== "panel-" + kod);
   });
@@ -1945,6 +1961,7 @@ function tunjukPanel(kod){
 function panelOff(){
   panelAktif = null;
   elInfo.hidden = true;
+  elTutupInfo.hidden = true;
   stage.classList.remove("panel-buka");
   Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
     b.classList.remove("pilih");
@@ -1955,6 +1972,7 @@ function tutupPanel(){
   if (!panelAktif) return;
   panelAktif = null;
   elInfo.hidden = true;
+  elTutupInfo.hidden = true;
   stage.classList.remove("panel-buka");
   Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
     b.classList.remove("pilih");
@@ -1968,9 +1986,12 @@ function tutupPanel(){
   }
 }
 
-Array.from(document.querySelectorAll("#tab button")).forEach(function(b){
+Array.from(document.querySelectorAll("#tab button[data-panel]")).forEach(function(b){
   b.addEventListener("click", function(){ tunjukPanel(b.dataset.panel); });
 });
+
+/* Back to the SPM entry form, whatever was on screen before the panel. */
+elTutupInfo.addEventListener("click", kembaliKeBorang);
 
 /* ============================================================
    CONTROLS
@@ -1986,6 +2007,10 @@ function kembaliKeBorang(){
   elHasil.hidden = true;
   paparWA(false);
   teaserIdx = 0;          /* lead with the last result */
+  /* dedah() and tunjukPanel() both hide the teaser; this is the one
+     function whose job is to put the idle screen back, so it unhides
+     it rather than leaving a blank strip until the next check. */
+  document.getElementById("teaser").hidden = false;
   mulaTeaser();
   lukisGiliran();
 }
