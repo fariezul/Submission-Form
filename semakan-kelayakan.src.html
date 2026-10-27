@@ -50,6 +50,16 @@
   --gold:#c8962a;
   --radius:8px;
 
+  /* ---- TikTok's picture-in-picture circle ----
+     Measured off a real recording (25 Okt): in stage coordinates the
+     circle sits at centre 883,1198 with a diameter of 259. The values
+     below add a small margin and drive BOTH the dashed guide ring and
+     the layout around it, so the two can never drift apart.
+     Nudge them live with the arrow keys while the S guides are on. */
+  --muka-d:280px;            /* diameter                      */
+  --muka-cx:883px;           /* centre, from the stage's left  */
+  --muka-cy:1198px;          /* centre, from the stage's top   */
+
   /* ---- surfaces, routed through tokens so the dark theme is a
           token swap rather than a second stylesheet ---- */
   --ground:var(--page-bg);   /* the stage itself        */
@@ -305,7 +315,10 @@ html,body{
 /* State A: the input is the whole screen - nothing else is shown
    until the candidate has entered a result and pressed Semak. */
 #input{
-  flex:0 0 648px;display:flex;flex-direction:column;
+  /* 648 was the height that fits eight subjects without scrolling; it
+     is now a floor rather than a fixed size, so the form spreads into
+     whatever the band above the camera circle leaves. */
+  flex:1 1 auto;min-height:648px;display:flex;flex-direction:column;
   background:var(--surface);border:1px solid var(--navy-100);
   border-radius:var(--radius);padding:18px 22px;min-height:0;
 }
@@ -349,17 +362,12 @@ html,body{
   background:var(--navy-900);border-radius:var(--radius);
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  gap:14px;padding:22px;text-align:center;overflow:hidden;
-}
-#teaser .kecil{
-  font-size:22px;font-weight:700;color:var(--gold);
-  letter-spacing:.2em;text-transform:uppercase;
+  gap:7px;padding:10px 26px;text-align:center;overflow:hidden;
 }
 #teaser .besar{
-  font-size:44px;font-weight:700;color:#fff;line-height:1.14;
-  max-width:800px;
+  font-size:36px;font-weight:700;color:#fff;line-height:1.08;
 }
-#teaser .sokong{font-size:25px;color:#9fb3d1;line-height:1.38;max-width:740px}
+#teaser .sokong{font-size:20px;color:#9fb3d1;line-height:1.2}
 #teaser .tukar{animation:masuk .5s cubic-bezier(.17,.84,.44,1) both}
 
 /* Last viewer's result, kept on screen while the next is typed. */
@@ -630,29 +638,45 @@ html,body{
 /* No rail reserve here: the face circle sits in the bottom RIGHT
    of the frame, which is exactly where that reserve was, so the
    camera well uses it instead. */
+/* The band begins exactly at the top of the camera circle, so the
+   circle never reaches up into the results list or the teaser. Its
+   height therefore falls out of the circle's position: everything
+   from the circle's top edge down to the footer. */
 #bawah{
-  flex:0 0 340px;display:flex;gap:18px;
+  /* The circle, 12px, then one 62px tab row. Nothing else. */
+  flex:0 0 calc(var(--muka-d) + 74px);
+  position:relative;
 }
 
 /* Reserved hole for the picture-in-picture camera. Nothing is
    ever drawn here; the dashed ring only appears with the safe
    guides (S) so he can line the circle up before going live. */
 #muka{
-  order:2;                   /* bottom right, matching the PiP */
-  flex:0 0 300px;height:300px;border-radius:50%;
+  position:absolute;top:0;
+  /* -20px: #bawah sits inside #utama's 20px left padding. */
+  left:calc(var(--muka-cx) - var(--muka-d) / 2 - 20px);
+  width:var(--muka-d);height:var(--muka-d);border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  text-align:center;padding:26px;
+  text-align:center;padding:26px;pointer-events:none;z-index:4;
 }
 #stage.panduan #muka{
   border:3px dashed rgba(200,150,42,.9);
   background:rgba(200,150,42,.1);
 }
-#muka span{display:none;font-size:19px;font-weight:700;color:#8a6410;
-  letter-spacing:.08em;text-transform:uppercase;line-height:1.3}
+#muka span{display:none;font-size:18px;font-weight:700;color:#8a6410;
+  letter-spacing:.06em;text-transform:uppercase;line-height:1.45}
+#muka span b{font-size:22px;letter-spacing:0}
 #stage.panduan #muka span{display:block}
 
-#aksi{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
-  justify-content:center;gap:13px}
+/* Half-wrapping the circle: the apply bar and the WhatsApp strip run
+   down its left side, and the programme tabs run along underneath it
+   at full width. Nothing is ever placed inside the circle. */
+#aksi{height:100%;min-width:0;display:flex;flex-direction:column;
+  gap:13px;padding-top:4px}
+#aksi > #teaser, #aksi > #mohon, #aksi > #wa{
+  margin-right:calc(1040px - (var(--muka-cx) - var(--muka-d) / 2 - 20px) + 18px);
+}
+#aksi > #tab{margin-top:auto}
 
 /* ---------- programme tabs ----------
    Sit under the apply bar and swap the big panel above between the
@@ -689,9 +713,24 @@ html,body{
 #info{
   flex:1 1 auto;min-height:0;overflow:hidden;
   background:var(--surface);border:1px solid var(--navy-100);
-  border-radius:var(--radius);padding:20px 24px;
+  border-radius:var(--radius);padding:6px 10px;
 }
-#info .panel{height:100%;display:flex;flex-direction:column}
+/* The panels were authored at a fixed 880px. The area is now set by
+   where the camera circle starts, so they follow it instead. */
+#info .panel{height:100%!important;width:100%!important;display:flex;flex-direction:column}
+
+/* ---- panel compaction ----
+   The three panels were hand-built for an 880px area. The camera
+   circle leaves 757, so rather than re-cutting three layouts by hand
+   the space is taken from the parts that carry no meaning: outer
+   padding, the gaps between blocks, list leading and the diagram's
+   height. No type is shrunk - 19px stays the floor, because this is
+   read off a filmed screen. */
+#info .panel{padding:4px 16px!important;gap:3px!important}
+#info .panel > *{margin-top:0!important;margin-bottom:0!important}
+#info .panel ul{line-height:1.1!important}
+#info .panel li{margin-bottom:1px!important}
+#info .panel svg{max-height:94px}
 
 /* ---------- apply bar ---------- */
 /* 130, not 108: the height given back here comes straight off the
@@ -716,6 +755,10 @@ html,body{
   background:var(--ground);
   display:none;align-items:center;justify-content:center;
   flex-direction:column;gap:14px;
+  /* The sheet still blanks the whole stage, but the number and its
+     caption centre in the area ABOVE the camera circle - otherwise the
+     caption lands at y1100 and the host's face sits on its tail. */
+  padding-bottom:calc((1920px - (var(--muka-cy) - var(--muka-d) / 2)) / 2);
 }
 #kira.on{display:flex}
 #kira .angka{
@@ -809,7 +852,10 @@ html,body{
 /* Lives in TikTok's comment zone, so everything here is
    expendable if the overlay covers it. */
 #kaki{
-  flex:0 0 360px;background:var(--navy-900);color:#fff;
+  /* Height follows the circle: the band above ends at the circle's
+     bottom + 74px of tabs + 12px padding, and this fills the rest. */
+  flex:0 0 calc(1920px - 86px - (var(--muka-cy) + var(--muka-d) / 2));
+  background:var(--navy-900);color:#fff;
   padding:16px 22px;display:flex;flex-direction:column;gap:12px;
 }
 #kaki .komen{
@@ -930,14 +976,6 @@ html,body{
       </div>
     </section>
 
-    <!-- Carries the message while he types the next viewer's grades,
-         so the screen is never a bare form. -->
-    <section id="teaser">
-      <div class="kecil" id="teaserKecil">TVETMARA Masjid Tanah</div>
-      <div class="besar" id="teaserBesar"></div>
-      <div class="sokong" id="teaserSokong"></div>
-    </section>
-
     <!-- ===== results: one list, scrollable ===== -->
     <!-- Programme panels, injected at build time from panel-dtp.html,
          panel-dts.html and panel-dtl.html. A sibling of #hasil, not a
@@ -979,8 +1017,18 @@ html,body{
     <!-- Face-cam well + the two CTAs. Last band before TikTok's
          comment overlay begins. -->
     <div id="bawah">
-      <div id="muka"><span>Letak<br>kamera<br>muka<br>di sini</span></div>
+      <div id="muka"><span>Bulatan kamera<br><b id="mukaNilai"></b><br>anak panah = alih<br>[ ] = saiz</span></div>
       <div id="aksi">
+        <!-- Carries the message while he types the next viewer's grades,
+             so the screen is never a bare form. It lives down here, in
+             the column beside the camera circle, because that column had
+             166px going spare and the band above it is for the form and
+             the results. -->
+        <section id="teaser">
+          <div class="besar" id="teaserBesar"></div>
+          <div class="sokong" id="teaserSokong"></div>
+        </section>
+
         <!-- Always on screen, not just after a check: the apply URL
              is useful to every viewer at every moment, and hiding it
              left the whole bottom row empty on the form screen. -->
@@ -1234,11 +1282,16 @@ const AWAL = [
 ];
 const MAKS_BARIS = 10;
 
-function buatSelect(cls, pilihan, placeholder){
+/* bolehKosong: leave the placeholder selectable, so picking it again
+   clears the field. The host mistypes a grade onto a subject the
+   candidate never sat often enough that there has to be a way back
+   that is not "reset everything". */
+function buatSelect(cls, pilihan, placeholder, bolehKosong){
   const sel = document.createElement("select");
   sel.className = cls;
   const p = document.createElement("option");
-  p.value = ""; p.textContent = placeholder; p.disabled = true; p.selected = true;
+  p.value = ""; p.textContent = placeholder;
+  p.disabled = !bolehKosong; p.selected = true;
   sel.appendChild(p);
 
   /* The subject list is grouped (Teras, Sains, Teknikal, …) so the
@@ -1273,7 +1326,7 @@ function tambahBaris(subjek, gred, kunci){
   const row = document.createElement("div");
   row.className = "baris";
 
-  const g = buatSelect("gred", SPM_GRADES, "Gred");
+  const g = buatSelect("gred", SPM_GRADES, "Gred", true);
   if (gred) g.value = gred;
 
   if (kunci){
@@ -1336,20 +1389,15 @@ semulaBaris();
    guarantees.
    ============================================================ */
 const TEASER = [
-  { kecil:"Syarat Kemasukan",
-    besar:"Matematik D pun boleh mohon",
+  { besar:"Matematik D pun boleh mohon",
     sokong:"Polimer Komposit, Seramik dan Plastik menerima calon Matematik D dengan kelas remedial." },
-  { kecil:"Yuran Pengajian",
-    besar:"Yuran pengajian ditanggung MARA",
-    sokong:"Elaun sara hidup dan asrama disediakan." },
-  { kecil:"Diploma Industri",
-    besar:"2 kredit sahaja untuk Diploma Industri",
+  { besar:"Yuran pengajian ditanggung MARA",
+    sokong:"Asrama percuma di TVETMARA Masjid Tanah." },
+  { besar:"Elaun RM300 sebulan",
+    sokong:"Butiran kelayakan elaun &mdash; tanya perunding pendidikan kami." },
+  { besar:"2 kredit sahaja untuk Diploma Industri",
     sokong:"Diploma Industri Pembuatan Komposit Aeroangkasa (IAC) di Masjid Tanah." },
-  { kecil:"3SURE",
-    besar:"Sure Kerja &middot; Sure Sambung Belajar &middot; Sure Usahawan",
-    sokong:"Lima program di TVETMARA Masjid Tanah." },
-  { kecil:"Cara Mohon",
-    besar:"Mohon di mohon.tvet.gov.my",
+  { besar:"Mohon di mohon.tvet.gov.my",
     sokong:"Pengambilan Januari 2027. Taip nama dan gred anda di komen untuk semakan percuma." },
 ];
 
@@ -1364,7 +1412,6 @@ function lukisTeaser(){
     : TEASER[teaserIdx % TEASER.length];
 
   elTeaser.classList.toggle("lepas", guna === hasilLepas);
-  document.getElementById("teaserKecil").innerHTML  = guna.kecil;
   document.getElementById("teaserBesar").innerHTML  = guna.besar;
   document.getElementById("teaserSokong").innerHTML = guna.sokong;
 
@@ -1515,7 +1562,28 @@ function kadHTML(prog, hasil, utama){
   '</div>';
 }
 
-const URUT = { layak:0, remedial:1, syarat:2, hampir:3, lanjutan:4, tidak:5 };
+/* Order of the list below the pinned Masjid Tanah block.
+   ------------------------------------------------------------
+   Set by the institution 2026-10-27, and it is NOT the same as
+   ordering by status: a programme can be fully eligible and still
+   need an interview, which pushes it down a group. So the group is
+   decided by the GATE, not by the status badge.
+
+     0  sijil, eligible, no interview
+     1  diploma at another campus, eligible, no interview
+     2  either, eligible, but an interview has to be passed
+     3  near misses - what the candidate just missed
+     4  needs an SKM or an existing diploma, so not an SPM route
+
+   Near misses sit above the SKM route deliberately: a school leaver
+   can act on "you missed this by one subject", but a programme that
+   needs an SKM first is not a route they have today.              */
+function kumpulan(x){
+  if (x.hasil.status === "lanjutan") return 4;
+  if (x.hasil.status === "hampir")   return 3;
+  if ((x.prog.gates || []).indexOf("temuduga") !== -1) return 2;
+  return x.prog.p === "S" ? 0 : 1;
+}
 
 /* Programmes the candidate has actually missed are not shown at
    all - not even the pinned Masjid Tanah ones. */
@@ -1564,7 +1632,6 @@ function papar(){
     /* They need advice more than anyone, so the counsellors show. */
     paparWA(true);
     hasilLepas = {
-      kecil: "Keputusan sebelum ini",
       besar: (nama ? selamat(nama) + " &mdash; " : "") + "tidak lulus SPM",
       sokong: "Bahasa Melayu dan Sejarah wajib lulus. Hubungi perunding kami."
     };
@@ -1584,8 +1651,10 @@ function papar(){
   const bawah = dinilai
     .filter(function(x){ return UTAMA.indexOf(x.prog.kod) === -1 && nampak(x); })
     .sort(function(a,b){
-      if (URUT[a.hasil.status] !== URUT[b.hasil.status]) return URUT[a.hasil.status] - URUT[b.hasil.status];
-      if (a.prog.p !== b.prog.p) return a.prog.p === "D" ? -1 : 1;
+      const ka = kumpulan(a), kb = kumpulan(b);
+      if (ka !== kb) return ka - kb;
+      /* Only group 2 holds both kinds; sijil leads there too. */
+      if (a.prog.p !== b.prog.p) return a.prog.p === "S" ? -1 : 1;
       if (a.prog.kluster !== b.prog.kluster) return a.prog.kluster < b.prog.kluster ? -1 : 1;
       return a.prog.nama < b.prog.nama ? -1 : 1;
     });
@@ -1624,7 +1693,6 @@ function papar(){
   /* Keep this result on screen as the first attract slide once he
      goes back to type the next viewer in. */
   hasilLepas = {
-    kecil: "Keputusan sebelum ini",
     besar: (nama ? selamat(nama) + " &mdash; " : "") + "layak " + bolehPohon + " program",
     sokong: "Taip nama dan gred SPM anda di komen untuk semakan anda pula."
   };
@@ -1994,6 +2062,41 @@ Array.from(document.querySelectorAll("#tab button[data-panel]")).forEach(functio
 elTutupInfo.addEventListener("click", kembaliKeBorang);
 
 /* ============================================================
+   CAMERA CIRCLE
+   ------------------------------------------------------------
+   Where TikTok draws the picture-in-picture depends on how the
+   phone is aimed at the screen, so these three numbers have to be
+   adjustable on the spot. They drive the guide ring AND the layout
+   around it, and they survive a reload.
+   ============================================================ */
+const MUKA_ASAL = { cx:883, cy:1198, d:280 };
+const muka = Object.assign({}, MUKA_ASAL);
+
+try {
+  const simpan = JSON.parse(localStorage.getItem("muka") || "null");
+  if (simpan && typeof simpan.cx === "number") Object.assign(muka, simpan);
+} catch (e) { /* private window, blocked storage - keep the defaults */ }
+
+function mukaPakai(){
+  const r = document.documentElement.style;
+  r.setProperty("--muka-cx", muka.cx + "px");
+  r.setProperty("--muka-cy", muka.cy + "px");
+  r.setProperty("--muka-d",  muka.d  + "px");
+  const lbl = document.getElementById("mukaNilai");
+  if (lbl) lbl.textContent = muka.cx + " , " + muka.cy + "  ø" + muka.d;
+  try { localStorage.setItem("muka", JSON.stringify(muka)); } catch (e) {}
+}
+function mukaUbah(medan, delta){
+  muka[medan] = Math.round(muka[medan] + delta);
+  /* Keep it on the stage and big enough to still be a face. */
+  muka.d  = Math.min(460, Math.max(160, muka.d));
+  muka.cx = Math.min(1080 - muka.d / 2, Math.max(muka.d / 2, muka.cx));
+  muka.cy = Math.min(1560 - muka.d / 2, Math.max(400 + muka.d / 2, muka.cy));
+  mukaPakai();
+}
+mukaPakai();
+
+/* ============================================================
    CONTROLS
    ============================================================ */
 /* Back to state A. The grades are left as they were, so he can
@@ -2088,6 +2191,21 @@ document.addEventListener("keydown", function(e){
   /* Light / dark. Switch it mid-LIVE and watch the viewer count:
      that comparison is the only test that settles the question. */
   if (k === "t"){ stage.classList.toggle("gelap"); }
+
+  /* Camera circle: arrows move it, [ ] resize it. Only while the S
+     guides are on, so the arrow keys stay free the rest of the time. */
+  if (stage.classList.contains("panduan")){
+    const langkah = e.shiftKey ? 20 : 5;
+    let ubah = true;
+    if (e.key === "ArrowLeft")  mukaUbah("cx", -langkah);
+    else if (e.key === "ArrowRight") mukaUbah("cx",  langkah);
+    else if (e.key === "ArrowUp")    mukaUbah("cy", -langkah);
+    else if (e.key === "ArrowDown")  mukaUbah("cy",  langkah);
+    else if (k === "[")              mukaUbah("d",  -langkah);
+    else if (k === "]")              mukaUbah("d",   langkah);
+    else ubah = false;
+    if (ubah) e.preventDefault();
+  }
   if (k === "l"){ ketengah = !ketengah; fitStage(); }
   if (k === "c"){ semulaBaris(CONTOH_GRED, CONTOH_TAMBAHAN); }
   if (k === "3"){ panjangKira = 3; }

@@ -42,16 +42,22 @@ const CREDIT_GRADE = "C";
    ------------------------------------------------------------ */
 const SPM_KUMPULAN = [
   { nama: "Teras", subjek: [
-    "Bahasa Melayu", "Bahasa Inggeris", "Matematik", "Sejarah",
-    "Pendidikan Islam", "Pendidikan Moral",
+    "Bahasa Melayu", "Bahasa Inggeris", "Matematik", "Matematik Tambahan",
+    "Sejarah", "Pendidikan Islam", "Pendidikan Moral",
   ]},
+  /* Matematik Tambahan is NOT here. It is a mathematics subject, so a
+     credit in it must not satisfy the "1 subjek Kumpulan Sains /
+     Vokasional & Teknologi" requirement that KUMPULAN_SAINS_TEK below
+     is built from. Confirmed by the institution 2026-10-27. */
   { nama: "Sains", subjek: [
-    "Sains", "Fizik", "Kimia", "Biologi",
-    "Sains Tambahan", "Matematik Tambahan",
+    "Sains", "Fizik", "Kimia", "Biologi", "Sains Tambahan",
+    "Sains Pertanian / Pertanian", "Sains Rumah Tangga", "Sains Sukan",
   ]},
   { nama: "Teknikal & Vokasional", subjek: [
     "Lukisan Kejuruteraan", "Teknologi Kejuruteraan",
-    "Grafik Komunikasi Teknikal", "Reka Cipta", "Sains Komputer",
+    "Grafik Komunikasi Teknikal (GKT)", "Reka Cipta", "Sains Komputer",
+    "Pengajian Kejuruteraan Awam", "Pengajian Kejuruteraan Mekanikal",
+    "Pengajian Kejuruteraan Elektrik & Elektronik",
     "Mata Pelajaran Vokasional (MPV)",
   ]},
   { nama: "Perdagangan", subjek: [
@@ -59,7 +65,7 @@ const SPM_KUMPULAN = [
   ]},
   { nama: "Kemanusiaan & Seni", subjek: [
     "Geografi", "Pendidikan Seni Visual", "Kesusasteraan Melayu",
-    "Kesusasteraan Inggeris", "Sains Sukan", "Pendidikan Muzik",
+    "Kesusasteraan Inggeris", "Pendidikan Muzik",
   ]},
   { nama: "Pengajian Islam", subjek: [
     "Pendidikan Al-Quran dan As-Sunnah", "Pendidikan Syariah Islamiah",
