@@ -1377,6 +1377,12 @@ function semulaBaris(gred, tambahan){
     tambahBaris(s, (gred && gred[s]) || "", true);
   });
   (tambahan || []).forEach(function(p){ tambahBaris(p[0], p[1], false); });
+
+  /* Fill the rest with empty rows rather than leaving the host to
+     press "+ Tambah Subjek" four times mid-sentence. The panel is
+     sized for all ten, and empty rows are dropped by bacaKeputusan()
+     so they cost nothing in the result. */
+  while (barisWrap.children.length < MAKS_BARIS) tambahBaris("", "", false);
 }
 semulaBaris();
 
