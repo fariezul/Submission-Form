@@ -910,6 +910,39 @@ body {
   margin: 0;
 }
 
+/* ---------- Activity cards ----------
+   Used by the "Activities" grid on the programme pages and on ADM.
+   These are the only cards a student is meant to click, so they get a
+   full navy outline instead of the faint .info-card tint, and a solid
+   navy button. Both read clearly on a classroom projector and survive
+   being printed, where the pale --navy-100 edge disappears entirely.
+   Must stay BELOW .info-card so the border-color override wins.       */
+.activity-card {
+  display: flex;
+  flex-direction: column;
+  border-color: var(--navy-600);
+}
+
+/* Pushes the button to the bottom of the card so every button in the
+   row lines up, however long the description above it runs. */
+.activity-card .activity-card-link {
+  margin-top: auto;
+  padding-top: 13px;
+}
+
+/* .btn-hero-primary is white-on-white by default, which is correct on a
+   navy hero but invisible on a white card. Flip it to navy-filled here. */
+.activity-card .btn-hero-primary {
+  color: var(--white);
+  background-color: var(--navy-600);
+  border-color: var(--navy-600);
+}
+
+.activity-card .btn-hero-primary:hover {
+  background-color: var(--navy-700);
+  border-color: var(--navy-700);
+}
+
 .card-year {
   display: block;
   font-size: 11.5px;
