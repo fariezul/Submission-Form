@@ -107,6 +107,30 @@
     <priority>0.7</priority>
   </url>
 
+  <!--
+    Composite Repair activities 1 and 2. Same rule as the Production
+    Coordination list above: both hold real content — the Basic
+    Composite Challenge quiz and the REPAIR REVISION paper — and
+    neither carries a noindex tag, so both belong here.
+
+    Activities 3 to 10 are still placeholders and DO carry noindex,
+    so they are deliberately absent. Add a <url> block for each one
+    as it is written, and delete its noindex line at the same time —
+    the two go together.
+  -->
+  <url>
+    <loc>https://www.farizuljaafar.com/composite-repair/activity-1.html</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.farizuljaafar.com/composite-repair/activity-2.html</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <url>
     <loc>https://www.farizuljaafar.com/adm</loc>
   </url>
