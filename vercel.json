@@ -8,9 +8,24 @@
     {
       "source": "/semak",
       "destination": "/semakan-kelayakan.html"
+    },
+    {
+      "source": "/adm",
+      "destination": "/adm.html"
+    },
+    {
+      "source": "/adm/playbook",
+      "destination": "/adm/playbook.html"
+    },
+    {
+      "source": "/adm/hotspot",
+      "destination": "/adm/hotspot.html"
+    },
+    {
+      "source": "/adm/sim",
+      "destination": "/adm/sim.html"
     }
   ],
-
   "redirects": [
     {
       "source": "/line",
