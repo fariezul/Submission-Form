@@ -34,6 +34,8 @@
     .jadual-bar .spacer { flex: 1; }
     .jadual-bar a { color: #1F4E9C; font-weight: 600; text-decoration: none; white-space: nowrap; }
     .jadual-bar a:hover { text-decoration: underline; }
+    .jadual-bar a.jadual-admin { color: #545454; font-weight: 500; border: 1px solid #E2E5EE; border-radius: 6px; padding: 3px 10px; background: #fff; }
+    .jadual-bar a.jadual-admin:hover { text-decoration: none; border-color: #1F4E9C; color: #1F4E9C; }
     .jadual-frame-wrap { background: #F5F6FA; }
     #jadualFrame { display: block; width: 100%; height: 80vh; min-height: 560px; border: 0; background: #22195E; }
     .jadual-note { text-align: center; font-size: 12px; color: #8A8FA3; padding: 6px 16px 10px; margin: 0; }
@@ -83,14 +85,14 @@
       <b id="jadualTitle">Pilihan Subjek Pensyarah</b>
       <span>Jabatan Teknologi Pemprosesan Polimer Komposit · TVETMARA Masjid Tanah</span>
       <span class="spacer"></span>
+      <a id="jadualSwitch" href="/jadual?admin=1" class="jadual-admin">Log masuk admin</a>
       <a id="jadualFull" href="#" target="_blank" rel="noopener">Buka dalam tetingkap penuh ↗</a>
     </div>
     <div class="jadual-frame-wrap">
       <iframe id="jadualFrame" title="Aplikasi Pilihan Subjek Pensyarah"
               allow="fullscreen; clipboard-write" allowfullscreen></iframe>
     </div>
-    <p class="jadual-note">Untuk pensyarah Jabatan Polimer Komposit dan Pengajian Am sahaja. Log masuk dengan No. IC atau No. Gaji. Developed by : Ts. Farizul Jaafar
-      · <a id="jadualSwitch" href="/jadual?admin=1" style="color:#8A8FA3">Log masuk admin</a></p>
+    <p class="jadual-note">Untuk pensyarah Jabatan Polimer Komposit dan Pengajian Am sahaja. Log masuk dengan No. IC atau No. Gaji. Developed by : Ts. Farizul Jaafar</p>
   </main>
 
   <script>
