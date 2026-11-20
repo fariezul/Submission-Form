@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!--
+  jadual.html — Pilihan Subjek Pensyarah (Jabatan Polimer Komposit, TVETMARA Masjid Tanah).
+
+  The app itself is a Google Apps Script web app. This page frames it under the
+  site header so lecturers reach it at www.farizuljaafar.com/jadual.
+    /jadual          lecturers log in with No. IC or No. Gaji
+    /jadual?admin=1  the timetable administrator's login (ID + password)
+
+  The page is kept out of search results (noindex, not in sitemap.xml):
+  it is an internal tool for department staff only.
+-->
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="icon" type="image/png" href="/logo-mark.png" />
+  <link rel="apple-touch-icon" href="/logo-mark.png" />
+
+  <title>Jadual Pensyarah · Pilihan Subjek | Ts. Farizul Jaafar</title>
+  <meta name="description" content="Aplikasi pilihan subjek pensyarah Jabatan Teknologi Pemprosesan Polimer Komposit, TVETMARA Masjid Tanah." />
+
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    /* The app needs the full height of the screen: no page footer, no outer scroll. */
+    .jadual-bar {
+      max-width: 1280px; margin: 0 auto; padding: 8px 16px;
+      display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center;
+      font-size: 13px; color: #545454;
+    }
+    .jadual-bar b { color: #22195E; font-size: 14px; }
+    .jadual-bar .spacer { flex: 1; }
+    .jadual-bar a { color: #1F4E9C; font-weight: 600; text-decoration: none; white-space: nowrap; }
+    .jadual-bar a:hover { text-decoration: underline; }
+    .jadual-frame-wrap { background: #F5F6FA; }
+    #jadualFrame { display: block; width: 100%; height: 80vh; min-height: 560px; border: 0; background: #22195E; }
+    .jadual-note { text-align: center; font-size: 12px; color: #8A8FA3; padding: 6px 16px 10px; margin: 0; }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header site-header-nav">
+    <div class="header-inner">
+      <a href="/index.html" class="header-logo-link" aria-label="Home">
+        <img src="/logo-mark.png" alt="" class="brand-mark" width="200" height="200" />
+        <span class="brand-name"><span class="brand-name-main">FarizulJaafar</span><span class="brand-name-tld">.com</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Main">
+        <button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="menuDropdown">
+          Menu <span class="menu-caret" aria-hidden="true">▾</span>
+        </button>
+        <ul class="menu-dropdown is-hidden" id="menuDropdown">
+          <li><a href="/alumni.html">Alumni</a></li>
+          <li><a href="/semak">Semakan Kelayakan</a></li>
+          <li><a href="/production-coordination.html">Production Coordination</a></li>
+          <li><a href="/permohonan.html">Permohonan TVETMARA</a></li>
+          <li><a href="/composite-repair.html">Composite Repair</a></li>
+          <li><a href="/adm">ADM</a></li>
+          <li><a href="/jadual">Jadual Pensyarah</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Sections">
+    <div class="tab-bar-inner">
+      <a href="/index.html" class="tab">Profile</a>
+      <a href="/alumni.html" class="tab">Alumni</a>
+      <a href="/semak" class="tab">Semakan Kelayakan</a>
+      <a href="/production-coordination.html" class="tab">Production Coordination</a>
+      <a href="/permohonan.html" class="tab">Permohonan TVETMARA</a>
+      <a href="/composite-repair.html" class="tab">Composite Repair</a>
+      <a href="/adm" class="tab">ADM</a>
+      <a href="/jadual" class="tab tab-active" aria-current="page">Jadual Pensyarah</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="jadual-bar">
+      <b id="jadualTitle">Pilihan Subjek Pensyarah</b>
+      <span>Jabatan Teknologi Pemprosesan Polimer Komposit · TVETMARA Masjid Tanah</span>
+      <span class="spacer"></span>
+      <a id="jadualFull" href="#" target="_blank" rel="noopener">Buka dalam tetingkap penuh ↗</a>
+    </div>
+    <div class="jadual-frame-wrap">
+      <iframe id="jadualFrame" title="Aplikasi Pilihan Subjek Pensyarah"
+              allow="fullscreen; clipboard-write" allowfullscreen></iframe>
+    </div>
+    <p class="jadual-note">Untuk pensyarah Jabatan Polimer Komposit dan Pengajian Am sahaja. Log masuk dengan No. IC atau No. Gaji. Developed by : Ts. Farizul Jaafar</p>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+      var APP = "https://script.google.com/macros/s/AKfycby0GJwdYqtryX-_03M-yPQIHfwSJ296caQr34Uv0c4pkP9C9cm4_fTojjJinbiHyYMYWA/exec";
+      var admin = /(^|[?&])admin=1(&|$)/.test(location.search);
+      var src = APP + (admin ? "?admin=1" : "");
+      var frame = document.getElementById("jadualFrame");
+      frame.src = src;
+      document.getElementById("jadualFull").href = src;
+      if (admin) document.getElementById("jadualTitle").textContent = "Pilihan Subjek Pensyarah · Pentadbir";
+
+      // Fill the rest of the screen below the header, so the app scrolls inside itself.
+      function fit() {
+        var top = frame.getBoundingClientRect().top + window.scrollY;
+        frame.style.height = Math.max(560, window.innerHeight - top) + "px";
+      }
+      window.addEventListener("resize", fit);
+      fit();
+    })();
+  </script>
+  <script src="/nav.js"></script>
+</body>
+</html>

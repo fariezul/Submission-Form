@@ -24,6 +24,10 @@
     {
       "source": "/adm/sim",
       "destination": "/adm/sim.html"
+    },
+    {
+      "source": "/jadual",
+      "destination": "/jadual.html"
     }
   ],
   "redirects": [
