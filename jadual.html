@@ -89,7 +89,8 @@
       <iframe id="jadualFrame" title="Aplikasi Pilihan Subjek Pensyarah"
               allow="fullscreen; clipboard-write" allowfullscreen></iframe>
     </div>
-    <p class="jadual-note">Untuk pensyarah Jabatan Polimer Komposit dan Pengajian Am sahaja. Log masuk dengan No. IC atau No. Gaji. Developed by : Ts. Farizul Jaafar</p>
+    <p class="jadual-note">Untuk pensyarah Jabatan Polimer Komposit dan Pengajian Am sahaja. Log masuk dengan No. IC atau No. Gaji. Developed by : Ts. Farizul Jaafar
+      · <a id="jadualSwitch" href="/jadual?admin=1" style="color:#8A8FA3">Log masuk admin</a></p>
   </main>
 
   <script>
@@ -101,7 +102,12 @@
       var frame = document.getElementById("jadualFrame");
       frame.src = src;
       document.getElementById("jadualFull").href = src;
-      if (admin) document.getElementById("jadualTitle").textContent = "Pilihan Subjek Pensyarah · Pentadbir";
+      if (admin) {
+        document.getElementById("jadualTitle").textContent = "Pilihan Subjek Pensyarah · Pentadbir";
+        var sw = document.getElementById("jadualSwitch");
+        sw.href = "/jadual";
+        sw.textContent = "Log masuk pensyarah";
+      }
 
       // Fill the rest of the screen below the header, so the app scrolls inside itself.
       function fit() {
